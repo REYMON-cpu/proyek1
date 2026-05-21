@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+<<<<<<< HEAD
 use Illuminate\Support\Facades\DB;
 
 // Jalur Utama (Halaman Dashboard)
@@ -15,3 +16,26 @@ Route::get('/', function () {
         'daftar_hewan' => $hewan
     ]);
 });
+=======
+use App\Http\Controllers\ReviewController;
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Route::get('/verify', function () {
+    return view('verify');
+});
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+});
+
+
+Route::post('/review-store', [ReviewController::class, 'store'])->name('review.store');
+
+
+
+
+
+>>>>>>> 0de9869f023d5b330a53d5703a39cd5d0d380b2b
