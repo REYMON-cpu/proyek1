@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="ml-20 ">
-                    <h2 class="text-3xl font-bold tracking-tight text-white">GoPet</h2>
+                    <h2 class="text-3xl font-bold tracking-tight text-white">Go<span class="text-[#D9B08C]">Pet</span></h2>
                 </div>
             </div>
 
@@ -188,9 +188,9 @@
                 <p class="text-gray-600 mb-8 text-lg leading-relaxed">
                     Pemeriksaan kesehatan, vaksinasi, dan pengobatan medis tanpa perlu keluar rumah.
                 </p>
-                <button class="w-full py-5 bg-[#2D433E] text-white rounded-2xl font-bold text-lg group-hover:bg-[#5E887E] shadow-lg transition-all">
-                    Pesan Dokter
-                </button>
+                <a href="{{ url('/pilih-dokter') }}" class="w-full py-5 bg-[#2D433E] text-white rounded-2xl font-bold text-lg group-hover:bg-[#5E887E] shadow-lg transition-all inline-block text-center">
+                    Pesan Dokter Hewan
+                </a>
             </div>
 
 
@@ -202,9 +202,9 @@
                 <p class="text-gray-600 mb-8 text-lg leading-relaxed">
                     Penjagaan anabul, pemberian makan, dan teman bermain saat Anda sedang sibuk.
                 </p>
-                <button class="w-full py-5 bg-[#2D433E] text-white rounded-2xl font-bold text-lg group-hover:bg-[#D9B08C] shadow-lg transition-all">
+                <a href="{{ url('/pilih-sitter') }}" class="w-full py-5 bg-[#2D433E] text-white rounded-2xl font-bold text-lg group-hover:bg-[#D9B08C] shadow-lg transition-all inline-block text-center">
                     Pesan Pet Sitter
-                </button>
+                </a>
             </div>
         </div>
     </section>
@@ -686,6 +686,7 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         function toggleFaq(btn) {
@@ -757,6 +758,20 @@
                 nav.style.paddingBottom = "24px";
             }
         };
+
+
+        @if(session('success'))
+            Swal.fire({
+                title: 'Verifikasi Berhasil!',
+                text: "{{ session('success') }}",
+                icon: 'success',
+                confirmButtonColor: '#5E887E',
+                background: '#F8FBF0',
+                customClass: {
+                    popup: 'rounded-3xl'
+                }
+            });
+        @endif
     </script>
 </body>
 </html>

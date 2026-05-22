@@ -28,6 +28,23 @@
         .anim-getar { animation: getar 0.4s ease-in-out;}
         .anim-kartu { animation: kartuMasuk 0.8s ease-out forwards; }
         .anim-konten { opacity: 0; animation: slideTeks 0.6s ease-out 0.5s forwards; }
+
+        @media screen and (max-width: 480px) {
+            .anim-kartu {
+                padding: 32px 20px !important;
+            }
+
+            #otp-inputs input {
+                width: 3.25rem !important;
+                height: 3.25rem !important;
+                font-size: 1.25rem !important;
+            }
+
+            #otp-inputs {
+                gap: 8px !important;
+                justify-content: center !important;
+            }
+        }
     </style>
 </head>
 
@@ -49,10 +66,10 @@
 
         <form action="#" class="space-y-8 anim-konten">
             <div class="flex justify-between gap-2" id="otp-inputs">
-                <input type="text" maxlength="1" class="w-14 h-14 text-center text-2xl font-bold rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:ring-2 focus:ring-[#5E887E]/20 outline-none transition-all duration-300">
-                <input type="text" maxlength="1" class="w-14 h-14 text-center text-2xl font-bold rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:ring-2 focus:ring-[#5E887E]/20 outline-none transition-all duration-300">
-                <input type="text" maxlength="1" class="w-14 h-14 text-center text-2xl font-bold rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:ring-2 focus:ring-[#5E887E]/20 outline-none transition-all duration-300">
-                <input type="text" maxlength="1" class="w-14 h-14 text-center text-2xl font-bold rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:ring-2 focus:ring-[#5E887E]/20 outline-none transition-all duration-300">
+                <input type="text" name="otp[]" maxlength="1" class="w-14 h-14 text-center text-2xl font-bold rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:ring-2 focus:ring-[#5E887E]/20 outline-none transition-all duration-300">
+                <input type="text" name="otp[]" maxlength="1" class="w-14 h-14 text-center text-2xl font-bold rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:ring-2 focus:ring-[#5E887E]/20 outline-none transition-all duration-300">
+                <input type="text" name="otp[]" maxlength="1" class="w-14 h-14 text-center text-2xl font-bold rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:ring-2 focus:ring-[#5E887E]/20 outline-none transition-all duration-300">
+                <input type="text" name="otp[]" maxlength="1" class="w-14 h-14 text-center text-2xl font-bold rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:ring-2 focus:ring-[#5E887E]/20 outline-none transition-all duration-300">
             </div>
 
             @if(session('error'))
@@ -125,6 +142,16 @@
                 displayTimer.parentElement.style.cursor = "pointer";
             }
         }, 1000);
+
+        inputs[0].addEventListener('paste', (e) => {
+            const pasteData = e.clipboardData.getData('text');
+            if (pasteData.length === inputs.length) {
+                inputs.forEach((input, index) => {
+                    input.value = pasteData[index];
+                });
+                inputs[inputs.length - 1].focus();
+            }
+        });
     </script>
 </body>
 </html>

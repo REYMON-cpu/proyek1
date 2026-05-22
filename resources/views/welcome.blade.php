@@ -39,6 +39,27 @@
             opacity: 0;
             animation: kartuMasuk 0.8s ease-out 1.3s forwards;
         }
+
+        @media screen and (max-width: 767px) {
+            @keyframes slideDariKiri {
+                from { opacity: 0; transform: translateX(-20px); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+
+            .md\:w-1\/2.bg\-\[\#5E887E\] {
+                padding: 24px !important;
+                gap: 24px;
+            }
+
+            .md\:w-1\/2.p-10 {
+                padding: 32px 24px !important;
+            }
+
+            .mb-10 {
+                margin-bottom: 24px !important;
+            }
+        }
+
     </style>
 </head>
 
@@ -51,7 +72,7 @@
             <div class="anim-teks">
                 <div class="flex items-center gap-2 mb-10">
                     <img src="{{ asset('images/logo putih.svg') }}" alt="Logo" class="h-12 w-auto">
-                    <h2 class="text-3xl font-bold tracking-tight">GoPet</h2>
+                    <h2 class="text-3xl font-bold tracking-tight">Go<span class="text-[#D9B08C]">Pet</span></h2>
                 </div>
 
                 <h1 class="text-4xl lg:text-5xl font-bold leading-tight mb-6">
