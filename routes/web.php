@@ -11,22 +11,46 @@ use Illuminate\Http\Request;
 */
 
 // ==========================================
-// 1. ROUTE DASHBOARD / HALAMAN UTAMA (SUDAH DISATUKAN)
+// 0. HALAMAN LOGIN UTAMA (TAMPILAN LUXURY GOPET)
+// ==========================================
+Route::get('/', function () {
+    return view('index'); // Memanggil tampilan form login baru kita
+});
+
+// PROSES MENGECEK DATA LOGIN KE DATABASE
+Route::post('/login/proses', function (Request $request) {
+    // 1. Validasi input sederhana
+    $email = $request->input('email');
+    $password = $request->input('password');
+
+    // 2. Cari user di database berdasarkan email & password (sesuaikan nama tabelmu, misal: 'users' atau 'user')
+    $user = DB::table('users')
+                ->where('email', $email)
+                ->where('password', $password) // Catatan: ini teks biasa, sesuaikan jika di db kelompokmu di-hash
+                ->first();
+
+    if ($user) {
+        // Jika login sukses, oper nama asli dari database atau default 'Reymon'
+        return redirect('/dashboard')->with('success', 'Selamat datang kembali, ' . ($user->nama ?? 'Reymon'));
+    }
+
+    // Jika gagal, tendang balik ke halaman login dengan pesan error
+    return back()->with('error', 'Email atau Password kamu salah, Cees!');
+})->name('login.proses');
+
+// ==========================================
+// 1. ROUTE DASHBOARD (AKSES: /dashboard)
 // ==========================================
 Route::get('/dashboard', function () {
-    // Query bawaan project kelompokmu
     $hewan = DB::table('hewan')->where('id_user', 1)->get();
     $layanan = DB::table('layanan')->get();
-    
-    // AMBIL DATA DARI TABEL RATING (Urutkan dari yang paling baru diinput)
     $daftar_rating = DB::table('review_ratings')->orderBy('id', 'desc')->get();
 
-    // Kirim semua variabel ke file dashboard.blade.php
     return view('dashboard', [
         'nama' => 'Reymon',
         'hewan' => $hewan,
         'daftar_layanan' => $layanan,
-        'daftar_rating' => $daftar_rating // Aman, tidak akan tertimpa lagi!
+        'daftar_rating' => $daftar_rating
     ]);
 });
 
@@ -46,9 +70,6 @@ Route::get('/pilih-sitter', function () {
     return view('pilih-sitter', ['daftar_sitter' => $sitter]);
 });
 
-// ==========================================
-// 4. PROSES SIMPAN FORM RATING (DASHBOARD)
-// ==========================================
 // ==========================================
 // 4. PROSES SIMPAN FORM RATING (DASHBOARD)
 // ==========================================
@@ -85,9 +106,6 @@ Route::post('/kontak/store', function (Request $request) {
 // ROUTE JEMBATAN BIAR TIDAK 404 NOT FOUND
 // ==========================================
 Route::get('/pesan-layanan', function (Request $request) {
-    // Kita cek, jika ada parameter jenis tertentu atau default-nya diarahkan ke dokter/sitter
-    // Tapi biar aman dan langsung menampilkan data, kita panggil view pilih-dokter atau pilih-sitter langsung.
-    
     $dokter = DB::table('penyedia_jasa')->where('jenis', 'dokter')->get();
     return view('pilih-dokter', ['daftar_dokter' => $dokter]);
 });
