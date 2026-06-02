@@ -23,11 +23,11 @@ Route::post('/login/proses', function (Request $request) {
     $email = $request->input('email');
     $password = $request->input('password');
 
-    // 2. Cari user di database berdasarkan email & password (sesuaikan nama tabelmu, misal: 'users' atau 'user')
-    $user = DB::table('users')
-                ->where('email', $email)
-                ->where('password', $password) // Catatan: ini teks biasa, sesuaikan jika di db kelompokmu di-hash
-                ->first();
+   // Ubah dari DB::table('users') menjadi 'user'
+$user = DB::table('user')
+            ->where('email', $email)
+            ->where('password', $password)
+            ->first();
 
     if ($user) {
         // Jika login sukses, oper nama asli dari database atau default 'Reymon'
