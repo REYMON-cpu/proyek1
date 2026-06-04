@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
-| Web Routes - Proyek Aplikasi GoPet (Integrasi Simpan Database)
+| Web Routes - Proyek Aplikasi GoPet (Hasil Integrasi Backend & Frontend)
 |--------------------------------------------------------------------------
 */
 
@@ -87,24 +87,42 @@ Route::get('/dashboard', function () {
     ]);
 });
 
+
 // ==========================================
-// 2. ROUTE HALAMAN PILIH DOKTER HEWAN
+// 2. ROUTE HALAMAN FITUR DAN LAYANAN (DARI FRONTEND & BACKEND)
 // ==========================================
+
+// Halaman pesan layanan (mengambil data dokter dari database)
+Route::get('/pesan-layanan', function () {
+    $dokter = DB::table('penyedia_jasa')->where('jenis', 'dokter')->get();
+    return view('pilih-dokter', ['daftar_dokter' => $dokter]);
+});
+
+// Halaman pilih dokter (mengambil data dokter dari database)
 Route::get('/pilih-dokter', function () {
     $dokter = DB::table('penyedia_jasa')->where('jenis', 'dokter')->get();
     return view('pilih-dokter', ['daftar_dokter' => $dokter]);
 });
 
-// ==========================================
-// 3. ROUTE HALAMAN PILIH PET SITTER
-// ==========================================
+// Halaman pilih sitter (mengambil data sitter dari database)
 Route::get('/pilih-sitter', function () {
     $sitter = DB::table('penyedia_jasa')->where('jenis', 'sitter')->get();
     return view('pilih-sitter', ['daftar_sitter' => $sitter]);
 });
 
+// BARU DARI FRONTEND: Halaman daftar mitra
+Route::get('/daftar-mitra', function () {
+    return view('daftar-mitra');
+});
+
+// BARU DARI FRONTEND: Halaman chat
+Route::get('/chat', function () {
+    return view('chat');
+});
+
+
 // ==========================================
-// 4. PROSES SIMPAN FORM RATING (DASHBOARD)
+// 3. PROSES SIMPAN FORM RATING (DASHBOARD)
 // ==========================================
 Route::post('/review/store', function (Request $request) {
     DB::table('review_ratings')->insert([
@@ -117,8 +135,9 @@ Route::post('/review/store', function (Request $request) {
     return back()->with('success', 'Rating anabul kamu berhasil disimpan ke database!');
 })->name('review.store');
 
+
 // ==========================================
-// 5. PROSES SIMPAN FORM KONTAK / PESAN
+// 4. PROSES SIMPAN FORM KONTAK / PESAN
 // ==========================================
 Route::post('/kontak/store', function (Request $request) {
     DB::table('kontak_pesan')->insert([
@@ -129,11 +148,3 @@ Route::post('/kontak/store', function (Request $request) {
 
     return back()->with('success', 'Pesan kamu berhasil dikirim dan tersimpan di database!');
 })->name('kontak.store');
-
-// ==========================================
-// ROUTE JEMBATAN BIAR TIDAK 404 NOT FOUND
-// ==========================================
-Route::get('/pesan-layanan', function (Request $request) {
-    $dokter = DB::table('penyedia_jasa')->where('jenis', 'dokter')->get();
-    return view('pilih-dokter', ['daftar_dokter' => $dokter]);
-});
