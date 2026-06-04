@@ -15,11 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('queue')->index();
             $table->longText('payload');
-<<<<<<< HEAD
-            $table->unsignedTinyInteger('attempts');
-=======
             $table->unsignedSmallInteger('attempts');
->>>>>>> 0de9869f023d5b330a53d5703a39cd5d0d380b2b
             $table->unsignedInteger('reserved_at')->nullable();
             $table->unsignedInteger('available_at');
             $table->unsignedInteger('created_at');
@@ -28,9 +24,9 @@ return new class extends Migration
         Schema::create('job_batches', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->string('name');
-            $table->integer('total_jobs');
-            $table->integer('pending_jobs');
-            $table->integer('failed_jobs');
+            $table->text('total_jobs');
+            $table->text('pending_jobs');
+            $table->text('failed_jobs');
             $table->longText('failed_job_ids');
             $table->mediumText('options')->nullable();
             $table->integer('cancelled_at')->nullable();

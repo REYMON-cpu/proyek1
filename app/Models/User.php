@@ -2,43 +2,36 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Database\Factories\UserFactory;
-<<<<<<< HEAD
-=======
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
->>>>>>> 0de9869f023d5b330a53d5703a39cd5d0d380b2b
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-<<<<<<< HEAD
-=======
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
->>>>>>> 0de9869f023d5b330a53d5703a39cd5d0d380b2b
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
-<<<<<<< HEAD
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
+     * 1. PAKSA LARAVEL UNTUK MENEMBAK TABEL KUSTOM 'user' (TANPA HURUF S)
+     */
+    protected $table = 'user';
+
+    /**
+     * 2. BERITAHU LARAVEL KALAU PRIMARY KEY DI TABEL KAMU ADALAH 'id_user'
+     */
+    protected $primaryKey = 'id_user';
+
+    /**
+     * Kolom-kolom di database yang diizinkan untuk diisi massal.
      */
     protected $fillable = [
-        'name',
+        'nama',
         'email',
         'password',
+        'role',
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
+     * Sembunyikan password saat data di-serialize (keamanan internal).
      */
     protected $hidden = [
         'password',
@@ -46,17 +39,13 @@ class User extends Authenticatable
     ];
 
     /**
-=======
->>>>>>> 0de9869f023d5b330a53d5703a39cd5d0d380b2b
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * Konfigurasi casting tipe data dari Laravel.
      */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            // 'password' => 'hashed', // DI-NONAKTIFKAN: Supaya Laravel mau menerima password teks biasa (Plaintext) di database
         ];
     }
 }

@@ -14,29 +14,62 @@ use Illuminate\Http\Request;
 // 0. HALAMAN LOGIN UTAMA (TAMPILAN LUXURY GOPET)
 // ==========================================
 Route::get('/', function () {
-    return view('index'); // Memanggil tampilan form login baru kita
+    return view('index'); // Memanggil tampilan form login utama (index.blade.php)
 });
 
 // PROSES MENGECEK DATA LOGIN KE DATABASE
 Route::post('/login/proses', function (Request $request) {
-    // 1. Validasi input sederhana
     $email = $request->input('email');
     $password = $request->input('password');
 
-   // Ubah dari DB::table('users') menjadi 'user'
-$user = DB::table('user')
+    $user = DB::table('user')
             ->where('email', $email)
             ->where('password', $password)
             ->first();
 
     if ($user) {
-        // Jika login sukses, oper nama asli dari database atau default 'Reymon'
         return redirect('/dashboard')->with('success', 'Selamat datang kembali, ' . ($user->nama ?? 'Reymon'));
     }
 
-    // Jika gagal, tendang balik ke halaman login dengan pesan error
     return back()->with('error', 'Email atau Password kamu salah, Cees!');
 })->name('login.proses');
+
+
+// ==========================================
+// KUNCI UTAMA: FITUR DAFTAR SEKARANG (REGISTER)
+// ==========================================
+
+// 1. TAMPILKAN HALAMAN FORM DAFTAR
+Route::get('/register', function () {
+    return view('register'); // Memanggil file resources/views/register.blade.php
+});
+
+// 2. PROSES DAFTAR AKUN BARU LANGSUNG KE DATABASE (BYPASS CONTROLLER)
+Route::post('/register', function (Request $request) {
+    $nama     = $request->input('nama');
+    $email    = $request->input('email');
+    $password = $request->input('password');
+    $role     = $request->input('role');
+
+    // Cek dulu apakah email sudah pernah dipakai di tabel user
+    $cek_email = DB::table('user')->where('email', $email)->first();
+
+    if ($cek_email) {
+        return back()->with('error', 'Email sudah terdaftar, Cees! Gunakan email lain.');
+    }
+
+    // Jika email aman, langsung masukkan data ke tabel 'user' sebagai teks biasa
+    DB::table('user')->insert([
+        'nama'     => $nama,
+        'email'    => $email,
+        'password' => $password, // Password tersimpan polos (Plaintext) sesuai kemauan sistem loginmu
+        'role'     => $role
+    ]);
+
+    // Setelah sukses daftar, lempar balik ke halaman login utama dengan pesan sukses
+    return redirect('/')->with('success', 'Akun berhasil dibuat, Cees! Silakan login.');
+});
+
 
 // ==========================================
 // 1. ROUTE DASHBOARD (AKSES: /dashboard)
@@ -74,14 +107,10 @@ Route::get('/pilih-sitter', function () {
 // 4. PROSES SIMPAN FORM RATING (DASHBOARD)
 // ==========================================
 Route::post('/review/store', function (Request $request) {
-    // Memasukkan data dari form rating langsung ke tabel review_ratings
     DB::table('review_ratings')->insert([
         'customer_name' => $request->input('customer_name'),
         'pet_name'      => $request->input('pet_name'),
-        
-        // DISINI KUNCINYA: Kiri adalah nama kolom database asli ('rating'), kanan adalah name dari input HTML-mu
         'rating'        => $request->input('rating_value', 5), 
-        
         'experience'    => $request->input('experience'),
     ]);
     
@@ -92,7 +121,6 @@ Route::post('/review/store', function (Request $request) {
 // 5. PROSES SIMPAN FORM KONTAK / PESAN
 // ==========================================
 Route::post('/kontak/store', function (Request $request) {
-    // Memasukkan data dari form kontak langsung ke tabel kontak_pesan
     DB::table('kontak_pesan')->insert([
         'nama_lengkap' => $request->input('nama_lengkap'),
         'email'        => $request->input('email'),
