@@ -37,7 +37,7 @@
 
     <main class="w-full px-6 md:px-12 py-10 flex-grow">
         <div class="mb-10">
-            <h1 class="text-3xl font-extrabold tracking-tight">Pilih Dokter Hewan (Vet)</h1>
+            <h1 class="text-3xl font-extrabold tracking-tight">Pilih Dokter Hewan</h1>
             <p class="text-[#5E887E] font-medium text-sm mt-1">Seluruh dokter telah melalui verifikasi berkas KTP, SIP, dan SKCK secara ketat.</p>
         </div>
 

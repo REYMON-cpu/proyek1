@@ -324,7 +324,7 @@
             <div class="lg:col-span-7">
                 <h3 class="text-2xl font-bold text-[#2D433E] mb-8 text-center lg:text-left">Apa Kata Mereka?</h3>
                 <div class="space-y-6">
-                    
+
                     @foreach($daftar_rating as $rat)
                     <div class="bg-white p-8 rounded-[35px] shadow-sm border border-gray-50 flex gap-6">
                         <div class="w-16 h-16 rounded-2xl bg-[#D9B08C]/10 flex-shrink-0 flex items-center justify-center text-[#D9B08C]">
@@ -337,7 +337,7 @@
                                     <p class="text-xs text-gray-400">{{ $rat->pet_name }}</p>
                                 </div>
                                 <div class="flex text-yellow-400 text-xs gap-1">
-                                    @for($i = 0; $i < ($rat->rating_value ?? 5); $i++)
+                                    @for($i = 0; $i < ($rat->rating ?? 5); $i++)
                                         <i class="fas fa-star"></i>
                                     @endfor
                                 </div>
@@ -535,8 +535,8 @@
 
             <div class="flex flex-col lg:flex-row gap-20 relative z-10">
                 <div class="lg:w-1/3 text-white">
-                    <h2 class="text-5xl font-black mb-8 leading-tight">Mari Bicara <br> <span class="text-[#D9B08C]">Anabul.</span></h2>
-                    <p class="text-white/60 mb-12">Punya pertanyaan khusus atau butuh bantuan darurat? Tim Gopet siap membantu kamu dan anabulmu.</p>
+                    <h2 class="text-5xl font-black mb-8 leading-tight">Hubungi Tim Go<span class="text-[#D9B08C]">Pet</span></h2>
+                    <p class="text-white/60 mb-12">Kami ingin memastikan pengalamanmu menggunakan GoPet selalu nyaman dan lancar. Apakah kamu menemukan kendala teknis saat mengakses fitur atau punya saran pengembangan agar GoPet jadi lebih baik? Beritahu kami melalui formulir ini. Setiap masukanmu sangat berarti bagi perkembangan layanan kami.</p>
 
                     <div class="space-y-8">
                         <div class="flex items-center gap-6">

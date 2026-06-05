@@ -13,10 +13,10 @@ return new class extends Migration
     {
         Schema::create('pemesanan', function (Blueprint $table) {
             $table->integer('id_pemesanan', true);
-            $table->integer('id_user')->index('id_user');
-            $table->integer('id_hewan')->index('id_hewan');
-            $table->integer('id_layanan')->index('id_layanan');
-            $table->integer('id_penyedia')->index('id_penyedia');
+            $table->integer('id_user');
+            $table->integer('id_hewan');
+            $table->integer('id_layanan');
+            $table->integer('id_penyedia');
             $table->date('tanggal');
             $table->text('alamat');
             $table->string('status', 50);

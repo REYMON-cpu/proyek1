@@ -3,180 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - GoPet</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Login GoPet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+        body { font-family: 'Quicksand', sans-serif; overflow-x: hidden; }
+
+        @keyframes kartuMasuk {
+            from { opacity: 0; transform: scale(0.9) translateY(30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
         }
 
-        body {
-            background-color: #f4f7f5;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+        @keyframes slideDariKiri {
+            from { opacity: 0; transform: translateX(-100px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
-        .login-container {
-            background: #ffffff;
-            width: 100%;
-            max-width: 450px;
-            padding: 40px;
-            border-radius: 30px;
-            box-shadow: 0 10px 30px rgba(26, 54, 43, 0.05);
-            text-align: center;
+        @keyframes zoomGemas {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
         }
 
-        .logo-section {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 30px;
+        .anim-kartu {
+            animation: kartuMasuk 1s ease-out forwards;
         }
-
-        .logo-section h2 {
-            color: #1a362b; /* Hijau Ciri Khas GoPet */
-            font-size: 28px;
-            font-weight: 700;
+        .anim-teks {
+            opacity: 0;
+            animation: slideDariKiri 0.8s ease-out 0.6s forwards;
         }
-
-        .login-header h3 {
-            color: #2d3748;
-            font-size: 22px;
-            margin-bottom: 8px;
+        .anim-foto {
+            opacity: 0;
+            animation: zoomGemas 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) 1s forwards;
         }
-
-        .login-header p {
-            color: #a0aec0;
-            font-size: 14px;
-            margin-bottom: 30px;
-        }
-
-        .form-group {
-            text-align: left;
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            color: #4a5568;
-            margin-bottom: 8px;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 14px 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 15px;
-            font-size: 15px;
-            color: #2d3748;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            border-color: #1a362b;
-            box-shadow: 0 0 0 4px rgba(26, 54, 43, 0.1);
-        }
-
-        .alert-error {
-            background-color: #fed7d7;
-            color: #c53030;
-            padding: 12px;
-            border-radius: 12px;
-            font-size: 14px;
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .btn-login {
-            width: 100%;
-            background-color: #1a362b; /* Hijau Tombol Dashboard */
-            color: white;
-            border: none;
-            padding: 16px;
-            border-radius: 15px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin-top: 10px;
-            box-shadow: 0 4px 12px rgba(26, 54, 43, 0.2);
-        }
-
-        .btn-login:hover {
-            background-color: #11241d;
-        }
-
-        .footer-text {
-            margin-top: 25px;
-            font-size: 14px;
-            color: #718096;
-        }
-
-        .footer-text a {
-            color: #1a362b;
-            text-decoration: none;
-            font-weight: 600;
+        .anim-form {
+            opacity: 0;
+            animation: kartuMasuk 0.8s ease-out 1.3s forwards;
         }
     </style>
 </head>
-<body>
 
-<div class="login-container">
-    <div class="logo-section">
-        <img src="/images/logo hijau.svg" alt="GoPet Logo" style="height: 35px; onerror="this.style.display='none'">
-        <h2>GoPet</h2>
+<body class="bg-[#FDF5E6] flex items-center justify-center min-h-screen p-4">
+
+
+    <div class="anim-kartu bg-white rounded-[30px] shadow-2xl overflow-hidden max-w-5xl w-full flex flex-col md:flex-row">
+
+        <div class="md:w-1/2 bg-[#5E887E] p-10 md:p-12 flex flex-col justify-between text-white">
+            <div class="anim-teks">
+                <div class="flex items-center gap-2 mb-10">
+                    <img src="{{ asset('images/logo putih.svg') }}" alt="Logo" class="h-12 w-auto">
+                    <h2 class="text-3xl font-bold tracking-tight">GoPet</h2>
+                </div>
+
+                <h1 class="text-4xl lg:text-5xl font-bold leading-tight mb-6">
+                    Bikin anabul makin happy dan terawat.
+                </h1>
+                <p class="text-lg opacity-90 leading-relaxed mb-8">
+                    Booking jasa pet care gak pakai ribet. Mulai dari pet sitting sampai konsultasi ahli, semua ada di GoPet!
+                </p>
+            </div>
+            <div class="w-full anim-foto">
+                <img src="{{ asset('images/gopet form.jpeg') }}"
+                     alt="Anabul"
+                     class="w-full h-56 lg:h-64 object-cover rounded-[20px] shadow-md border-2 border-white/20 transition-transform duration-500 hover:scale-105">
+            </div>
+        </div>
+
+
+        <div class="md:w-1/2 p-10 md:p-14 flex flex-col justify-center bg-white anim-form">
+            <h2 class="text-3xl font-bold text-[#4A4A4A] mb-2">Buat Akun</h2>
+            <p class="text-gray-500 mb-8">Lengkapi data di bawah untuk bergabung dengan komunitas GoPet.</p>
+
+            @if(session('error'))
+                <div class="bg-red-100 text-red-700 p-3 rounded-xl mb-4 text-center font-bold">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+           <form action="{{ route('login.proses') }}" method="POST" class="space-y-5">
+                @csrf
+                <div>
+                    <label class="block text-sm font-bold text-[#5E887E] mb-1">Email</label>
+                    <input type="email" name="email" required class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:bg-white outline-none transition-all duration-300" placeholder="contoh@gmail.com">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-[#5E887E] mb-1">Password</label>
+                    <input type="password" name="password" required class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:bg-white outline-none" placeholder="••••••••">
+                </div>
+
+                <div>
+                    <label for="role" class="block text-sm font-bold text-[#5E887E] mb-1">Masuk Sebagai</label>
+                    <select id="role" name="role" required class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:bg-white outline-none transition-all duration-300 appearance-none">
+                        <option value="Pemilik Hewan">Pemilik Hewan</option>
+                        <option value="Penyedia Jasa">Penyedia Jasa</option>
+                    </select>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" class="w-full bg-[#5E887E] hover:bg-[#4a6b63] text-white font-bold py-4 rounded-xl shadow-lg transition-all duration-300 active:scale-95">
+                        Masuk
+                    </button>
+                </div>
+            </form>
+
+            <p class="mt-6 text-center text-sm text-gray-500">
+                Belum punya akun? <a href="{{ url('/register') }}" class="text-[#5E887E] font-bold">Daftar di sini</a>
+            </p>
+        </div>
     </div>
-
-    <div class="login-header">
-        <h3>Selamat Datang, Cees!</h3>
-        <p>Silakan masuk untuk mengelola anabul kesayanganmu.</p>
-    </div>
-
-    @if(session('error'))
-        <div class="alert-error">
-            ⚠️ {{ session('error') }}
-        </div>
-    @endif
-
-    <form action="{{ route('login.proses') }}" method="POST">
-        @csrf
-        
-        <div class="form-group">
-            <label for="email">Alamat Email</label>
-            <input type="email" id="email" name="email" placeholder="contoh@email.com" required>
-        </div>
-
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="••••••••" required>
-        </div>
-
-        <div class="form-group">
-            <label for="role">Masuk Sebagai</label>
-            <select id="role" name="role">
-                <option value="customer">Pemilik Hewan</option>
-                <option value="dokter">Dokter Hewan</option>
-                <option value="sitter">Pet Sitter</option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn-login">Masuk</button>
-    </form>
-
-    <div class="footer-text">
-        Belum punya akun? <a href="#">Daftar Sekarang</a>
-    </div>
-</div>
-
 </body>
 </html>

@@ -21,19 +21,20 @@ Route::get('/', function () {
 Route::post('/login/proses', function (Request $request) {
     $email = $request->input('email');
     $password = $request->input('password');
+    $role = $request->input('role');
 
     $user = DB::table('user')
-            ->where('email', $email)
-            ->where('password', $password)
-            ->first();
+              ->where('email', $email)
+              ->where('password', $password)
+              ->where('role', $role)
+              ->first();
 
     if ($user) {
         return redirect('/dashboard')->with('success', 'Selamat datang kembali, ' . ($user->nama ?? 'Reymon'));
     }
 
-    return back()->with('error', 'Email atau Password kamu salah, Cees!');
-})->name('login.proses');
-
+    return back()->with('error', 'Email, Password, atau Role salah, Cees!');
+    })->name('login.proses');
 
 // ==========================================
 // KUNCI UTAMA: FITUR DAFTAR SEKARANG (REGISTER)
@@ -95,7 +96,7 @@ Route::get('/dashboard', function () {
 // Halaman pesan layanan (mengambil data dokter dari database)
 Route::get('/pesan-layanan', function () {
     $dokter = DB::table('penyedia_jasa')->where('jenis', 'dokter')->get();
-    return view('pilih-dokter', ['daftar_dokter' => $dokter]);
+    return view('pesan-layanan', ['daftar_dokter' => $dokter]);
 });
 
 // Halaman pilih dokter (mengambil data dokter dari database)
@@ -128,10 +129,10 @@ Route::post('/review/store', function (Request $request) {
     DB::table('review_ratings')->insert([
         'customer_name' => $request->input('customer_name'),
         'pet_name'      => $request->input('pet_name'),
-        'rating'        => $request->input('rating_value', 5), 
+        'rating'        => $request->input('rating_value', 5),
         'experience'    => $request->input('experience'),
     ]);
-    
+
     return back()->with('success', 'Rating anabul kamu berhasil disimpan ke database!');
 })->name('review.store');
 
@@ -148,3 +149,16 @@ Route::post('/kontak/store', function (Request $request) {
 
     return back()->with('success', 'Pesan kamu berhasil dikirim dan tersimpan di database!');
 })->name('kontak.store');
+
+Route::get('/dashboard-admin', function () {
+    return view('dashboard-admin');
+});
+
+Route::get('/login-admin', function () {
+    return view('login-admin');
+});
+
+Route::get('/login', function () {
+    return view('login');
+});
+

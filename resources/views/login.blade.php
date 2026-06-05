@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if ($data) {
         // Cocokkan password teks biasa (Plaintext)
         if ($password == $data['password']) {
-            
+
             // Simpan data ke session
             $_SESSION['id_user'] = $data['id_user'];
             $_SESSION['nama']    = $data['nama'];

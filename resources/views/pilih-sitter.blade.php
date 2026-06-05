@@ -36,7 +36,7 @@
 
     <main class="w-full px-6 md:px-12 py-10 flex-grow">
         <div class="mb-10">
-            <h1 class="text-3xl font-extrabold tracking-tight">Pilih Pet Sitter (Pencinta Hewan)</h1>
+            <h1 class="text-3xl font-extrabold tracking-tight">Pilih Pet Sitter</h1>
             <p class="text-[#5E887E] font-medium text-sm mt-1">Sitter kami telah diverifikasi identitasnya lewat KTP, SKCK, dan sertifikat keahlian mendasar.</p>
         </div>
 

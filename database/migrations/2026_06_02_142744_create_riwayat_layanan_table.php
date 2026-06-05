@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('riwayat_layanan', function (Blueprint $table) {
             $table->integer('id_riwayat', true);
-            $table->integer('id_pemesanan')->unique('id_pemesanan');
+            $table->integer('id_pemesanan')->unique(); 
             $table->text('catatan')->nullable();
             $table->date('tanggal');
         });
     }
+
 
     /**
      * Reverse the migrations.
