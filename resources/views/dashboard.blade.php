@@ -570,7 +570,7 @@
                 </div>
 
                 <div class="flex-1 bg-white/5 backdrop-blur-sm p-8 md:p-10 rounded-[40px] border border-white/10">
-                    <form action="{{ route('kontak.store') }}" method="POST" class="space-y-6">
+                    <form action="/kontak-store" method="POST" class="space-y-6">
                         @csrf
                         <div>
                             <label class="text-xs font-bold text-white/60 uppercase tracking-widest block mb-2 ml-2">Nama Lengkap</label>

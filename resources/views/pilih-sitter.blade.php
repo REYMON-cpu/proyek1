@@ -42,7 +42,6 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full">
 
-
             <div class="bg-white rounded-[35px] p-6 border border-white shadow-sm flex flex-col justify-between hover:-translate-y-1 transition-all duration-300">
                 <div>
                     <div class="relative w-24 h-24 mx-auto mb-4">
@@ -87,13 +86,12 @@
                         <a href="/chat" class="w-12 h-12 bg-[#F8FBF0] hover:bg-[#5E887E]/10 border border-[#5E887E]/20 text-[#5E887E] rounded-2xl flex items-center justify-center transition-all shadow-sm active:scale-95" title="Hubungi Sitter via Chat">
                             <i class="fa-solid fa-comment-dots text-lg"></i>
                         </a>
-                        <a href="/pesan-layanan" class="flex-1 bg-[#2D433E] hover:bg-[#5E887E] text-white font-bold py-3 rounded-2xl text-sm transition-all shadow-md active:scale-95 text-center flex items-center justify-center">
+                        <a href="/pesan-layanan/4" class="flex-1 bg-[#2D433E] hover:bg-[#5E887E] text-white font-bold py-3 rounded-2xl text-sm transition-all shadow-md active:scale-95 text-center flex items-center justify-center">
                             Pesan Sitter
                         </a>
                     </div>
                 </div>
             </div>
-
 
             <div class="bg-white rounded-[35px] p-6 border border-white shadow-sm flex flex-col justify-between hover:-translate-y-1 transition-all duration-300">
                 <div>
@@ -139,7 +137,7 @@
                         <a href="/chat" class="w-12 h-12 bg-[#F8FBF0] hover:bg-[#5E887E]/10 border border-[#5E887E]/20 text-[#5E887E] rounded-2xl flex items-center justify-center transition-all shadow-sm active:scale-95" title="Hubungi Sitter via Chat">
                             <i class="fa-solid fa-comment-dots text-lg"></i>
                         </a>
-                        <a href="/pesan-layanan" class="flex-1 bg-[#2D433E] hover:bg-[#5E887E] text-white font-bold py-3 rounded-2xl text-sm transition-all shadow-md active:scale-95 text-center flex items-center justify-center">
+                        <a href="/pesan-layanan/5" class="flex-1 bg-[#2D433E] hover:bg-[#5E887E] text-white font-bold py-3 rounded-2xl text-sm transition-all shadow-md active:scale-95 text-center flex items-center justify-center">
                             Pesan Sitter
                         </a>
                     </div>

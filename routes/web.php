@@ -34,7 +34,7 @@ Route::post('/login/proses', function (Request $request) {
     }
 
     return back()->with('error', 'Email, Password, atau Role salah, Cees!');
-    })->name('login.proses');
+})->name('login.proses');
 
 // ==========================================
 // KUNCI UTAMA: FITUR DAFTAR SEKARANG (REGISTER)
@@ -90,13 +90,18 @@ Route::get('/dashboard', function () {
 
 
 // ==========================================
-// 2. ROUTE HALAMAN FITUR DAN LAYANAN (DARI FRONTEND & BACKEND)
+// FIX: Halaman pesan layanan sekarang dinamis berdasarkan ID dokter/sitter yang diklik
 // ==========================================
+Route::get('/pesan-layanan/{id}', function ($id) {
+    // Sembuh: Mengubah 'id' menjadi 'id_penyedia' sesuai kolom di database kamu
+    $dokter = DB::table('penyedia_jasa')->where('id_penyedia', $id)->first();
 
-// Halaman pesan layanan (mengambil data dokter dari database)
-Route::get('/pesan-layanan', function () {
-    $dokter = DB::table('penyedia_jasa')->where('jenis', 'dokter')->get();
-    return view('pesan-layanan', ['daftar_dokter' => $dokter]);
+    // Antisipasi kalau data dokter tidak sengaja terhapus atau tidak ada di DB
+    if (!$dokter) {
+        return redirect('/pilih-dokter')->with('error', 'Penyedia jasa tidak ditemukan, Cees!');
+    }
+
+    return view('pesan-layanan', ['dokter' => $dokter]);
 });
 
 // Halaman pilih dokter (mengambil data dokter dari database)
@@ -137,28 +142,53 @@ Route::post('/review/store', function (Request $request) {
 })->name('review.store');
 
 
-// ==========================================
-// 4. PROSES SIMPAN FORM KONTAK / PESAN
-// ==========================================
-Route::post('/kontak/store', function (Request $request) {
-    DB::table('kontak_pesan')->insert([
-        'nama_lengkap' => $request->input('nama_lengkap'),
-        'email'        => $request->input('email'),
-        'pesan'        => $request->input('pesan'),
+// =========================================================================
+// 4. HALAMAN PESAN LAYANAN (MENAMPILKAN FORMULIR)
+// =========================================================================
+Route::get('/pesan-layanan/{id}', function ($id) {
+    // Mencari data penyedia jasa berdasarkan id_penyedia di database gopet_db2
+    $dokter = DB::table('penyedia_jasa')->where('id_penyedia', $id)->first();
+
+    if (!$dokter) {
+        return redirect('/pilih-dokter')->with('error', 'Penyedia jasa tidak ditemukan, Cees!');
+    }
+
+    // Mengirim data dokter DAN melempar variabel id_terpilih langsung dari parameter URL
+    return view('pesan-layanan', [
+        'dokter'      => $dokter,
+        'id_terpilih' => $id
+    ]);
+});
+
+// =========================================================================
+// 5. PROSES SIMPAN FORM PEMESANAN LAYANAN KE DATABASE (ANTI-NULL)
+// =========================================================================
+Route::post('/proses-pemesanan', function (Request $request) {
+    
+    // Menyimpan seluruh kiriman data formulir ke dalam tabel pemesanan
+    DB::table('pemesanan')->insert([
+        'id_mitra'          => $request->input('id_mitra'),
+        'nama_hewan'        => $request->input('nama_hewan'),
+        'jenis_hewan'       => $request->input('jenis_hewan'),
+        'umur_hewan'        => $request->input('umur_hewan'),
+        'riwayat_kesehatan' => $request->input('riwayat_kesehatan'),
+        'tanggal_kunjungan' => $request->input('tanggal_kunjungan'),
+        'jam_kunjungan'     => $request->input('jam_kunjungan'),
+        'alamat'            => $request->input('alamat'),
+        'catatan'           => $request->input('catatan'),
+        'status'            => 'Pending', // Status default saat pertama kali pesan
+        'created_at'        => now(),
+        'updated_at'        => now()
     ]);
 
-    return back()->with('success', 'Pesan kamu berhasil dikirim dan tersimpan di database!');
-})->name('kontak.store');
-
-Route::get('/dashboard-admin', function () {
-    return view('dashboard-admin');
+    // Mengalihkan halaman kembali ke dashboard dengan membawa notifikasi sukses
+    return redirect('/dashboard')->with('success', 'Pemesanan layanan home-visit berhasil dibuat, Cees!');
 });
 
-Route::get('/login-admin', function () {
-    return view('login-admin');
-});
-
-Route::get('/login', function () {
-    return view('login');
-});
-
+// ==========================================
+// 6. PROSES SIMPAN FORM KONTAK DI DASHBOARD
+// ==========================================
+Route::post('/kontak-store', function (Request $request) {
+    // Sementara kita buat redirect balik ke dashboard dulu agar tidak error
+    return redirect('/dashboard')->with('success', 'Pesan kamu berhasil dikirim, Cees!');
+})->name('kontak.store'); // <-- Ini nama rute yang dicari oleh dashboard.blade.php

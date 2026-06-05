@@ -43,33 +43,35 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full">
 
-
+            @forelse($daftar_dokter as $doc)
             <div class="bg-white rounded-[35px] p-6 border border-white shadow-sm flex flex-col justify-between hover:-translate-y-1 transition-all duration-300">
                 <div>
                     <div class="relative w-24 h-24 mx-auto mb-4">
-                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=jinten" alt="Doctor" class="w-full h-full rounded-2xl bg-[#F8FBF0] object-cover border border-gray-100">
+                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ urlencode($doc->nama) }}" alt="Doctor" class="w-full h-full rounded-2xl bg-[#F8FBF0] object-cover border border-gray-100">
                         <span class="absolute -bottom-1 -right-1 w-6 h-6 bg-[#5E887E] border-2 border-white rounded-full flex items-center justify-center" title="Berkas Terverifikasi">
                             <i class="fa-solid fa-check text-white text-[10px]"></i>
                         </span>
                     </div>
 
                     <div class="text-center mb-4">
-                        <h3 class="font-bold text-lg text-[#2D433E]">drh. Jinten Anggraeni</h3>
-                        <p class="text-xs font-semibold text-[#D9B08C] bg-[#FFFBF7] px-3 py-1 rounded-full inline-block mt-1">Spesialis Kucing & Anjing</p>
+                        <h3 class="font-bold text-lg text-[#2D433E]">drh. {{ $doc->nama }}</h3>
+                        <p class="text-xs font-semibold text-[#D9B08C] bg-[#FFFBF7] px-3 py-1 rounded-full inline-block mt-1">
+                            {{ $doc->spesialis ?? $doc->spialis ?? 'Spesialis Hewan' }}
+                        </p>
                     </div>
 
                     <p class="text-xs text-gray-400 text-center line-clamp-2 px-2 mb-4 italic">
-                        "Sangat mencintai anabul dan siap memberikan penanganan medis primer terbaik langsung di rumah Anda."
+                        "Siap memberikan penanganan medis primer terbaik langsung di rumah Anda."
                     </p>
 
                     <div class="border-t border-b border-gray-100 py-3 my-4 space-y-2 text-sm text-[#2D433E]">
                         <div class="flex justify-between items-center">
                             <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-briefcase w-4 text-[#5E887E]"></i> Pengalaman:</span>
-                            <span class="font-bold text-xs">2 Tahun</span>
+                            <span class="font-bold text-xs">{{ $doc->pengalaman ?? '2' }} Tahun</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-file-medical w-4 text-[#D9B08C]"></i> Dokumen SIP:</span>
-                            <span class="font-mono text-xs text-gray-500">SIP/2026/0892</span>
+                            <span class="font-mono text-xs text-gray-500">SIP/2026/0{{ $doc->id_penyedia }}92</span>
                         </div>
                         <div class="flex justify-between items-center">
                             <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-shield-check w-4 text-emerald-500"></i> Status Berkas:</span>
@@ -81,121 +83,26 @@
                 <div class="mt-2">
                     <div class="flex items-baseline justify-between mb-3 px-1">
                         <span class="text-xs text-gray-400">Harga Jasa:</span>
-                        <span class="text-lg font-extrabold text-[#5E887E]">Rp 150.000<span class="text-[10px] font-normal text-gray-400">/visit</span></span>
-                    </div>
-                    <div class="flex gap-2">
-                        <a href="/chat" class="w-12 h-12 bg-[#F8FBF0] hover:bg-[#5E887E]/10 border border-[#5E887E]/20 text-[#5E887E] rounded-2xl flex items-center justify-center transition-all shadow-sm active:scale-95" title="Hubungi Dokter via Chat">
-                            <i class="fa-solid fa-comment-dots text-lg"></i>
-                        </a>
-                        <a href="/pesan-layanan" class="flex-1 bg-[#2D433E] hover:bg-[#5E887E] text-white font-bold py-3 rounded-2xl text-sm transition-all shadow-md active:scale-95 text-center flex items-center justify-center">
-                            Pilih Dokter
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-
-            <div class="bg-white rounded-[35px] p-6 border border-white shadow-sm flex flex-col justify-between hover:-translate-y-1 transition-all duration-300">
-                <div>
-                    <div class="relative w-24 h-24 mx-auto mb-4">
-                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=doctor2" alt="Doctor" class="w-full h-full rounded-2xl bg-[#F8FBF0] object-cover border border-gray-100">
-                        <span class="absolute -bottom-1 -right-1 w-6 h-6 bg-[#5E887E] border-2 border-white rounded-full flex items-center justify-center">
-                            <i class="fa-solid fa-check text-white text-[10px]"></i>
+                        <span class="text-lg font-extrabold text-[#5E887E]">
+                            Rp {{ number_format($doc->tarif, 0, ',', '.') }}<span class="text-[10px] font-normal text-gray-400">/visit</span>
                         </span>
                     </div>
-
-                    <div class="text-center mb-4">
-                        <h3 class="font-bold text-lg text-[#2D433E]">drh. Muhamad Reyhan</h3>
-                        <p class="text-xs font-semibold text-[#D9B08C] bg-[#FFFBF7] px-3 py-1 rounded-full inline-block mt-1">Spesialis Hewan</p>
-                    </div>
-
-                    <p class="text-xs text-gray-400 text-center line-clamp-2 px-2 mb-4 italic">
-                        "Berpengalaman menangani satwa reptil, aves, hingga mamalia kecil dengan pendekatan terapeutik."
-                    </p>
-
-                    <div class="border-t border-b border-gray-100 py-3 my-4 space-y-2 text-sm text-gray-600">
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-briefcase w-4 text-[#5E887E]"></i> Pengalaman:</span>
-                            <span class="font-bold text-xs">5 Tahun</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-file-medical w-4 text-[#D9B08C]"></i> Dokumen SIP:</span>
-                            <span class="font-mono text-xs text-gray-500">SIP/2021/1105</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-shield-check w-4 text-emerald-500"></i> Status Berkas:</span>
-                            <span class="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md flex items-center gap-1">Terverifikasi</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex items-baseline justify-between mb-3 px-1">
-                        <span class="text-xs text-gray-400">Harga Jasa:</span>
-                        <span class="text-lg font-extrabold text-[#5E887E]">Rp 175.000<span class="text-[10px] font-normal text-gray-400">/visit</span></span>
-                    </div>
-
                     <div class="flex gap-2">
                         <a href="/chat" class="w-12 h-12 bg-[#F8FBF0] hover:bg-[#5E887E]/10 border border-[#5E887E]/20 text-[#5E887E] rounded-2xl flex items-center justify-center transition-all shadow-sm active:scale-95" title="Hubungi Dokter via Chat">
                             <i class="fa-solid fa-comment-dots text-lg"></i>
                         </a>
-                        <a href="/pesan-layanan" class="flex-1 bg-[#2D433E] hover:bg-[#5E887E] text-white font-bold py-3 rounded-2xl text-sm transition-all shadow-md active:scale-95 text-center flex items-center justify-center">
+                        <a href="/pesan-layanan/{{ $doc->id_penyedia }}" class="flex-1 bg-[#2D433E] hover:bg-[#5E887E] text-white font-bold py-3 rounded-2xl text-sm transition-all shadow-md active:scale-95 text-center flex items-center justify-center">
                             Pilih Dokter
                         </a>
                     </div>
                 </div>
             </div>
-
-
-            <div class="bg-white rounded-[35px] p-6 border border-white shadow-sm flex flex-col justify-between hover:-translate-y-1 transition-all duration-300">
-                <div>
-                    <div class="relative w-24 h-24 mx-auto mb-4">
-                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=doctor5" alt="Doctor" class="w-full h-full rounded-2xl bg-[#F8FBF0] object-cover border border-gray-100">
-                        <span class="absolute -bottom-1 -right-1 w-6 h-6 bg-[#5E887E] border-2 border-white rounded-full flex items-center justify-center">
-                            <i class="fa-solid fa-check text-white text-[10px]"></i>
-                        </span>
-                    </div>
-
-                    <div class="text-center mb-4">
-                        <h3 class="font-bold text-lg text-[#2D433E]">drh. Tesal Slamet</h3>
-                        <p class="text-xs font-semibold text-[#D9B08C] bg-[#FFFBF7] px-3 py-1 rounded-full inline-block mt-1">Spesialis Bedah Anjing</p>
-                    </div>
-
-                    <p class="text-xs text-gray-400 text-center line-clamp-2 px-2 mb-4 italic">
-                        "Fokus pada tindakan preventif, sterilisasi, serta pengobatan darurat penyakit dalam hewan kesayangan."
-                    </p>
-
-                    <div class="border-t border-b border-gray-100 py-3 my-4 space-y-2 text-sm text-gray-600">
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-briefcase w-4 text-[#5E887E]"></i> Pengalaman:</span>
-                            <span class="font-bold text-xs">7 Tahun</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-file-medical w-4 text-[#D9B08C]"></i> Dokumen SIP:</span>
-                            <span class="font-mono text-xs text-gray-500">SIP/2019/0082</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-shield-check w-4 text-emerald-500"></i> Status Berkas:</span>
-                            <span class="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md flex items-center gap-1">Terverifikasi</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div>
-                    <div class="flex items-baseline justify-between mb-3 px-1">
-                        <span class="text-xs text-gray-400">Harga Jasa:</span>
-                        <span class="text-lg font-extrabold text-[#5E887E]">Rp 200.000<span class="text-[10px] font-normal text-gray-400">/visit</span></span>
-                    </div>
-                    <div class="flex gap-2">
-                        <a href="/chat" class="w-12 h-12 bg-[#F8FBF0] hover:bg-[#5E887E]/10 border border-[#5E887E]/20 text-[#5E887E] rounded-2xl flex items-center justify-center transition-all shadow-sm active:scale-95" title="Hubungi Dokter via Chat">
-                            <i class="fa-solid fa-comment-dots text-lg"></i>
-                        </a>
-                        <a href="/pesan-layanan" class="flex-1 bg-[#2D433E] hover:bg-[#5E887E] text-white font-bold py-3 rounded-2xl text-sm transition-all shadow-md active:scale-95 text-center flex items-center justify-center">
-                            Pilih Dokter
-                        </a>
-                    </div>
-                </div>
+            @empty
+            <div class="col-span-full text-center py-12">
+                <i class="fa-solid fa-user-md text-gray-300 text-5xl mb-3"></i>
+                <p class="text-gray-500 font-medium">Belum ada dokter yang tersedia saat ini, Cees.</p>
             </div>
+            @endforelse
 
         </div>
     </main>
