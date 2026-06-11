@@ -164,7 +164,7 @@ Route::get('/pesan-layanan/{id}', function ($id) {
 // 5. PROSES SIMPAN FORM PEMESANAN LAYANAN KE DATABASE (ANTI-NULL)
 // =========================================================================
 Route::post('/proses-pemesanan', function (Request $request) {
-    
+
     // Menyimpan seluruh kiriman data formulir ke dalam tabel pemesanan
     DB::table('pemesanan')->insert([
         'id_mitra'          => $request->input('id_mitra'),
@@ -192,3 +192,7 @@ Route::post('/kontak-store', function (Request $request) {
     // Sementara kita buat redirect balik ke dashboard dulu agar tidak error
     return redirect('/dashboard')->with('success', 'Pesan kamu berhasil dikirim, Cees!');
 })->name('kontak.store'); // <-- Ini nama rute yang dicari oleh dashboard.blade.php
+
+Route::get('/dashboard-dokter', function () {
+    return view('dashboard-dokter');
+});
