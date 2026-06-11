@@ -96,6 +96,7 @@
                     <select id="role" name="role" required class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:bg-white outline-none transition-all duration-300 appearance-none">
                         <option value="Pemilik Hewan">Pemilik Hewan</option>
                         <option value="Penyedia Jasa">Penyedia Jasa</option>
+                        <option value="Admin">Admin</option>
                     </select>
                 </div>
 

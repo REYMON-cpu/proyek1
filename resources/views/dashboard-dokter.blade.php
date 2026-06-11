@@ -82,7 +82,9 @@
         </div>
       </div>
       <div class="border-t border-[#5E887E]/10 pt-3">
-        <button onclick="alert('Fungsi logout aplikasi.')" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-red-400 hover:bg-red-50 font-bold text-sm transition-all">
+        <!-- Tombol Keluar Langsung Mengarah Ke Landing Page / Welcome -->
+        <button onclick="window.location.href='/'" 
+                class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-red-400 hover:bg-red-50 font-bold text-sm transition-all">
           <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i> Keluar Aplikasi
         </button>
       </div>
@@ -145,53 +147,44 @@
         <!-- Jadwal Hari Ini + Chat Preview -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-          <!-- Jadwal Preview -->
           <div class="bg-white rounded-[32px] border border-gray-100 p-6 shadow-sm">
             <div class="flex justify-between items-start mb-5">
               <div>
                 <h3 class="text-base font-extrabold text-[#2D433E]">Jadwal Hari Ini</h3>
-                <p class="text-xs text-gray-400 mt-0.5">Sabtu, 7 Juni 2026</p>
+                <p class="text-xs text-gray-400 mt-0.5">{{ date('l, d F Y') }}</p>
               </div>
               <button onclick="switchTab('jadwal')" class="text-xs font-bold text-[#5E887E] hover:underline">Lihat Semua →</button>
             </div>
             <div class="space-y-3">
-              <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF9F6] border border-gray-50">
-                <div class="text-center min-w-[44px]">
-                  <div class="text-[10px] font-bold text-[#5E887E]">09.00</div>
+              @forelse($daftar_pesanan as $pesan)
+                <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF9F6] border border-gray-50">
+                  <div class="text-center min-w-[44px]">
+                    <div class="text-[10px] font-bold text-[#5E887E]">{{ \Carbon\Carbon::parse($pesan->jam_kunjungan)->format('H.i') }}</div>
+                  </div>
+                  <div class="w-9 h-9 rounded-xl bg-[#5E887E]/10 flex items-center justify-center text-[#5E887E] text-xs font-bold">
+                    {{ strtoupper(substr($pesan->nama_hewan ?? 'AN', 0, 2)) }}
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-xs font-bold text-[#2D433E]">{{ $pesan->nama_hewan }}</div>
+                    <div class="text-[10px] text-gray-400">{{ $pesan->jenis_hewan }} — Umur: {{ $pesan->umur_hewan }}</div>
+                  </div>
+                  
+                  @if($pesan->status === 'Pending' || $pesan->status === 'Pending')
+                    <span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold">Menunggu</span>
+                  @elseif($pesan->status === 'Selesai')
+                    <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold">Selesai</span>
+                  @else
+                    <span class="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold">Berlangsung</span>
+                  @endif
                 </div>
-                <div class="w-9 h-9 rounded-xl bg-[#5E887E]/10 flex items-center justify-center text-[#5E887E] text-xs font-bold">BL</div>
-                <div class="flex-1">
-                  <div class="text-xs font-bold text-[#2D433E]">Bunga Lestari</div>
-                  <div class="text-[10px] text-gray-400">Mochi — Kucing Persia</div>
+              @empty
+                <div class="text-center py-6 text-gray-400 text-xs">
+                  Belum ada pesanan masuk untuk hari ini, Cees!
                 </div>
-                <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold">Selesai</span>
-              </div>
-              <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF9F6] border border-gray-50">
-                <div class="text-center min-w-[44px]">
-                  <div class="text-[10px] font-bold text-[#5E887E]">10.30</div>
-                </div>
-                <div class="w-9 h-9 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-xs font-bold">RK</div>
-                <div class="flex-1">
-                  <div class="text-xs font-bold text-[#2D433E]">Rizal Kurniawan</div>
-                  <div class="text-[10px] text-gray-400">Max — Anjing Shiba</div>
-                </div>
-                <span class="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold">Berlangsung</span>
-              </div>
-              <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF9F6] border border-gray-50">
-                <div class="text-center min-w-[44px]">
-                  <div class="text-[10px] font-bold text-[#5E887E]">13.00</div>
-                </div>
-                <div class="w-9 h-9 rounded-xl bg-blue-400/10 flex items-center justify-center text-blue-500 text-xs font-bold">SA</div>
-                <div class="flex-1">
-                  <div class="text-xs font-bold text-[#2D433E]">Siti Aminah</div>
-                  <div class="text-[10px] text-gray-400">Luna — Kucing Anggora</div>
-                </div>
-                <span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold">Menunggu</span>
-              </div>
+              @endforelse
             </div>
           </div>
 
-          <!-- Chat Preview -->
           <div class="bg-white rounded-[32px] border border-gray-100 p-6 shadow-sm">
             <div class="flex justify-between items-start mb-5">
               <div>
@@ -201,37 +194,92 @@
               <button onclick="switchTab('chat')" class="text-xs font-bold text-[#5E887E] hover:underline">Lihat Semua →</button>
             </div>
             <div class="space-y-3">
-              <div class="flex items-center gap-3 p-3 rounded-2xl hover:bg-[#FAF9F6] cursor-pointer transition-all border border-transparent hover:border-gray-50">
-                <div class="w-2 h-2 rounded-full bg-[#5E887E] flex-shrink-0"></div>
-                <div class="w-9 h-9 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-xs font-bold flex-shrink-0">RK</div>
-                <div class="flex-1 min-w-0">
-                  <div class="text-xs font-bold text-[#2D433E]">Rizal Kurniawan</div>
-                  <div class="text-[10px] text-gray-400 truncate">Dok, Max masih belum mau makan...</div>
+              @forelse($daftar_chat->take(3) as $chat)
+                <!-- Chat Item Dinamis Dashboard Depan -->
+                <div onclick="switchTab('chat')" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-[#FAF9F6] cursor-pointer transition-all border border-transparent hover:border-gray-50">
+                  <!-- Indikator Hijau -->
+                  <div class="w-2 h-2 rounded-full bg-[#5E887E] flex-shrink-0"></div>
+                  
+                  <!-- Avatar Inisial Otomatis -->
+                  <div class="w-9 h-9 rounded-xl bg-[#5E887E]/10 flex items-center justify-center text-[#5E887E] text-xs font-bold flex-shrink-0">
+                    {{ strtoupper(substr($chat->nama ?? $chat->name ?? $chat->nama_user ?? 'US', 0, 2)) }}
+                  </div>
+                  
+                  <div class="flex-1 min-w-0">
+                    <div class="text-xs font-bold text-[#2D433E]">
+                      {{ $chat->nama ?? $chat->name ?? $chat->nama_user ?? 'Pengguna GoPet' }}
+                    </div>
+                    <div class="text-[10px] text-gray-400 truncate mt-0.5">
+                      {{ $chat->pesan ?? $chat->isi_pesan ?? $chat->message ?? '(Pesan kosong)' }}
+                    </div>
+                  </div>
+                  
+                  <!-- Waktu Masuk -->
+                  <div class="text-[10px] text-gray-400 font-semibold flex-shrink-0">
+                    {{ isset($chat->created_at) ? \Carbon\Carbon::parse($chat->created_at)->format('H.i') : 'Baru' }}
+                  </div>
                 </div>
-                <div class="text-[10px] text-gray-400 font-semibold flex-shrink-0">08.45</div>
-              </div>
-              <div class="flex items-center gap-3 p-3 rounded-2xl hover:bg-[#FAF9F6] cursor-pointer transition-all border border-transparent hover:border-gray-50">
-                <div class="w-2 h-2 rounded-full bg-[#5E887E] flex-shrink-0"></div>
-                <div class="w-9 h-9 rounded-xl bg-blue-400/10 flex items-center justify-center text-blue-500 text-xs font-bold flex-shrink-0">SA</div>
-                <div class="flex-1 min-w-0">
-                  <div class="text-xs font-bold text-[#2D433E]">Siti Aminah</div>
-                  <div class="text-[10px] text-gray-400 truncate">Dok, bisa reschedule besok ya?</div>
+              @empty
+                <!-- Jika database kosong -->
+                <div class="text-center py-6 text-gray-400 text-xs">
+                  Belum ada pesan masuk, Cees!
                 </div>
-                <div class="text-[10px] text-gray-400 font-semibold flex-shrink-0">Kemarin</div>
-              </div>
-              <div class="flex items-center gap-3 p-3 rounded-2xl hover:bg-[#FAF9F6] cursor-pointer transition-all border border-transparent hover:border-gray-50">
-                <div class="w-2 h-2 rounded-full bg-transparent flex-shrink-0"></div>
-                <div class="w-9 h-9 rounded-xl bg-[#5E887E]/10 flex items-center justify-center text-[#5E887E] text-xs font-bold flex-shrink-0">BL</div>
-                <div class="flex-1 min-w-0">
-                  <div class="text-xs font-bold text-[#2D433E]">Bunga Lestari</div>
-                  <div class="text-[10px] text-gray-400 truncate">Terima kasih dok, Mochi sudah membaik!</div>
-                </div>
-                <div class="text-[10px] text-gray-400 font-semibold flex-shrink-0">Kemarin</div>
-              </div>
+              @endforelse
             </div>
           </div>
-        </div>
 
+      </main>
+    </div>
+
+    <div id="tab-jadwal" class="tab-content">
+      <main class="px-6 md:px-10 py-6">
+        <div class="bg-white rounded-[32px] border border-gray-100 p-6 md:p-8 shadow-sm">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <div>
+              <h3 class="text-lg font-extrabold text-[#2D433E]">Jadwal Konsultasi</h3>
+              <p class="text-xs text-gray-400 mt-0.5">Kelola sesi kunjungan dan konfirmasi pasien harian.</p>
+            </div>
+            <button onclick="openJadwalModal('create')" class="px-4 py-2.5 bg-[#5E887E] text-white rounded-xl text-xs font-bold hover:bg-[#4d7168] transition-all flex items-center gap-2 shadow-md">
+              <i class="fa-solid fa-plus"></i> Tambah Jadwal
+            </button>
+          </div>
+
+          <div class="space-y-3" id="jadwal-list">
+            @forelse($daftar_pesanan as $pesan)
+              <div id="jadwal-row-{{ $pesan->id_pemesanan }}" class="flex flex-wrap items-center gap-3 p-4 rounded-2xl border 
+                {{ $pesan->status === 'Pending' ? 'border-amber-50 bg-amber-50/30' : ($pesan->status === 'Selesai' ? 'border-gray-50 bg-[#FAF9F6]/60' : 'border-blue-50 bg-blue-50/30') }} hover:bg-opacity-100 transition-all">
+                
+                <div class="text-xs font-bold text-[#5E887E] w-12">{{ \Carbon\Carbon::parse($pesan->jam_kunjungan)->format('H.i') }}</div>
+                <div class="w-10 h-10 rounded-xl bg-[#5E887E]/10 flex items-center justify-center text-[#5E887E] text-xs font-bold">
+                  {{ strtoupper(substr($pesan->nama_hewan ?? 'AN', 0, 2)) }}
+                </div>
+                <div class="flex-1 min-w-[120px]">
+                  <div class="text-sm font-bold text-[#2D433E] cell-j-nama">{{ $pesan->nama_hewan }} ({{ $pesan->jenis_hewan }})</div>
+                  <div class="text-[10px] text-gray-400 cell-j-hewan">Alamat: {{ $pesan->alamat }} • Keluhan: {{ $pesan->riwayat_kesehatan ?? '-' }}</div>
+                </div>
+
+                @if($pesan->status === 'Pending')
+                  <span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold cell-j-status">Menunggu</span>
+                @elseif($pesan->status === 'Selesai')
+                  <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold cell-j-status">Selesai</span>
+                @else
+                  <span class="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold cell-j-status">Berlangsung</span>
+                @endif
+
+                <div class="flex gap-2">
+                  @if($pesan->status === 'Pending')
+                    <button onclick="alert('Fitur terima dalam pengembangan, Cees!')" class="w-8 h-8 bg-green-50 text-green-600 rounded-lg text-xs flex items-center justify-center hover:bg-green-500 hover:text-white transition-all" title="Terima"><i class="fa-solid fa-check"></i></button>
+                  @endif
+                  <button onclick="openJadwalModal('edit', {{ $pesan->id_pemesanan }})" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
+                </div>
+              </div>
+            @empty
+              <div class="text-center py-10 text-gray-400">
+                <p class="text-sm">Belum ada antrean jadwal konsultasi di database, Cees!</p>
+              </div>
+            @endforelse
+          </div>
+        </div>
       </main>
     </div>
 
@@ -332,68 +380,46 @@
               <thead>
                 <tr class="border-b border-gray-100 text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">
                   <th class="pb-4 pl-2">Nama Hewan</th>
-                  <th class="pb-4">Pemilik</th>
-                  <th class="pb-4">Diagnosis</th>
-                  <th class="pb-4">Tindakan</th>
-                  <th class="pb-4">Tanggal</th>
+                  <th class="pb-4">Jenis Hewan</th>
+                  <th class="pb-4">Diagnosis (Keluhan)</th>
+                  <th class="pb-4">Catatan Medis</th>
+                  <th class="pb-4">Tanggal Periksa</th>
                   <th class="pb-4 text-center">Aksi</th>
                 </tr>
               </thead>
               <tbody id="rekam-table-body" class="divide-y divide-gray-50 text-sm font-medium text-[#2D433E]">
-                <tr id="rekam-row-1" class="hover:bg-[#FAF9F6]/50 transition-colors">
-                  <td class="py-4 pl-2">
-                    <div class="font-bold cell-r-hewan">Mochi</div>
-                    <div class="text-[10px] text-gray-400 cell-r-jenis">Kucing Persia</div>
-                  </td>
-                  <td class="py-4 text-xs cell-r-pemilik">Bunga Lestari</td>
-                  <td class="py-4">
-                    <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-bold cell-r-diagnosis">Infeksi Saluran Napas</span>
-                  </td>
-                  <td class="py-4 text-xs cell-r-tindakan">Antibiotik + Nebulisasi</td>
-                  <td class="py-4 text-[10px] text-gray-400 cell-r-tanggal">07 Jun 2026</td>
-                  <td class="py-4">
-                    <div class="flex justify-center gap-2">
-                      <button onclick="openRekamModal('edit', 1)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                      <button onclick="deleteRekam(1, 'Mochi')" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                  </td>
-                </tr>
-                <tr id="rekam-row-2" class="hover:bg-[#FAF9F6]/50 transition-colors">
-                  <td class="py-4 pl-2">
-                    <div class="font-bold cell-r-hewan">Max</div>
-                    <div class="text-[10px] text-gray-400 cell-r-jenis">Anjing Shiba</div>
-                  </td>
-                  <td class="py-4 text-xs cell-r-pemilik">Rizal Kurniawan</td>
-                  <td class="py-4">
-                    <span class="px-2 py-1 bg-amber-50 text-amber-700 rounded-full text-[10px] font-bold cell-r-diagnosis">Anoreksia</span>
-                  </td>
-                  <td class="py-4 text-xs cell-r-tindakan">Vitamin B12 + Diet Khusus</td>
-                  <td class="py-4 text-[10px] text-gray-400 cell-r-tanggal">07 Jun 2026</td>
-                  <td class="py-4">
-                    <div class="flex justify-center gap-2">
-                      <button onclick="openRekamModal('edit', 2)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                      <button onclick="deleteRekam(2, 'Max')" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                  </td>
-                </tr>
-                <tr id="rekam-row-3" class="hover:bg-[#FAF9F6]/50 transition-colors">
-                  <td class="py-4 pl-2">
-                    <div class="font-bold cell-r-hewan">Luna</div>
-                    <div class="text-[10px] text-gray-400 cell-r-jenis">Kucing Anggora</div>
-                  </td>
-                  <td class="py-4 text-xs cell-r-pemilik">Siti Aminah</td>
-                  <td class="py-4">
-                    <span class="px-2 py-1 bg-green-50 text-green-700 rounded-full text-[10px] font-bold cell-r-diagnosis">Vaksinasi Rutin</span>
-                  </td>
-                  <td class="py-4 text-xs cell-r-tindakan">Vaksin Rabies + Deworm</td>
-                  <td class="py-4 text-[10px] text-gray-400 cell-r-tanggal">02 Jun 2026</td>
-                  <td class="py-4">
-                    <div class="flex justify-center gap-2">
-                      <button onclick="openRekamModal('edit', 3)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                      <button onclick="deleteRekam(3, 'Luna')" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                  </td>
-                </tr>
+                @forelse($rekam_medis as $rm)
+                  <tr id="rekam-row-{{ $rm->id_pemesanan }}" class="hover:bg-[#FAF9F6]/50 transition-colors">
+                    <td class="py-4 pl-2">
+                      <div class="font-bold cell-r-hewan">{{ $rm->nama_hewan }}</div>
+                      <div class="text-[10px] text-gray-400">Umur: {{ $rm->umur_hewan }}</div>
+                    </td>
+                    <td class="py-4 text-xs text-gray-600">{{ $rm->jenis_hewan }}</td>
+                    <td class="py-4">
+                      <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-bold cell-r-diagnosis">
+                        {{ $rm->riwayat_kesehatan ?? 'Pemeriksaan Rutin' }}
+                      </span>
+                    </td>
+                    <td class="py-4 text-xs text-gray-500 cell-r-tindakan">
+                      {{ $rm->catatan ?? 'Tidak ada catatan tindakan tambahan' }}
+                    </td>
+                    <td class="py-4 text-[10px] text-gray-400 cell-r-tanggal">
+                      {{ \Carbon\Carbon::parse($rm->tanggal_kunjungan)->format('d M Y') }}
+                    </td>
+                    <td class="py-4">
+                      <div class="flex justify-center gap-2">
+                        <button onclick="openRekamModal('edit', {{ $rm->id_pemesanan }})" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button onclick="alert('Fitur hapus rekam medis dalam pengembangan, Cees!')" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
+                      </div>
+                    </td>
+                  </tr>
+                @empty
+                  <tr>
+                    <td colspan="6" class="text-center py-10 text-gray-400 text-xs">
+                      Belum ada riwayat rekam medis dari pasien yang berstatus Selesai, Cees!
+                    </td>
+                  </tr>
+                @endforelse
               </tbody>
             </table>
           </div>
@@ -402,60 +428,47 @@
     </div>
 
     <!-- ===== TAB: CHAT ===== -->
-    <div id="tab-chat" class="tab-content">
-      <main class="px-6 md:px-10 py-6">
-        <div class="bg-white rounded-[32px] border border-gray-100 p-6 md:p-8 shadow-sm">
-          <div class="mb-6">
-            <h3 class="text-lg font-extrabold text-[#2D433E]">Chat dengan Pemilik Hewan</h3>
-            <p class="text-xs text-gray-400 mt-0.5">Konsultasi dan komunikasi langsung via pesan.</p>
+    <div class="space-y-3">
+            @forelse($daftar_chat as $chat)
+              <!-- Chat Item Dinamis -->
+              <div class="flex items-center gap-4 p-4 rounded-2xl border border-[#5E887E]/10 hover:bg-[#FAF9F6] cursor-pointer transition-all" 
+                   onclick="openChatModal('{{ $chat->nama ?? $chat->name ?? $chat->nama_user ?? 'Pengguna GoPet' }}', '{{ strtoupper(substr($chat->nama ?? $chat->name ?? $chat->nama_user ?? 'US', 0, 2)) }}', 'Hubungi: {{ $chat->email ?? $chat->no_hp ?? $chat->telepon ?? '-' }}')">
+                
+                <!-- Indikator Pesan Baru -->
+                <div class="w-2 h-2 rounded-full bg-[#5E887E] flex-shrink-0"></div>
+                
+                <!-- Avatar Inisial Otomatis -->
+                <div class="w-11 h-11 rounded-xl bg-[#5E887E]/10 flex items-center justify-center text-[#5E887E] text-sm font-bold flex-shrink-0">
+                  {{ strtoupper(substr($chat->nama ?? $chat->name ?? $chat->nama_user ?? 'US', 0, 2)) }}
+                </div>
+                
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <div class="text-sm font-bold text-[#2D433E]">
+                      {{ $chat->nama ?? $chat->name ?? $chat->nama_user ?? 'Pengguna GoPet' }}
+                    </div>
+                    <span class="px-2 py-0.5 bg-gray-100 text-gray-600 rounded-full text-[9px] font-bold">Klien GoPet</span>
+                  </div>
+                  <!-- Isi Pesan Asli -->
+                  <div class="text-xs text-gray-400 truncate mt-0.5">
+                    {{ $chat->pesan ?? $chat->isi_pesan ?? $chat->message ?? '(Pesan kosong)' }}
+                  </div>
+                </div>
+                
+                <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
+                  <div class="text-[10px] text-gray-400 font-semibold">
+                    {{ isset($chat->created_at) ? \Carbon\Carbon::parse($chat->created_at)->format('H.i') : 'Baru' }}
+                  </div>
+                </div>
+              </div>
+            @empty
+              <!-- Tampilan Jika Tidak Ada Chat -->
+              <div class="text-center py-12 text-gray-400 text-xs">
+                <i class="fa-regular fa-comments text-2xl block mb-2 text-gray-300"></i>
+                Belum ada pesan masuk dari pemilik hewan di database, Cees!
+              </div>
+            @endforelse
           </div>
-          <div class="space-y-3">
-            <!-- Chat Item 1 -->
-            <div class="flex items-center gap-4 p-4 rounded-2xl border border-[#5E887E]/10 hover:bg-[#FAF9F6] cursor-pointer transition-all" onclick="openChatModal('Rizal Kurniawan', 'RK', 'Max — Anjing Shiba')">
-              <div class="w-2 h-2 rounded-full bg-[#5E887E] flex-shrink-0"></div>
-              <div class="w-11 h-11 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-sm font-bold flex-shrink-0">RK</div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2">
-                  <div class="text-sm font-bold text-[#2D433E]">Rizal Kurniawan</div>
-                  <span class="px-2 py-0.5 bg-[#D9B08C]/10 text-[#D9B08C] rounded-full text-[9px] font-bold">Max — Shiba</span>
-                </div>
-                <div class="text-xs text-gray-400 truncate mt-0.5">Dok, Max masih belum mau makan sejak kemarin malam...</div>
-              </div>
-              <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
-                <div class="text-[10px] text-gray-400 font-semibold">08.45</div>
-                <div class="w-5 h-5 rounded-full bg-[#5E887E] flex items-center justify-center text-white text-[9px] font-bold">2</div>
-              </div>
-            </div>
-            <!-- Chat Item 2 -->
-            <div class="flex items-center gap-4 p-4 rounded-2xl border border-gray-50 hover:bg-[#FAF9F6] cursor-pointer transition-all" onclick="openChatModal('Siti Aminah', 'SA', 'Luna — Kucing Anggora')">
-              <div class="w-2 h-2 rounded-full bg-[#5E887E] flex-shrink-0"></div>
-              <div class="w-11 h-11 rounded-xl bg-blue-400/10 flex items-center justify-center text-blue-500 text-sm font-bold flex-shrink-0">SA</div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2">
-                  <div class="text-sm font-bold text-[#2D433E]">Siti Aminah</div>
-                  <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[9px] font-bold">Luna — Anggora</span>
-                </div>
-                <div class="text-xs text-gray-400 truncate mt-0.5">Dok, bisa reschedule besok ya?</div>
-              </div>
-              <div class="text-[10px] text-gray-400 font-semibold">Kemarin</div>
-            </div>
-            <!-- Chat Item 3 -->
-            <div class="flex items-center gap-4 p-4 rounded-2xl border border-gray-50 hover:bg-[#FAF9F6] cursor-pointer transition-all" onclick="openChatModal('Bunga Lestari', 'BL', 'Mochi — Kucing Persia')">
-              <div class="w-2 h-2 rounded-full bg-transparent flex-shrink-0"></div>
-              <div class="w-11 h-11 rounded-xl bg-[#5E887E]/10 flex items-center justify-center text-[#5E887E] text-sm font-bold flex-shrink-0">BL</div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2">
-                  <div class="text-sm font-bold text-[#2D433E]">Bunga Lestari</div>
-                  <span class="px-2 py-0.5 bg-[#E8F0EE] text-[#5E887E] rounded-full text-[9px] font-bold">Mochi — Persia</span>
-                </div>
-                <div class="text-xs text-gray-400 truncate mt-0.5">Terima kasih dok, Mochi sudah membaik!</div>
-              </div>
-              <div class="text-[10px] text-gray-400 font-semibold">Kemarin</div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
 
     <!-- ===== TAB: PROFIL & TARIF ===== -->
     <div id="tab-profil" class="tab-content">

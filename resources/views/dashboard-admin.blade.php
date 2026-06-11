@@ -85,33 +85,39 @@
 
 
         <div id="tab-dashboard" class="tab-content">
-            <main class="px-6 md:px-10 py-8 space-y-10">
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div class="bg-white p-6 rounded-[30px] border border-[#5E887E]/5 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.03)] flex justify-between items-center">
-                        <div class="space-y-2">
-                            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Pengguna Terdaftar</p>
-                            <h3 class="text-2xl font-black text-[#2D433E]">1.250 <span class="text-xs font-medium text-gray-400">User</span></h3>
-                        </div>
-                        <div class="w-14 h-14 bg-[#D9B08C]/10 rounded-2xl flex items-center justify-center text-[#D9B08C] text-2xl"><i class="fa-solid fa-users"></i></div>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-[30px] border border-[#5E887E]/5 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.03)] flex justify-between items-center">
-                        <div class="space-y-2">
-                            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Mitra Terverifikasi</p>
-                            <h3 class="text-2xl font-black text-[#2D433E]">48 <span class="text-xs font-medium text-gray-400">Mitra</span></h3>
-                        </div>
-                        <div class="w-14 h-14 bg-[#2D433E]/10 rounded-2xl flex items-center justify-center text-[#2D433E] text-2xl"><i class="fa-solid fa-user-shield"></i></div>
-                    </div>
-
-                    <div class="bg-white p-6 rounded-[30px] border border-[#5E887E]/5 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.03)] flex justify-between items-center">
-                        <div class="space-y-2">
-                            <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Butuh Verifikasi</p>
-                            <h3 class="text-2xl font-black text-amber-600">2 <span class="text-xs font-medium text-gray-400">Berkas</span></h3>
-                        </div>
-                        <div class="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-600 text-2xl"><i class="fa-solid fa-file-signature"></i></div>
-                    </div>
+    <main class="px-6 md:px-10 py-8 space-y-10">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+            <!-- Pengguna Terdaftar -->
+            <div class="bg-white p-6 rounded-[30px] border border-[#5E887E]/5 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.03)] flex justify-between items-center">
+                <div class="space-y-2">
+                    <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Pengguna Terdaftar</p>
+                    <h3 class="text-2xl font-black text-[#2D433E]">{{ $total_user }} <span class="text-xs font-medium text-gray-400">User</span></h3>
                 </div>
+                <div class="w-14 h-14 bg-[#D9B08C]/10 rounded-2xl flex items-center justify-center text-[#D9B08C] text-2xl"><i class="fa-solid fa-users"></i></div>
+            </div>
+
+            <!-- Mitra Terverifikasi -->
+            <div class="bg-white p-6 rounded-[30px] border border-[#5E887E]/5 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.03)] flex justify-between items-center">
+                <div class="space-y-2">
+                    <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Mitra Terverifikasi</p>
+                    <h3 class="text-2xl font-black text-[#2D433E]">{{ $total_mitra }} <span class="text-xs font-medium text-gray-400">Mitra</span></h3>
+                </div>
+                <div class="w-14 h-14 bg-[#2D433E]/10 rounded-2xl flex items-center justify-center text-[#2D433E] text-2xl"><i class="fa-solid fa-user-shield"></i></div>
+            </div>
+
+            <!-- Butuh Verifikasi -->
+            <div class="bg-white p-6 rounded-[30px] border border-[#5E887E]/5 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.03)] flex justify-between items-center">
+                <div class="space-y-2">
+                    <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Butuh Verifikasi</p>
+                    <h3 class="text-2xl font-black text-amber-600">{{ $total_pending }} <span class="text-xs font-medium text-gray-400">Berkas</span></h3>
+                </div>
+                <div class="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-600 text-2xl"><i class="fa-solid fa-file-signature"></i></div>
+            </div>
+
+        </div>
+    </main>
+</div>
 
 
                 <div class="w-full bg-white rounded-[40px] border border-gray-100 p-6 md:p-8 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.02)]">

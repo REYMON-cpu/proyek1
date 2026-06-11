@@ -17,7 +17,7 @@ Route::get('/', function () {
     return view('index'); // Memanggil tampilan form login utama (index.blade.php)
 });
 
-// PROSES MENGECEK DATA LOGIN KE DATABASE
+// PROSES MENGECEK DATA LOGIN KE DATABASE DENGAN DIVRESI ROLE AUTOMATIS
 Route::post('/login/proses', function (Request $request) {
     $email = $request->input('email');
     $password = $request->input('password');
@@ -30,7 +30,13 @@ Route::post('/login/proses', function (Request $request) {
               ->first();
 
     if ($user) {
-        return redirect('/dashboard')->with('success', 'Selamat datang kembali, ' . ($user->nama ?? 'Reymon'));
+        if ($user->role === 'Penyedia Jasa') {
+            return redirect('/dashboard-dokter')->with('success', 'Selamat bekerja, Dokter ' . ($user->nama ?? ''));
+        } elseif ($user->role === 'Admin') {
+            return redirect('/dashboard-admin')->with('success', 'Selamat datang Admin, ' . ($user->nama ?? ''));
+        } else {
+            return redirect('/dashboard')->with('success', 'Selamat datang kembali, ' . ($user->nama ?? 'Reymon'));
+        }
     }
 
     return back()->with('error', 'Email, Password, atau Role salah, Cees!');
@@ -63,7 +69,7 @@ Route::post('/register', function (Request $request) {
     DB::table('user')->insert([
         'nama'     => $nama,
         'email'    => $email,
-        'password' => $password, // Password tersimpan polos (Plaintext) sesuai kemauan sistem loginmu
+        'password' => $password, // Password tersimpan polos (Plaintext)
         'role'     => $role
     ]);
 
@@ -73,7 +79,7 @@ Route::post('/register', function (Request $request) {
 
 
 // ==========================================
-// 1. ROUTE DASHBOARD (AKSES: /dashboard)
+// 1. ROUTE DASHBOARD USER UTAMA (AKSES: /dashboard)
 // ==========================================
 Route::get('/dashboard', function () {
     $hewan = DB::table('hewan')->where('id_user', 1)->get();
@@ -90,19 +96,50 @@ Route::get('/dashboard', function () {
 
 
 // ==========================================
-// FIX: Halaman pesan layanan sekarang dinamis berdasarkan ID dokter/sitter yang diklik
+// 2. ROUTE DASHBOARD KHUSUS DOKTER & ADMIN (FIXED ID COLUMNS)
 // ==========================================
-Route::get('/pesan-layanan/{id}', function ($id) {
-    // Sembuh: Mengubah 'id' menjadi 'id_penyedia' sesuai kolom di database kamu
-    $dokter = DB::table('penyedia_jasa')->where('id_penyedia', $id)->first();
+Route::get('/dashboard-dokter', function () {
+    // 1. Ambil data antrean pemesanan aktif
+    $pemesanan = DB::table('pemesanan')->orderBy('id_pemesanan', 'desc')->get();
 
-    // Antisipasi kalau data dokter tidak sengaja terhapus atau tidak ada di DB
-    if (!$dokter) {
-        return redirect('/pilih-dokter')->with('error', 'Penyedia jasa tidak ditemukan, Cees!');
-    }
+    // 2. Ambil data rekam medis (yang statusnya Selesai)
+    $rekam_medis = DB::table('pemesanan')
+                    ->where('status', 'Selesai')
+                    ->orderBy('id_pemesanan', 'desc')
+                    ->get();
 
-    return view('pesan-layanan', ['dokter' => $dokter]);
+    // 3. Ambil data chat dari tabel kontak_pesan
+    $chats = DB::table('kontak_pesan')->orderBy('id', 'desc')->get(); 
+
+    return view('dashboard-dokter', [
+        'daftar_pesanan' => $pemesanan,
+        'rekam_medis'    => $rekam_medis,
+        'daftar_chat'    => $chats
+    ]);
 });
+
+Route::get('/dashboard-admin', function () {
+    $total_user    = DB::table('user')->count(); 
+    $total_mitra   = DB::table('penyedia_jasa')->count();
+    $total_pending = 0; // Karena kolom status belum ada di DB
+
+    // Data untuk masing-masing tab
+    $mitra_list     = DB::table('penyedia_jasa')->get(); // Data Dokter & Sitter
+    $pelanggan_list = DB::table('user')->where('role', '!=', 'Admin')->get(); // Data Pelanggan
+
+    return view('dashboard-admin', [
+        'total_user'    => $total_user,
+        'total_mitra'   => $total_mitra,
+        'total_pending' => $total_pending,
+        'mitra_list'    => $mitra_list,
+        'pelanggan_list'=> $pelanggan_list
+    ]);
+});
+
+
+// ==========================================
+// 3. SELEKSI & PEMESANAN LAYANAN MITRA
+// ==========================================
 
 // Halaman pilih dokter (mengambil data dokter dari database)
 Route::get('/pilih-dokter', function () {
@@ -116,37 +153,9 @@ Route::get('/pilih-sitter', function () {
     return view('pilih-sitter', ['daftar_sitter' => $sitter]);
 });
 
-// BARU DARI FRONTEND: Halaman daftar mitra
-Route::get('/daftar-mitra', function () {
-    return view('daftar-mitra');
-});
-
-// BARU DARI FRONTEND: Halaman chat
-Route::get('/chat', function () {
-    return view('chat');
-});
-
-
-// ==========================================
-// 3. PROSES SIMPAN FORM RATING (DASHBOARD)
-// ==========================================
-Route::post('/review/store', function (Request $request) {
-    DB::table('review_ratings')->insert([
-        'customer_name' => $request->input('customer_name'),
-        'pet_name'      => $request->input('pet_name'),
-        'rating'        => $request->input('rating_value', 5),
-        'experience'    => $request->input('experience'),
-    ]);
-
-    return back()->with('success', 'Rating anabul kamu berhasil disimpan ke database!');
-})->name('review.store');
-
-
-// =========================================================================
-// 4. HALAMAN PESAN LAYANAN (MENAMPILKAN FORMULIR)
-// =========================================================================
+// Halaman pesan layanan sekarang dinamis berdasarkan ID dokter/sitter yang diklik
 Route::get('/pesan-layanan/{id}', function ($id) {
-    // Mencari data penyedia jasa berdasarkan id_penyedia di database gopet_db2
+    // Mencari data penyedia jasa berdasarkan id_penyedia di database gopet_db
     $dokter = DB::table('penyedia_jasa')->where('id_penyedia', $id)->first();
 
     if (!$dokter) {
@@ -160,11 +169,8 @@ Route::get('/pesan-layanan/{id}', function ($id) {
     ]);
 });
 
-// =========================================================================
-// 5. PROSES SIMPAN FORM PEMESANAN LAYANAN KE DATABASE (ANTI-NULL)
-// =========================================================================
+// PROSES SIMPAN FORM PEMESANAN LAYANAN KE DATABASE (ANTI-NULL)
 Route::post('/proses-pemesanan', function (Request $request) {
-
     // Menyimpan seluruh kiriman data formulir ke dalam tabel pemesanan
     DB::table('pemesanan')->insert([
         'id_mitra'          => $request->input('id_mitra'),
@@ -185,14 +191,59 @@ Route::post('/proses-pemesanan', function (Request $request) {
     return redirect('/dashboard')->with('success', 'Pemesanan layanan home-visit berhasil dibuat, Cees!');
 });
 
-// ==========================================
-// 6. PROSES SIMPAN FORM KONTAK DI DASHBOARD
-// ==========================================
-Route::post('/kontak-store', function (Request $request) {
-    // Sementara kita buat redirect balik ke dashboard dulu agar tidak error
-    return redirect('/dashboard')->with('success', 'Pesan kamu berhasil dikirim, Cees!');
-})->name('kontak.store'); // <-- Ini nama rute yang dicari oleh dashboard.blade.php
 
-Route::get('/dashboard-dokter', function () {
-    return view('dashboard-dokter');
+// ==========================================
+// 4. UTILITAS LAINNYA: CHAT, MITRA, RATING, KONTAK
+// ==========================================
+Route::get('/daftar-mitra', function () {
+    return view('daftar-mitra');
 });
+
+Route::get('/chat', function () {
+    return view('chat');
+});
+
+// PROSES SIMPAN FORM RATING (DASHBOARD)
+Route::post('/review/store', function (Request $request) {
+    DB::table('review_ratings')->insert([
+        'customer_name' => $request->input('customer_name'),
+        'pet_name'      => $request->input('pet_name'),
+        'rating'        => $request->input('rating_value', 5),
+        'experience'    => $request->input('experience'),
+    ]);
+
+    return back()->with('success', 'Rating anabul kamu berhasil disimpan ke database!');
+})->name('review.store');
+
+// PROSES SIMPAN FORM KONTAK DI DASHBOARD
+Route::post('/kontak-store', function (Request $request) {
+    return redirect('/dashboard')->with('success', 'Pesan kamu berhasil dikirim, Cees!');
+})->name('kontak.store');
+
+// PROSES MENYETUJUI DOKUMEN MITRA (UPDATE STATUS)
+Route::post('/admin/mitra/setujui/{id}', function ($id) {
+    // Update status berkas di tabel penyedia_jasa menjadi 'Aktif' atau 'Disetujui'
+    DB::table('penyedia_jasa')
+        ->where('id_penyedia', $id)
+        ->update(['status_verifikasi' => 'Disetujui']); // sesuaikan nama kolom status di tabelmu
+
+    return back()->with('success', 'Dokumen mitra berhasil disetujui, Cees!');
+})->name('admin.mitra.setujui');
+
+// PROSES MENOLAK DOKUMEN MITRA
+Route::post('/admin/mitra/tolak/{id}', function ($id) {
+    DB::table('penyedia_jasa')
+        ->where('id_penyedia', $id)
+        ->update(['status_verifikasi' => 'Ditolak']);
+
+    return back()->with('error', 'Dokumen mitra telah ditolak.');
+})->name('admin.mitra.tolak');
+
+// PROSES LOGOUT AKUN (SINKRON UNTUK SEMUA ROLE)
+Route::post('/logout', function () {
+    // Menghapus seluruh data session aktif
+    session()->flush(); 
+    
+    // Kembalikan ke halaman login utama dengan pesan sukses
+    return redirect('/')->with('success', 'Berhasil keluar aplikasi. Sampai jumpa, Cees!');
+})->name('logout');
