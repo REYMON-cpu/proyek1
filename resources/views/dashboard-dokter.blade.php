@@ -27,13 +27,15 @@
     <div class="space-y-8">
 
       <!-- Logo -->
-    <div class="flex items-center justify-between px-2">
+      <div class="flex items-center justify-between px-2">
         <div class="flex items-center gap-3">
-            <img src="{{ asset('images/logo hijau.svg') }}" alt="Logo" class="h-12 w-auto">
-            <div>
-                <h2 class="text-xl font-bold text-[#5E887E] tracking-tight">Go<span class="text-[#D9B08C]">Pet</span></h2>
-                <span class="text-[10px] font-bold text-[#5E887E] uppercase tracking-widest block -mt-1">Admin Panel</span>
-            </div>
+          <div class="w-10 h-10 rounded-xl bg-[#5E887E] flex items-center justify-center">
+            <i class="fa-solid fa-paw text-white text-lg"></i>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-[#5E887E] tracking-tight">Go<span class="text-[#D9B08C]">Pet</span></h2>
+            <span class="text-[10px] font-bold text-[#5E887E] uppercase tracking-widest block -mt-1">Admin Panel</span>
+          </div>
         </div>
         <button onclick="toggleSidebar()" class="w-9 h-9 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100 lg:hidden">
           <i class="fa-solid fa-xmark"></i>
@@ -67,7 +69,7 @@
 
         <button onclick="switchTab('profil')" id="btn-tab-profil"
           class="sidebar-link text-gray-400 hover:text-[#5E887E] hover:bg-[#E8F0EE]/50 w-full text-left flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold text-sm transition-all duration-300">
-          <i class="fa-solid fa-circle-user text-base w-5 text-center"></i> Profil & Tarif
+          <i class="fa-solid fa-circle-user text-base w-5 text-center"></i> Tarif
         </button>
       </nav>
     </div>
@@ -95,7 +97,7 @@
     <!-- TOPBAR -->
     <header class="px-6 md:px-10 pt-6 pb-2 flex justify-between items-center sticky top-0 bg-[#FAF9F6]/90 backdrop-blur-sm z-40">
       <div class="flex items-center gap-4">
-        <button onclick="toggleSidebar()" class="w-11 h-11 bg-white rounded-2xl border border-gray-100 shadow-sm flex items-center justify-center text-gray-500 hover:text-[#5E887E] transition-all lg:hidden">
+        <button onclick="toggleSidebar()" class="w-11 h-11 bg-white rounded-2xl border border-gray-100 shadow-sm flex items-center justify-center text-gray-500 hover:text-[#5E887E] transition-all">
           <i class="fa-solid fa-bars"></i>
         </button>
         <div>
@@ -115,32 +117,34 @@
 
     <!-- ===== TAB: DASHBOARD ===== -->
     <div id="tab-dashboard" class="tab-content active">
-        <main class="px-6 md:px-10 py-6 space-y-8">
+      <main class="px-6 md:px-10 py-6 space-y-8">
 
-       <!-- Metric Cards -->
+        <!-- Metric Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        <div class="bg-white p-5 rounded-[28px] border border-[#5E887E]/5 shadow-sm flex justify-between items-center">
-            <div>
-            <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Konsultasi Hari Ini</p>
-            <h3 class="text-2xl font-black text-[#2D433E] mt-1">6 <span class="text-xs font-medium text-gray-400">sesi</span></h3>
-            </div>
-            <div class="w-12 h-12 bg-[#5E887E]/10 rounded-2xl flex items-center justify-center text-[#5E887E] text-xl"><i class="fa-solid fa-stethoscope"></i></div>
+    <div class="bg-white p-5 rounded-[28px] border border-[#5E887E]/5 shadow-sm flex justify-between items-center">
+        <div>
+        <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Konsultasi Hari Ini</p>
+        <h3 class="text-2xl font-black text-[#2D433E] mt-1">6 <span class="text-xs font-medium text-gray-400">sesi</span></h3>
         </div>
-        <div class="bg-white p-5 rounded-[28px] border border-[#5E887E]/5 shadow-sm flex justify-between items-center">
-            <div>
-            <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Menunggu Konfirmasi</p>
-            <h3 class="text-2xl font-black text-amber-600 mt-1">2 <span class="text-xs font-medium text-gray-400">pasien</span></h3>
-            </div>
-            <div class="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-600 text-xl"><i class="fa-solid fa-clock"></i></div>
+        <div class="w-12 h-12 bg-[#5E887E]/10 rounded-2xl flex items-center justify-center text-[#5E887E] text-xl"><i class="fa-solid fa-stethoscope"></i></div>
+    </div>
+
+    <div class="bg-white p-5 rounded-[28px] border border-[#5E887E]/5 shadow-sm flex justify-between items-center">
+        <div>
+        <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Menunggu Konfirmasi</p>
+        <h3 class="text-2xl font-black text-amber-600 mt-1">2 <span class="text-xs font-medium text-gray-400">pasien</span></h3>
         </div>
-        <div class="bg-white p-5 rounded-[28px] border border-[#5E887E]/5 shadow-sm flex justify-between items-center">
-            <div>
-            <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Total Pasien Aktif</p>
-            <h3 class="text-2xl font-black text-[#2D433E] mt-1">24 <span class="text-xs font-medium text-gray-400">hewan</span></h3>
-            </div>
-            <div class="w-12 h-12 bg-blue-500/10 rounded-2xl flex items-center justify-center text-blue-500 text-xl"><i class="fa-solid fa-paw"></i></div>
+        <div class="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-600 text-xl"><i class="fa-solid fa-clock"></i></div>
+    </div>
+
+    <div class="bg-white p-5 rounded-[28px] border border-[#5E887E]/5 shadow-sm flex justify-between items-center">
+        <div>
+        <p class="text-[10px] font-bold uppercase tracking-wider text-gray-400">Total Hewan yang Telah Ditangani</p>
+        <h3 class="text-2xl font-black text-[#2D433E] mt-1">142 <span class="text-xs font-medium text-gray-400">hewan</span></h3>
         </div>
-        </div>
+        <div class="w-12 h-12 bg-teal-500/10 rounded-2xl flex items-center justify-center text-teal-600 text-xl"><i class="fa-solid fa-circle-check"></i></div>
+    </div>
+    </div>
 
         <!-- Jadwal Hari Ini + Chat Preview -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -244,9 +248,6 @@
               <h3 class="text-lg font-extrabold text-[#2D433E]">Jadwal Konsultasi</h3>
               <p class="text-xs text-gray-400 mt-0.5">Kelola sesi kunjungan dan konfirmasi pasien harian.</p>
             </div>
-            <button onclick="openJadwalModal('create')" class="px-4 py-2.5 bg-[#5E887E] text-white rounded-xl text-xs font-bold hover:bg-[#4d7168] transition-all flex items-center gap-2 shadow-md">
-              <i class="fa-solid fa-plus"></i> Tambah Jadwal
-            </button>
           </div>
 
           <div class="space-y-3" id="jadwal-list">
@@ -410,7 +411,6 @@
             <p class="text-xs text-gray-400 mt-0.5">Konsultasi dan komunikasi langsung via pesan.</p>
           </div>
           <div class="space-y-3">
-            <!-- Chat Item 1 -->
             <div class="flex items-center gap-4 p-4 rounded-2xl border border-[#5E887E]/10 hover:bg-[#FAF9F6] cursor-pointer transition-all" onclick="openChatModal('Rizal Kurniawan', 'RK', 'Max — Anjing Shiba')">
               <div class="w-2 h-2 rounded-full bg-[#5E887E] flex-shrink-0"></div>
               <div class="w-11 h-11 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-sm font-bold flex-shrink-0">RK</div>
@@ -426,7 +426,6 @@
                 <div class="w-5 h-5 rounded-full bg-[#5E887E] flex items-center justify-center text-white text-[9px] font-bold">2</div>
               </div>
             </div>
-            <!-- Chat Item 2 -->
             <div class="flex items-center gap-4 p-4 rounded-2xl border border-gray-50 hover:bg-[#FAF9F6] cursor-pointer transition-all" onclick="openChatModal('Siti Aminah', 'SA', 'Luna — Kucing Anggora')">
               <div class="w-2 h-2 rounded-full bg-[#5E887E] flex-shrink-0"></div>
               <div class="w-11 h-11 rounded-xl bg-blue-400/10 flex items-center justify-center text-blue-500 text-sm font-bold flex-shrink-0">SA</div>
@@ -439,7 +438,6 @@
               </div>
               <div class="text-[10px] text-gray-400 font-semibold">Kemarin</div>
             </div>
-            <!-- Chat Item 3 -->
             <div class="flex items-center gap-4 p-4 rounded-2xl border border-gray-50 hover:bg-[#FAF9F6] cursor-pointer transition-all" onclick="openChatModal('Bunga Lestari', 'BL', 'Mochi — Kucing Persia')">
               <div class="w-2 h-2 rounded-full bg-transparent flex-shrink-0"></div>
               <div class="w-11 h-11 rounded-xl bg-[#5E887E]/10 flex items-center justify-center text-[#5E887E] text-sm font-bold flex-shrink-0">BL</div>
@@ -468,7 +466,7 @@
             <p class="text-xs text-gray-400 mt-0.5">Update status real-time Anda agar terlihat pemilik hewan.</p>
           </div>
           <div class="flex flex-wrap gap-3">
-            <button onclick="setStatus('tersedia')" class="status-opt px-5 py-2.5 rounded-full text-xs font-bold border-2 border-green-200 bg-green-50 text-green-800 hover:border-green-500 transition-all selected-status" data-status="tersedia">
+            <button onclick="setStatus('tersedia')" class="status-opt px-5 py-2.5 rounded-full text-xs font-bold border-2 border-green-200 bg-green-50 text-green-800 hover:border-green-500 transition-all" data-status="tersedia">
               <i class="fa-solid fa-circle-check mr-1.5"></i> Tersedia
             </button>
             <button onclick="setStatus('perjalanan')" class="status-opt px-5 py-2.5 rounded-full text-xs font-bold border-2 border-amber-200 bg-amber-50 text-amber-800 hover:border-amber-500 transition-all" data-status="perjalanan">
@@ -483,38 +481,54 @@
           </div>
         </div>
 
-        <!-- Profil Form -->
+        <!-- Pengajuan Tarif -->
         <div class="bg-white rounded-[32px] border border-gray-100 p-6 md:p-8 shadow-sm">
           <div class="mb-5">
-            <h3 class="text-lg font-extrabold text-[#2D433E]">Profil & Tarif Saya</h3>
-            <p class="text-xs text-gray-400 mt-0.5">Informasi yang tampil kepada calon pelanggan di aplikasi.</p>
+            <h3 class="text-lg font-extrabold text-[#2D433E]">Pengajuan Kenaikan Tarif Dokter</h3>
+            <p class="text-xs text-gray-400 mt-0.5">Formulir ini digunakan untuk mengajukan penyesuaian tarif. Perubahan akan berlaku setelah diverifikasi oleh Admin.</p>
           </div>
-          <form onsubmit="saveProfil(event)" class="space-y-4">
+          <form onsubmit="submitPengajuanGaji(event)" class="space-y-4" enctype="multipart/form-data">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Nama Lengkap & Gelar</label>
-                <input type="text" value="drh. Jinten Anggraeni" class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E] focus:ring-1 focus:ring-[#5E887E]/20">
-              </div>
-              <div>
-                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Nomor STR / SIP</label>
-                <input type="text" value="SIP/2026/0892" class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E] focus:ring-1 focus:ring-[#5E887E]/20">
+                <input type="text" value="drh. Jinten Anggraeni" disabled class="w-full px-4 py-2.5 bg-[#F5F5F3] border border-gray-100 rounded-xl text-xs font-semibold text-gray-500 cursor-not-allowed focus:outline-none">
               </div>
               <div>
                 <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Spesialisasi</label>
-                <input type="text" value="Spesialis Kucing & Anjing" class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E] focus:ring-1 focus:ring-[#5E887E]/20">
+                <input type="text" value="Spesialis Kucing & Anjing" disabled class="w-full px-4 py-2.5 bg-[#F5F5F3] border border-gray-100 rounded-xl text-xs font-semibold text-gray-500 cursor-not-allowed focus:outline-none">
               </div>
               <div>
-                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Tarif per Kunjungan</label>
-                <input type="text" value="Rp 150.000" class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E] focus:ring-1 focus:ring-[#5E887E]/20">
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Tarif Saat Ini (Per Kunjungan)</label>
+                <input type="text" value="Rp 150.000" disabled class="w-full px-4 py-2.5 bg-[#F5F5F3] border border-gray-100 rounded-xl text-xs font-semibold text-gray-500 cursor-not-allowed focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Usulan Tarif Baru (Rp)</label>
+                <input type="number" placeholder="Contoh: 180000" required class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E] focus:ring-1 focus:ring-[#5E887E]/20">
               </div>
               <div class="sm:col-span-2">
-                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Bio / Deskripsi Singkat</label>
-                <textarea rows="3" class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E] focus:ring-1 focus:ring-[#5E887E]/20 resize-none">Dokter hewan berpengalaman 2 tahun, berfokus pada perawatan kucing dan anjing. Home visit tersedia di area Bandung.</textarea>
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Upload Surat Persetujuan Atasan Klinik</label>
+                <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-200 border-dashed rounded-xl bg-[#FAF9F6] hover:border-[#5E887E] transition-colors relative">
+                  <div class="space-y-1 text-center">
+                    <i class="fa-solid fa-cloud-arrow-up text-gray-400 text-2xl mb-2 block"></i>
+                    <div class="flex text-xs text-gray-600 justify-center">
+                      <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-bold text-[#5E887E] hover:text-[#4d7168]">
+                        <span>Pilih Berkas</span>
+                        <input id="file-upload" name="file-upload" type="file" accept=".pdf,.png,.jpg,.jpeg" required class="sr-only">
+                      </label>
+                      <p class="pl-1 text-gray-400 font-medium">atau drag and drop</p>
+                    </div>
+                    <p class="text-[10px] text-gray-400">PDF, PNG, atau JPG maksimal 5MB (Harus bertandatangan resmi)</p>
+                  </div>
+                </div>
+              </div>
+              <div class="sm:col-span-2">
+                <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Alasan / Keterangan Pengajuan</label>
+                <textarea rows="3" placeholder="Tuliskan alasan penyesuaian tarif di sini..." required class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E] focus:ring-1 focus:ring-[#5E887E]/20 resize-none"></textarea>
               </div>
             </div>
             <div class="pt-2">
               <button type="submit" class="px-6 py-2.5 bg-[#5E887E] text-white rounded-xl text-xs font-bold hover:bg-[#4d7168] transition-all shadow-md">
-                <i class="fa-solid fa-floppy-disk mr-1.5"></i> Simpan Perubahan
+                <i class="fa-solid fa-paper-plane mr-1.5"></i> Kirim Pengajuan ke Admin
               </button>
             </div>
           </form>
@@ -619,9 +633,7 @@
         </div>
         <button onclick="closeChatModal()" class="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-gray-400 hover:bg-gray-100"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <div id="chatMessages" class="flex-1 overflow-y-auto p-5 space-y-3" style="min-height:200px;max-height:50vh">
-        <!-- Messages -->
-      </div>
+      <div id="chatMessages" class="flex-1 overflow-y-auto p-5 space-y-3" style="min-height:200px;max-height:50vh"></div>
       <div class="p-4 border-t border-gray-50 flex gap-2">
         <input type="text" id="chatInput" placeholder="Ketik pesan..." class="flex-1 px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E]">
         <button onclick="sendChat()" class="px-4 py-2.5 bg-[#5E887E] text-white rounded-xl text-xs font-bold hover:bg-[#4d7168] transition-all">
@@ -632,22 +644,25 @@
   </div>
 
   <script>
-    // ========== SIDEBAR & TAB ==========
     function toggleSidebar() {
       const sidebar = document.getElementById('sidebar');
-      const main = document.getElementById('main-content');
-      sidebar.classList.toggle('-translate-x-full');
-      if (window.innerWidth >= 1024) {
-        main.classList.toggle('lg:pl-72');
+      const mainContent = document.getElementById('main-content');
+      if (sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.remove('-translate-x-full');
+        mainContent.classList.add('lg:pl-72');
+      } else {
+        sidebar.classList.add('-translate-x-full');
+        mainContent.classList.remove('lg:pl-72');
       }
     }
 
+    // ========== TAB ==========
     const tabMeta = {
       dashboard: ['Selamat Datang, Dokter! 🩺', 'Ringkasan aktivitas harian dan status konsultasi Anda.'],
       jadwal:    ['Jadwal Konsultasi 📅', 'Kelola sesi kunjungan dan konfirmasi pasien harian.'],
       pasien:    ['Rekam Medis Pasien 📋', 'Riwayat diagnosis dan tindakan medis seluruh pasien.'],
       chat:      ['Chat Pemilik Hewan 💬', 'Komunikasi langsung dengan pemilik hewan peliharaan.'],
-      profil:    ['Profil & Tarif Saya ⚙️', 'Update informasi, tarif, dan status ketersediaan real-time.'],
+      profil:    ['Tarif Saya ⚙️', 'Update informasi, tarif, dan status ketersediaan real-time.'],
     };
 
     function switchTab(name) {
@@ -667,10 +682,10 @@
 
     // ========== STATUS ==========
     const statusConfig = {
-      tersedia:   { label: 'Tersedia',          dot: 'bg-green-600', pill: 'bg-green-100 text-green-800 border-green-200', sidebar: '● Tersedia' },
-      perjalanan: { label: 'Dalam Perjalanan',  dot: 'bg-amber-500', pill: 'bg-amber-100 text-amber-800 border-amber-200', sidebar: '● Dalam Perjalanan' },
-      memeriksa:  { label: 'Sedang Memeriksa',  dot: 'bg-blue-500',  pill: 'bg-blue-100 text-blue-800 border-blue-200',   sidebar: '● Sedang Memeriksa' },
-      selesai:    { label: 'Sesi Selesai',       dot: 'bg-teal-600',  pill: 'bg-teal-100 text-teal-800 border-teal-200',   sidebar: '● Sesi Selesai' },
+      tersedia:   { label: 'Tersedia',         dot: 'bg-green-600', pill: 'bg-green-100 text-green-800 border-green-200',  sidebar: '● Tersedia' },
+      perjalanan: { label: 'Dalam Perjalanan', dot: 'bg-amber-500', pill: 'bg-amber-100 text-amber-800 border-amber-200',  sidebar: '● Dalam Perjalanan' },
+      memeriksa:  { label: 'Sedang Memeriksa', dot: 'bg-blue-500',  pill: 'bg-blue-100 text-blue-800 border-blue-200',    sidebar: '● Sedang Memeriksa' },
+      selesai:    { label: 'Sesi Selesai',      dot: 'bg-teal-600',  pill: 'bg-teal-100 text-teal-800 border-teal-200',    sidebar: '● Sesi Selesai' },
     };
 
     function setStatus(key) {
@@ -681,7 +696,6 @@
       pill.className = `flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold border ${cfg.pill}`;
       dot.className  = `w-2 h-2 rounded-full ${cfg.dot}`;
       document.getElementById('sidebar-status-text').innerText = cfg.sidebar;
-
       document.querySelectorAll('.status-opt').forEach(b => {
         b.style.boxShadow = b.dataset.status === key ? '0 0 0 2.5px currentColor' : 'none';
       });
@@ -705,7 +719,7 @@
         const parts = hewanFull.split(' • ');
         document.getElementById('inputJHewan').value  = parts[0] || '';
         document.getElementById('inputJLokasi').value = parts[1] || 'Home Visit';
-        document.getElementById('inputJJam').value   = row.querySelector('.text-xs.font-bold.text-\\[\\#5E887E\\]')?.innerText || '';
+        document.getElementById('inputJJam').value   = row.querySelector('.text-xs.font-bold').innerText || '';
       }
     }
 
@@ -865,12 +879,9 @@
       document.getElementById('chatAvatar').innerText = inisial;
       document.getElementById('chatName').innerText   = name;
       document.getElementById('chatPet').innerText    = pet;
-
       const msgs = document.getElementById('chatMessages');
       msgs.innerHTML = '';
-      const history = chatHistories[name] || [];
-      history.forEach(m => appendChatBubble(m.from, m.text, false));
-
+      (chatHistories[name] || []).forEach(m => appendChatBubble(m.from, m.text, false));
       document.getElementById('chatModal').classList.add('show');
       msgs.scrollTop = msgs.scrollHeight;
     }
@@ -898,10 +909,9 @@
 
     document.getElementById('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });
 
-    // ========== PROFIL SAVE ==========
-    function saveProfil(e) {
+    function submitPengajuanGaji(e) {
       e.preventDefault();
-      alert('Perubahan profil berhasil disimpan!');
+      alert('Pengajuan tarif berhasil dikirim ke Admin!');
     }
   </script>
 </body>

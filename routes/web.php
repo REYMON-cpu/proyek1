@@ -196,3 +196,15 @@ Route::post('/kontak-store', function (Request $request) {
 Route::get('/dashboard-dokter', function () {
     return view('dashboard-dokter');
 });
+
+Route::get('/login-admin', function () {
+    return view('login-admin');
+});
+
+Route::get('/dashboard-admin', function () {
+    return view('dashboard-admin');
+});
+
+Route::get('/dashboard-sitter', function () {
+    return view('dashboard-sitter');
+});

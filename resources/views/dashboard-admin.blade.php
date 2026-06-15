@@ -117,13 +117,13 @@
                 <div class="w-full bg-white rounded-[40px] border border-gray-100 p-6 md:p-8 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.02)]">
                     <div class="mb-6">
                         <h3 class="text-xl font-extrabold text-[#2D433E]">Persetujuan Dokumen Mitra</h3>
-                        <p class="text-xs text-gray-400 mt-1">Lakukan validasi berkas STR Dokter Hewan atau ID Sitter sebelum diaktifkan.</p>
+                        <p class="text-[12px] font-extrabold text-gray-400 mt-1">Lakukan validasi berkas STR Dokter Hewan atau ID Sitter sebelum diaktifkan.</p>
                     </div>
 
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="border-b border-gray-100 text-[11px] font-extrabold text-gray-400 uppercase tracking-widest">
+                                <tr class="border-b border-gray-200 text-[11px] font-extrabold text-gray-400 uppercase tracking-widest">
                                     <th class="pb-4 pl-2">Calon Mitra</th>
                                     <th class="pb-4">Profesi</th>
                                     <th class="pb-4">Dokumen Hewan/Sitter</th>
@@ -169,7 +169,7 @@
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                         <div>
                             <h3 class="text-xl font-extrabold text-[#2D433E]">Daftar Dokter & Pet Sitter Active</h3>
-                            <p class="text-xs text-gray-400 mt-1">Kelola data seluruh mitra penanganan hewan yang aktif di platform.</p>
+                            <p class="text-[12px] font-extrabold text-gray-400 mt-1">Kelola data seluruh mitra penanganan hewan yang aktif di platform.</p>
                         </div>
                         <button onclick="openMitraModal('create')" class="px-4 py-2.5 bg-[#5E887E] text-white rounded-xl text-xs font-bold hover:bg-[#4d7168] transition-all flex items-center justify-center gap-2 shadow-md">
                             <i class="fa-solid fa-plus"></i> Tambah Mitra Baru
@@ -179,9 +179,9 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="border-b border-gray-100 text-[11px] font-extrabold text-gray-400 uppercase tracking-widest">
+                                <tr class="border-b border-gray-200 text-[11px] font-extrabold text-gray-400 uppercase tracking-widest">
                                     <th class="pb-4 pl-2">Nama Lengkap</th>
-                                    <th class="pb-4">Profesi & Spesialisasi</th>
+                                    <th class="pb-4">Profesi</th>
                                     <th class="pb-4">Pengalaman</th>
                                     <th class="pb-4">Tarif Jasa</th>
                                     <th class="pb-4 text-center">Aksi</th>
@@ -200,7 +200,6 @@
                                     </td>
                                     <td class="py-4">
                                         <span class="px-2.5 py-1 bg-[#E8F0EE] text-[#5E887E] rounded-full text-xs font-bold block w-max cell-profesi">Dokter</span>
-                                        <span class="text-[11px] text-gray-400 block mt-1 cell-spesialisasi">Spesialis Kucing & Anjing</span>
                                     </td>
                                     <td class="py-4">
                                         <div class="text-xs font-semibold cell-pengalaman">2 Tahun</div>
@@ -228,7 +227,6 @@
                                     </td>
                                     <td class="py-4">
                                         <span class="px-2.5 py-1 bg-[#D9B08C]/10 text-[#D9B08C] rounded-full text-xs font-bold block w-max cell-profesi">Pet Sitter</span>
-                                        <span class="text-[11px] text-gray-400 block mt-1 cell-spesialisasi">Cat Lovers</span>
                                     </td>
                                     <td class="py-4">
                                         <div class="text-xs font-semibold cell-pengalaman">3 Tahun</div>
@@ -257,14 +255,14 @@
             <main class="px-6 md:px-10 py-8 space-y-6">
                 <div class="w-full bg-white rounded-[40px] border border-gray-100 p-6 md:p-8 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.02)]">
                     <div class="mb-6">
-                        <h3 class="text-xl font-extrabold text-[#2D433E]">Daftar Pelanggan Baru</h3>
-                        <p class="text-xs text-gray-400 mt-1">Data esensial pengguna terdaftar (Nama, Email, dan Kontrol Akses).</p>
+                        <h3 class="text-xl font-extrabold text-[#2D433E]">Daftar Pengguna</h3>
+                        <p class="text-[12px] font-extrabold text-gray-400 mt-1">Data esensial pengguna terdaftar (Nama, Email, dan Kontrol Akses).</p>
                     </div>
 
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse">
                             <thead>
-                                <tr class="border-b border-gray-100 text-[11px] font-extrabold text-gray-400 uppercase tracking-widest">
+                                <tr class="border-b border-gray-200 text-[11px] font-extrabold text-gray-400 uppercase tracking-widest">
                                     <th class="pb-4 pl-2">Nama Lengkap</th>
                                     <th class="pb-4">Alamat Email</th>
                                     <th class="pb-4 text-center">Aksi</th>
@@ -325,7 +323,7 @@
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
                         <div>
-                            <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Spesialisasi</label>
+                            <label class="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">Profesi</label>
                             <input type="text" id="inputSpesialisasi" required class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none">
                         </div>
                         <div>
@@ -407,15 +405,29 @@
                 mainTitle.innerText = "Selamat Datang, Admin!";
                 mainDesc.innerText = "Pemantauan data metrik dan verifikasi berkas kemitraan aplikasi GoPet.";
             }
+
             if(tabName === 'mitra') {
                 document.getElementById('btn-tab-mitra').className = "sidebar-link active w-full text-left flex items-center gap-4 px-4 py-4 rounded-2xl font-bold text-sm transition-all duration-300";
                 mainTitle.innerText = "Manajemen Partner Kemitraan 🩺";
                 mainDesc.innerText = "Validasi data kerja penanganan medis (Dokter Hewan) dan pengasuhan (Pet Sitter).";
             }
+
             if(tabName === 'pelanggan') {
                 document.getElementById('btn-tab-pelanggan').className = "sidebar-link active w-full text-left flex items-center gap-4 px-4 py-4 rounded-2xl font-bold text-sm transition-all duration-300";
                 mainTitle.innerText = "Manajemen Pengguna Aplikasi 🐾";
                 mainDesc.innerText = "Daftar pengawasan akun konsumen terdaftar (Nama Lengkap & Email aktif).";
+            }
+
+            if(tabName === 'tarif') {
+                document.getElementById('btn-tab-tarif').className = "sidebar-link active w-full text-left flex items-center gap-4 px-4 py-4 rounded-2xl font-bold text-sm transition-all duration-300";
+                mainTitle.innerText = "Persetujuan Tarif Dokter 💰";
+                mainDesc.innerText = "Verifikasi dokumen usulan kenaikan tarif kunjungan dan persetujuan dari atasan klinik.";
+            }
+
+            if(tabName === 'tarif') {
+                document.getElementById('btn-tab-tarif').className = "sidebar-link active w-full text-left flex items-center gap-4 px-4 py-4 rounded-2xl font-bold text-sm transition-all duration-300";
+                mainTitle.innerText = "Persetujuan Tarif Dokter 💰";
+                mainDesc.innerText = "Verifikasi dokumen usulan kenaikan tarif kunjungan dan persetujuan dari atasan klinik.";
             }
         }
 

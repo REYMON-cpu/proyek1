@@ -41,58 +41,60 @@
     <div class="bg-blob top-[-150px] left-[-150px] opacity-70"></div>
     <div class="bg-blob bottom-[-150px] right-[-150px] opacity-50"></div>
 
-    <header id="main-nav" class="fixed top-0 w-full z-[100] px-6 py-6 transition-all duration-500">
-       <nav class="w-full max-w-[1440px] mx-auto bg-[#5E887E] backdrop-blur-xl rounded-[30px] px-4 md:px-10 py-5 flex justify-between items-center border border-[#5E887E]/20 shadow-[0_20px_40px_-15px_rgba(94,136,126,0.3)]">
-            <div class="flex items-center gap-4 relative">
-                <div class="w-20 h-20 absolute -left-2 top-1/2 -translate-y-1/2 flex items-center justify-center overflow-hidden bg-[#5E887E] rounded-2xl p-2 border-4 border-[#5E887E]">
+    <header id="main-nav" class="fixed top-0 w-full z-[100] px-4 md:px-6 py-4 transition-all duration-500">
+        <nav class="w-full max-w-[1440px] mx-auto bg-[#5E887E] backdrop-blur-xl rounded-[24px] px-4 md:px-8 py-3 flex justify-between items-center border border-[#5E887E]/20 shadow-[0_15px_30px_-10px_rgba(94,136,126,0.25)]">
+
+            <div class="flex items-center gap-3 relative">
+                <div class="w-12 h-12 flex items-center justify-center overflow-hidden bg-white/10 backdrop-blur-md rounded-xl p-1.5 border border-white/20">
                     <img src="{{ asset('images/logo putih.svg') }}" alt="Logo" class="w-full h-full object-contain">
                 </div>
 
-                <div class="ml-20 ">
-                    <h2 class="text-3xl font-bold tracking-tight text-white">Go<span class="text-[#D9B08C]">Pet</span></h2>
+                <div>
+                    <h2 class="text-xl font-bold tracking-tight text-white">Go<span class="text-[#D9B08C]">Pet</span></h2>
                 </div>
             </div>
 
-
-            <div class="hidden lg:flex gap-14 font-bold text-[15px] uppercase tracking-[0.3em] text-white/80">
+            <div class="hidden lg:flex gap-8 font-bold text-[13px] uppercase tracking-[0.2em] text-white/80">
                 <a href="#" class="hover:text-white transition-colors">Beranda</a>
                 <a href="#tentang-kami" class="hover:text-white transition-colors">Tentang Kami</a>
                 <a href="#kontak" class="hover:text-white transition-colors">Kontak</a>
                 <a href="#penyedia-layanan" class="hover:text-white transition-colors">Layanan</a>
             </div>
 
-            <button class="relative text-white hover:scale-110 transition-transform">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                </svg>
+            <div class="flex items-center gap-4">
+                <button class="relative text-white hover:scale-105 transition-transform p-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                    </svg>
 
-                {{-- aku udah pasang logic unread notifications buat titik merahnya kalo ada notif yang belum dibaca, Nanti tolong pastiin di Controller ada logic trigger notify() sama markAsRead() nya yaa rey--}}
-                @if(isset($hasUnreadNotifications) && $hasUnreadNotifications)
-                    <span class="absolute -top-1 -right-1 block h-3 w-3 rounded-full bg-red-500 border-2 border-[#5E887E]"></span>
-                @endif
-            </button>
+                    @if(isset($hasUnreadNotifications) && $hasUnreadNotifications)
+                        <span class="absolute top-1 right-1 block h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-[#5E887E]"></span>
+                    @endif
+                </button>
 
-            <div class="h-10 w-[1px] bg-white/20"></div>
+                <div class="h-6 w-[1px] bg-white/20"></div>
 
-            <a href="#" class="flex items-center gap-4 group">
-                <div class="text-right hidden xl:block">
-                    <p class="text-[12px] font-extrabold text-white leading-none uppercase tracking-tight" style="font-family: 'Poppins', sans-serif;">
-                        {{ Auth::user()->name ?? 'Guest' }}
-                    </p>
-                </div>
-
-                <div class="relative">
-                    <div class="w-12 h-12 rounded-2xl overflow-hidden border-2 border-white/30 shadow-md transition-transform group-hover:scale-105 flex items-center justify-center bg-[#FAF9F6]">
-                        @if(Auth::user() && Auth::user()->profile_photo_path)
-                            <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="Profil" class="w-full h-full object-cover">
-                        @else
-                            <span class="text-[#5E887E] text-lg font-bold" style="font-family: 'Poppins', sans-serif;">
-                                {{ strtoupper(substr(Auth::user()->name ?? 'Guest', 0, 2)) }}
-                            </span>
-                        @endif
+                <a href="#" class="flex items-center gap-3 group">
+                    <div class="text-right hidden xl:block">
+                        <p class="text-[11px] font-extrabold text-white leading-none uppercase tracking-tight" style="font-family: 'Poppins', sans-serif;">
+                            {{ Auth::user()->name ?? 'Guest' }}
+                        </p>
                     </div>
-                </div>
-            </a>
+
+                    <div class="relative">
+                        <div class="w-9 h-9 rounded-xl overflow-hidden border border-white/20 shadow-sm transition-transform group-hover:scale-105 flex items-center justify-center bg-[#FAF9F6]">
+                            @if(Auth::user() && Auth::user()->profile_photo_path)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="Profil" class="w-full h-full object-cover">
+                            @else
+                                <span class="text-[#5E887E] text-xs font-bold" style="font-family: 'Poppins', sans-serif;">
+                                    {{ strtoupper(substr(Auth::user()->name ?? 'Guest', 0, 2)) }}
+                                </span>
+                            @endif
+                        </div>
+                    </div>
+                </a>
+            </div>
+
         </nav>
     </header>
 
@@ -530,13 +532,13 @@
 
   <section id="kontak" class="py-24 bg-white">
     <div class="container mx-auto px-10">
-        <div class="bg-[#2D433E] rounded-[60px] p-10 lg:p-20 overflow-hidden relative">
+        <div class="bg-[#5E887E] rounded-[60px] p-10 lg:p-20 overflow-hidden relative">
             <div class="absolute -top-20 -right-20 w-80 h-80 bg-[#5E887E]/20 rounded-full filter blur-3xl"></div>
 
             <div class="flex flex-col lg:flex-row gap-20 relative z-10">
                 <div class="lg:w-1/3 text-white">
                     <h2 class="text-5xl font-black mb-8 leading-tight">Hubungi Tim Go<span class="text-[#D9B08C]">Pet</span></h2>
-                    <p class="text-white/60 mb-12">Kami ingin memastikan pengalamanmu menggunakan GoPet selalu nyaman dan lancar. Apakah kamu menemukan kendala teknis saat mengakses fitur atau punya saran pengembangan agar GoPet jadi lebih baik? Beritahu kami melalui formulir ini. Setiap masukanmu sangat berarti bagi perkembangan layanan kami.</p>
+                    <p class="text-white mb-12">Kami ingin memastikan pengalamanmu menggunakan GoPet selalu nyaman dan lancar. Apakah kamu menemukan kendala teknis saat mengakses fitur atau punya saran pengembangan agar GoPet jadi lebih baik? Beritahu kami melalui formulir ini. Setiap masukanmu sangat berarti bagi perkembangan layanan kami.</p>
 
                     <div class="space-y-8">
                         <div class="flex items-center gap-6">
@@ -573,17 +575,17 @@
                     <form action="/kontak-store" method="POST" class="space-y-6">
                         @csrf
                         <div>
-                            <label class="text-xs font-bold text-white/60 uppercase tracking-widest block mb-2 ml-2">Nama Lengkap</label>
+                            <label class="text-xs font-bold text-white uppercase tracking-widest block mb-2 ml-2">Nama Lengkap</label>
                             <input type="text" name="nama_lengkap" required placeholder="Ketik nama lengkapmu" class="w-full bg-white/10 border border-white/10 rounded-2xl p-4 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#D9B08C] focus:bg-white/15 transition">
                         </div>
 
                         <div>
-                            <label class="text-xs font-bold text-white/60 uppercase tracking-widest block mb-2 ml-2">Email</label>
+                            <label class="text-xs font-bold text-white uppercase tracking-widest block mb-2 ml-2">Email</label>
                             <input type="email" name="email" required placeholder="Contoh: reymon@gmail.com" class="w-full bg-white/10 border border-white/10 rounded-2xl p-4 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#D9B08C] focus:bg-white/15 transition">
                         </div>
 
                         <div>
-                            <label class="text-xs font-bold text-white/60 uppercase tracking-widest block mb-2 ml-2">Pesan</label>
+                            <label class="text-xs font-bold text-white uppercase tracking-widest block mb-2 ml-2">Pesan</label>
                             <textarea name="pesan" rows="4" required placeholder="Halo GoPet, saya ingin bertanya tentang..." class="w-full bg-white/10 border border-white/10 rounded-2xl p-4 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#D9B08C] focus:bg-white/15 transition resize-none"></textarea>
                         </div>
 
@@ -733,6 +735,7 @@
         }
 
 
+
         var swiper = new Swiper(".mySwiper", {
             loop: true,
             effect: "fade",
@@ -740,7 +743,7 @@
                 crossFade: true
             },
             autoplay: {
-                delay: 4000,
+                delay: 10000,
                 disableOnInteraction: false
             },
             pagination: {
