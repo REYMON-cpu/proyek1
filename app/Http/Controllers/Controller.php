@@ -21,11 +21,11 @@ class RegisterController extends Controller
 
         // 2. Insert ke tabel kustom 'user' dengan Plaintext Password
         User::create([
-            'nama' => $request->nama,
-            'email' => $request->email,
-            'password' => $request->password, // Teks biasa langsung jebol ke DB
-            'role' => $request->role,
-        ]);
+             'nama' => $request->nama,
+             'email' => $request->email,
+             'password' => bcrypt($request->password), // Menggunakan bcrypt untuk keamanan
+             'role' => $request->role,
+         ]);
 
         // 3. Alihkan ke halaman login utama dengan session sukses
         return redirect('/')->with('success', 'Akun berhasil terdaftar, Cees! Silakan login.');

@@ -30,12 +30,18 @@ Route::post('/login/proses', function (Request $request) {
               ->first();
 
     if ($user) {
+        // Simpan ID ke session agar dashboard bisa mengenali siapa yang login
+        session(['user_id' => $user->id]); 
+
         if ($user->role === 'Penyedia Jasa') {
-            return redirect('/dashboard-dokter')->with('success', 'Selamat bekerja, Dokter ' . ($user->nama ?? ''));
+            // Logika pembeda berdasarkan kolom 'jenis'
+            if (isset($user->jenis) && $user->jenis === 'sitter') {
+                return redirect('/dashboard-sitter');
+            } else {
+                return redirect('/dashboard-dokter');
+            }
         } elseif ($user->role === 'Admin') {
-            return redirect('/dashboard-admin')->with('success', 'Selamat datang Admin, ' . ($user->nama ?? ''));
-        } else {
-            return redirect('/dashboard')->with('success', 'Selamat datang kembali, ' . ($user->nama ?? 'Reymon'));
+            return redirect('/dashboard-admin');
         }
     }
 
@@ -96,7 +102,7 @@ Route::get('/dashboard', function () {
 
 
 // ==========================================
-// 2. ROUTE DASHBOARD KHUSUS DOKTER & ADMIN (FIXED ID COLUMNS)
+// 2. ROUTE DASHBOARD KHUSUS DOKTER, ADMIN ,& SITTER  (FIXED ID COLUMNS)
 // ==========================================
 Route::get('/dashboard-dokter', function () {
     // 1. Ambil data antrean pemesanan aktif
@@ -119,23 +125,59 @@ Route::get('/dashboard-dokter', function () {
 });
 
 Route::get('/dashboard-admin', function () {
-    $total_user    = DB::table('user')->count(); 
-    $total_mitra   = DB::table('penyedia_jasa')->count();
-    $total_pending = 0; // Karena kolom status belum ada di DB
+    // Menghitung data
+    $total_user     = DB::table('user')->count(); 
+    $total_mitra    = DB::table('penyedia_jasa')->count();
+    
+    // Asumsi: status pending ada di tabel pemesanan atau penyedia_jasa
+    // Jika tabel kamu memakai kolom 'status', gunakan kode ini:
+    $total_pending  = DB::table('pemesanan')->where('status', 'Pending')->count();
+    
+    $mitra_list     = DB::table('penyedia_jasa')->get(); 
+    $pelanggan_list = DB::table('user')->where('role', '!=', 'Admin')->get(); 
 
-    // Data untuk masing-masing tab
-    $mitra_list     = DB::table('penyedia_jasa')->get(); // Data Dokter & Sitter
-    $pelanggan_list = DB::table('user')->where('role', '!=', 'Admin')->get(); // Data Pelanggan
-
+    // Kirim semua variabel ke view
     return view('dashboard-admin', [
-        'total_user'    => $total_user,
-        'total_mitra'   => $total_mitra,
-        'total_pending' => $total_pending,
-        'mitra_list'    => $mitra_list,
-        'pelanggan_list'=> $pelanggan_list
+        'total_user'     => $total_user,
+        'total_mitra'    => $total_mitra,
+        'total_pending'  => $total_pending, // Variabel ini yang dicari view
+        'mitra_list'     => $mitra_list,
+        'pelanggan_list' => $pelanggan_list
     ]);
 });
 
+Route::post('/login/proses', function (Request $request) {
+    $email = $request->input('email');
+    $password = $request->input('password');
+    $role = $request->input('role');
+
+    // Ambil user dari database
+    $user = DB::table('user')
+              ->where('email', $email)
+              ->where('password', $password)
+              ->where('role', $role)
+              ->first();
+
+    if ($user) {
+        // Simpan ID ke session
+        session(['user_id' => $user->id_user]);
+
+        // Cek jika role-nya "Penyedia Jasa"
+        if ($user->role === 'Penyedia Jasa') {
+            if (isset($user->jenis) && $user->jenis === 'sitter') {
+                return redirect('/dashboard-sitter');
+            } else {
+                return redirect('/dashboard-dokter');
+            }
+        } elseif ($user->role === 'Admin') {
+            return redirect('/dashboard-admin');
+        } elseif ($user->role === 'Pemilik Hewan');{
+            return redirect('/dashboard');
+        }    
+    }
+    
+    return back()->with('error', 'Email, Password, atau Role salah, Cees!');
+})->name('login.proses'); // <--- INI KUNCI UTAMANYA!
 
 // ==========================================
 // 3. SELEKSI & PEMESANAN LAYANAN MITRA
@@ -249,10 +291,6 @@ Route::post('/logout', function () {
 })->name('logout');
 Route::get('/login-admin', function () {
     return view('login-admin');
-});
-
-Route::get('/dashboard-admin', function () {
-    return view('dashboard-admin');
 });
 
 Route::get('/dashboard-sitter', function () {
