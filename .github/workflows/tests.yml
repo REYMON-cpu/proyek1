@@ -19,13 +19,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-<<<<<<< HEAD
         php: [8.2, 8.3, 8.4]
-=======
-        php: [8.3, 8.4, 8.5]
->>>>>>> 0de9869f023d5b330a53d5703a39cd5d0d380b2b
-
-    name: PHP ${{ matrix.php }}
+        name: PHP ${{ matrix.php }}
 
     steps:
       - name: Checkout code
