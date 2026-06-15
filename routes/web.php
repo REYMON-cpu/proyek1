@@ -247,3 +247,14 @@ Route::post('/logout', function () {
     // Kembalikan ke halaman login utama dengan pesan sukses
     return redirect('/')->with('success', 'Berhasil keluar aplikasi. Sampai jumpa, Cees!');
 })->name('logout');
+Route::get('/login-admin', function () {
+    return view('login-admin');
+});
+
+Route::get('/dashboard-admin', function () {
+    return view('dashboard-admin');
+});
+
+Route::get('/dashboard-sitter', function () {
+    return view('dashboard-sitter');
+});
