@@ -120,188 +120,145 @@
 </div>
 
 
-                <div class="w-full bg-white rounded-[40px] border border-gray-100 p-6 md:p-8 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.02)]">
-                    <div class="mb-6">
-                        <h3 class="text-xl font-extrabold text-[#2D433E]">Persetujuan Dokumen Mitra</h3>
-                        <p class="text-[12px] font-extrabold text-gray-400 mt-1">Lakukan validasi berkas STR Dokter Hewan atau ID Sitter sebelum diaktifkan.</p>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="border-b border-gray-200 text-[11px] font-extrabold text-gray-400 uppercase tracking-widest">
-                                    <th class="pb-4 pl-2">Calon Mitra</th>
-                                    <th class="pb-4">Profesi</th>
-                                    <th class="pb-4">Dokumen Hewan/Sitter</th>
-                                    <th class="pb-4 text-center">Konfirmasi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-50 text-sm font-medium text-[#2D433E]">
-                                <tr class="hover:bg-[#FAF9F6]/50 transition-colors">
-                                    <td class="py-4 pl-2"><div class="font-bold">Drh. Aryan Rayhan</div></td>
-                                    <td class="py-4"><span class="px-2.5 py-1 bg-[#E8F0EE] text-[#5E887E] rounded-full text-xs font-bold">Dokter Hewan</span></td>
-                                    <td class="py-4"><a href="#" onclick="alert('Membuka berkas STR_Aryan.pdf')" class="text-xs text-blue-500 underline font-semibold"><i class="fa-solid fa-file-pdf mr-1"></i>STR_Aryan.pdf</a></td>
-                                    <td class="py-4">
-                                        <div class="flex justify-center gap-2">
-                                            <button onclick="alert('Berkas Drh. Aryan disetujui!')" class="px-3 py-1.5 bg-green-600 text-white rounded-xl text-xs font-bold hover:bg-green-700 transition-all">Terima</button>
-                                            <button onclick="alert('Berkas ditolak.')" class="px-3 py-1.5 bg-red-50 text-red-500 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white transition-all">Tolak</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="hover:bg-[#FAF9F6]/50 transition-colors">
-                                    <td class="py-4 pl-2"><div class="font-bold">Kak Kelvin</div></td>
-                                    <td class="py-4"><span class="px-2.5 py-1 bg-[#D9B08C]/10 text-[#D9B08C] rounded-full text-xs font-bold">Pet Sitter</span></td>
-                                    <td class="py-4"><a href="#" onclick="alert('Membuka berkas Sertif_Kelvin.png')" class="text-xs text-blue-500 underline font-semibold"><i class="fa-solid fa-file-image mr-1"></i>Sertif_Kelvin.png</a></td>
-                                    <td class="py-4">
-                                        <div class="flex justify-center gap-2">
-                                            <button onclick="alert('Berkas Kak Kelvin disetujui!')" class="px-3 py-1.5 bg-green-600 text-white rounded-xl text-xs font-bold hover:bg-green-700 transition-all">Terima</button>
-                                            <button onclick="alert('Berkas ditolak.')" class="px-3 py-1.5 bg-red-50 text-red-500 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white transition-all">Tolak</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <tbody class="divide-y divide-gray-50 text-sm font-medium text-[#2D433E]">
+    @foreach($mitra_list as $mitra)
+        <tr class="hover:bg-[#FAF9F6]/50 transition-colors">
+            <td class="py-4 pl-2"><div class="font-bold">{{ $mitra->nama }}</div></td>
+            
+            <td class="py-4">
+                <span class="px-2.5 py-1 {{ $mitra->jenis == 'Dokter Hewan' ? 'bg-[#E8F0EE] text-[#5E887E]' : 'bg-[#D9B08C]/10 text-[#D9B08C]' }} rounded-full text-xs font-bold">
+                    {{ $mitra->jenis }}
+                </span>
+            </td>
+            
+            <td class="py-4">
+                <a href="{{ asset('storage/'.$mitra->dokumen) }}" target="_blank" class="text-xs text-blue-500 underline font-semibold">
+                    <i class="fa-solid fa-file-pdf mr-1"></i>{{ $mitra->dokumen }}
+                </a>
+            </td>
+            
+            <td class="py-4">
+                <div class="flex justify-center gap-2">
+                    <!-- Form untuk Terima -->
+                    <form action="{{ route('admin.mitra.setujui', $mitra->id_penyedia) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="px-3 py-1.5 bg-green-600 text-white rounded-xl text-xs font-bold hover:bg-green-700 transition-all">Terima</button>
+                    </form>
+                    
+                    <!-- Form untuk Tolak -->
+                    <form action="{{ route('admin.mitra.tolak', $mitra->id_penyedia) }}" method="POST">
+                        @csrf
+                        <button type="submit" class="px-3 py-1.5 bg-red-50 text-red-500 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white transition-all">Tolak</button>
+                    </form>
                 </div>
-            </main>
-        </div>
+            </td>
+        </tr>
+    @endforeach
+</tbody>
 
 
         <!-- TAB 2: DATA DOKTER & PET SITTER (MITRA)   -->
 
-        <div id="tab-mitra" class="tab-content hidden">
-            <main class="px-6 md:px-10 py-8 space-y-6">
-                <div class="w-full bg-white rounded-[40px] border border-gray-100 p-6 md:p-8 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.02)]">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-                        <div>
-                            <h3 class="text-xl font-extrabold text-[#2D433E]">Daftar Dokter & Pet Sitter Active</h3>
-                            <p class="text-[12px] font-extrabold text-gray-400 mt-1">Kelola data seluruh mitra penanganan hewan yang aktif di platform.</p>
-                        </div>
-                        <button onclick="openMitraModal('create')" class="px-4 py-2.5 bg-[#5E887E] text-white rounded-xl text-xs font-bold hover:bg-[#4d7168] transition-all flex items-center justify-center gap-2 shadow-md">
-                            <i class="fa-solid fa-plus"></i> Tambah Mitra Baru
-                        </button>
-                    </div>
+       <main class="px-6 md:px-10 py-8 space-y-10">
 
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="border-b border-gray-200 text-[11px] font-extrabold text-gray-400 uppercase tracking-widest">
-                                    <th class="pb-4 pl-2">Nama Lengkap</th>
-                                    <th class="pb-4">Profesi</th>
-                                    <th class="pb-4">Pengalaman</th>
-                                    <th class="pb-4">Tarif Jasa</th>
-                                    <th class="pb-4 text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="mitra-table-body" class="divide-y divide-gray-50 text-sm font-medium text-[#2D433E]">
-                                <tr id="mitra-row-1" class="hover:bg-[#FAF9F6]/50 transition-colors">
-                                    <td class="py-4 pl-2">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-xl bg-[#5E887E]/10 flex items-center justify-center font-bold text-[#5E887E]">JA</div>
-                                            <div>
-                                                <div class="font-bold cell-nama">drh. Jinten Anggraeni</div>
-                                                <div class="text-[11px] text-gray-400 cell-dokumen-id">SIP: SIP/2026/0892</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-4">
-                                        <span class="px-2.5 py-1 bg-[#E8F0EE] text-[#5E887E] rounded-full text-xs font-bold block w-max cell-profesi">Dokter</span>
-                                    </td>
-                                    <td class="py-4">
-                                        <div class="text-xs font-semibold cell-pengalaman">2 Tahun</div>
-                                        <div class="text-[11px] text-green-600 font-semibold"><i class="fa-solid fa-circle-check text-[10px] mr-1"></i>Verified</div>
-                                    </td>
-                                    <td class="py-4 font-bold text-[#2D433E]">
-                                        <span class="cell-tarif">Rp 150.000</span><span class="text-[10px] text-gray-400 font-medium">/visit</span>
-                                    </td>
-                                    <td class="py-4">
-                                        <div class="flex justify-center gap-2">
-                                            <button onclick="openMitraModal('edit', 1)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                                            <button onclick="deleteMitraRow(1, 'drh. Jinten Anggraeni')" class="w-8 h-8 bg-red-50 text-red-500 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr id="mitra-row-2" class="hover:bg-[#FAF9F6]/50 transition-colors">
-                                    <td class="py-4 pl-2">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-xl bg-[#D9B08C]/20 flex items-center justify-center font-bold text-[#D9B08C]">AL</div>
-                                            <div>
-                                                <div class="font-bold cell-nama">Aurellia Ledy</div>
-                                                <div class="text-[11px] text-gray-400 cell-dokumen-id">Cert: Pet Handling 101</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-4">
-                                        <span class="px-2.5 py-1 bg-[#D9B08C]/10 text-[#D9B08C] rounded-full text-xs font-bold block w-max cell-profesi">Pet Sitter</span>
-                                    </td>
-                                    <td class="py-4">
-                                        <div class="text-xs font-semibold cell-pengalaman">3 Tahun</div>
-                                        <div class="text-[11px] text-green-600 font-semibold"><i class="fa-solid fa-circle-check text-[10px] mr-1"></i>Verified</div>
-                                    </td>
-                                    <td class="py-4 font-bold text-[#2D433E]">
-                                        <span class="cell-tarif">Rp 75.000</span><span class="text-[10px] text-gray-400 font-medium">/hari</span>
-                                    </td>
-                                    <td class="py-4">
-                                        <div class="flex justify-center gap-2">
-                                            <button onclick="openMitraModal('edit', 2)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                                            <button onclick="deleteMitraRow(2, 'Aurellia Ledy')" class="w-8 h-8 bg-red-50 text-red-500 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
+    <div class="w-full bg-white rounded-[40px] border border-gray-100 p-6 md:p-8 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.02)]">
+        <div class="mb-6">
+            <h3 class="text-xl font-extrabold text-[#2D433E]">Daftar Dokter & Pet Sitter Active</h3>
+            <p class="text-[12px] font-extrabold text-gray-400 mt-1">Kelola data seluruh mitra penanganan hewan yang aktif.</p>
         </div>
 
-
-        <!-- TAB 3: DATA PELANGGAN                      -->
-        <div id="tab-pelanggan" class="tab-content hidden">
-            <main class="px-6 md:px-10 py-8 space-y-6">
-                <div class="w-full bg-white rounded-[40px] border border-gray-100 p-6 md:p-8 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.02)]">
-                    <div class="mb-6">
-                        <h3 class="text-xl font-extrabold text-[#2D433E]">Daftar Pengguna</h3>
-                        <p class="text-[12px] font-extrabold text-gray-400 mt-1">Data esensial pengguna terdaftar (Nama, Email, dan Kontrol Akses).</p>
-                    </div>
-
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left border-collapse">
-                            <thead>
-                                <tr class="border-b border-gray-200 text-[11px] font-extrabold text-gray-400 uppercase tracking-widest">
-                                    <th class="pb-4 pl-2">Nama Lengkap</th>
-                                    <th class="pb-4">Alamat Email</th>
-                                    <th class="pb-4 text-center">Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody id="customer-table-body" class="divide-y divide-gray-50 text-sm font-medium text-[#2D433E]">
-                                <tr id="cust-row-1" class="hover:bg-[#FAF9F6]/50 transition-colors">
-                                    <td class="py-4 pl-2">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-xl bg-[#5E887E]/10 flex items-center justify-center font-bold text-[#5E887E]">BL</div>
-                                            <div>
-                                                <div class="font-bold cell-cust-nama">Bunga Lestari</div>
-                                                <div class="text-[11px] text-gray-400">ID: CUST-001</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-4 text-gray-500 cell-cust-email">bunga.lestari@gmail.com</td>
-                                    <td class="py-4">
-                                        <div class="flex justify-center gap-2">
-                                            <button onclick="openCustomerModal('edit', 1)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                                            <button onclick="deleteCustomerRow(1, 'Bunga Lestari')" class="w-8 h-8 bg-red-50 text-red-500 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-[11px] font-extrabold text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                        <th class="py-6 pl-2">Nama Lengkap</th>
+                        <th class="py-6">Profesi</th>
+                        <th class="py-6">Pengalaman</th>
+                        <th class="py-6">Tarif Jasa</th>
+                        <th class="py-6 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 text-sm font-medium text-[#2D433E]">
+                    @forelse($mitra_aktif as $mitra)
+                        <tr class="hover:bg-[#FAF9F6]/50 transition-colors">
+                            <td class="py-4 pl-2">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-[#5E887E]/10 flex items-center justify-center font-bold text-[#5E887E]">
+                                        {{ substr($mitra->nama, 0, 2) }}
+                                    </div>
+                                    <div>
+                                        <div class="font-bold">{{ $mitra->nama }}</div>
+                                        <div class="text-[11px] text-gray-400">ID: {{ $mitra->id_penyedia }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-4">
+                                <span class="px-2.5 py-1 {{ $mitra->jenis == 'Dokter' ? 'bg-[#E8F0EE] text-[#5E887E]' : 'bg-[#D9B08C]/10 text-[#D9B08C]' }} rounded-full text-xs font-bold block w-max">
+                                    {{ $mitra->jenis }}
+                                </span>
+                            </td>
+                            <td class="py-4">
+                                <div class="text-xs font-semibold">{{ $mitra->pengalaman }} Tahun</div>
+                                <div class="text-[11px] text-green-600 font-semibold"><i class="fa-solid fa-circle-check text-[10px] mr-1"></i>Verified</div>
+                            </td>
+                            <td class="py-4 font-bold text-[#2D433E]">
+                                <span>Rp {{ number_format($mitra->tarif, 0, ',', '.') }}</span>
+                                <span class="text-[10px] text-gray-400 font-medium">/visit</span>
+                            </td>
+                            <td class="py-4">
+                                <div class="flex justify-center gap-2">
+                                    <button class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
+                                    <button class="w-8 h-8 bg-red-50 text-red-500 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="5" class="py-10 text-center text-gray-400 font-bold">Belum ada mitra aktif.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-
     </div>
 
+    <div class="w-full bg-white rounded-[40px] border border-gray-100 p-6 md:p-8 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.02)]">
+        <div class="mb-6">
+            <h3 class="text-xl font-extrabold text-[#2D433E]">Daftar Pengguna</h3>
+            <p class="text-[12px] font-extrabold text-gray-400 mt-1">Data esensial pengguna terdaftar.</p>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="text-[11px] font-extrabold text-gray-400 uppercase tracking-widest border-b border-gray-100">
+                        <th class="py-6 pl-2">Nama Lengkap</th>
+                        <th class="py-6">Email</th>
+                        <th class="py-6">Role</th>
+                        <th class="py-6 text-center">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50 text-sm font-medium text-[#2D433E]">
+                    @forelse($pelanggan_list as $user)
+                        <tr class="hover:bg-[#FAF9F6]/50 transition-colors">
+                            <td class="py-4 pl-2 font-bold">{{ $user->nama }}</td>
+                            <td class="py-4 text-gray-500">{{ $user->email }}</td>
+                            <td class="py-4">
+                                <span class="px-2.5 py-1 bg-gray-100 rounded-full text-xs font-bold">{{ $user->role }}</span>
+                            </td>
+                            <td class="py-4 text-center">
+                                <button class="w-8 h-8 bg-red-50 text-red-500 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
+                                    <i class="fa-solid fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr><td colspan="4" class="py-10 text-center text-gray-400 font-bold">Belum ada pengguna.</td></tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
     <!-- MODAL POPUP FORM 1: DOKTER & SITTER -->
     <div id="mitraModal" class="fixed inset-0 bg-[#2D433E]/40 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4 overflow-y-auto">
         <div class="bg-white rounded-[32px] w-full max-w-lg p-6 md:p-8 border border-gray-100 shadow-2xl transform transition-all duration-300 scale-95 opacity-0 my-8" id="modalMitraContainer">

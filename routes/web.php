@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -125,24 +126,30 @@ Route::get('/dashboard-dokter', function () {
 });
 
 Route::get('/dashboard-admin', function () {
-    // Menghitung data
-    $total_user     = DB::table('user')->count(); 
-    $total_mitra    = DB::table('penyedia_jasa')->count();
+    // 1. Ambil data dari database terlebih dahulu
+    $total_user       = DB::table('user')->count(); 
+    $total_mitra      = DB::table('penyedia_jasa')->count();
+    $total_pending    = DB::table('pemesanan')->where('status', 'Pending')->count();
     
-    // Asumsi: status pending ada di tabel pemesanan atau penyedia_jasa
-    // Jika tabel kamu memakai kolom 'status', gunakan kode ini:
-    $total_pending  = DB::table('pemesanan')->where('status', 'Pending')->count();
-    
-    $mitra_list     = DB::table('penyedia_jasa')->get(); 
-    $pelanggan_list = DB::table('user')->where('role', '!=', 'Admin')->get(); 
+    // Pindahkan pengambilan data ini ke atas
+    $mitra_verifikasi = DB::table('penyedia_jasa')->whereNull('status')->get();
+    $mitra_list       = DB::table('penyedia_jasa')->whereNull('status')->orWhere('status','!=','Disetujui')->get();
+    $pelanggan_list   = DB::table('user')->where('role', '!=', 'Admin')->get(); 
+    $mitra_aktif      = DB::table('penyedia_jasa')->where('status','Disetujui')->get();
 
-    // Kirim semua variabel ke view
+    // 2. Sekarang baru hitung count-nya (karena variabelnya sudah ada)
+    $total_butuh_verifikasi = $mitra_verifikasi->count();
+
+    // 3. Kirim semua variabel ke view
     return view('dashboard-admin', [
-        'total_user'     => $total_user,
-        'total_mitra'    => $total_mitra,
-        'total_pending'  => $total_pending, // Variabel ini yang dicari view
-        'mitra_list'     => $mitra_list,
-        'pelanggan_list' => $pelanggan_list
+        'total_user'             => $total_user,
+        'total_mitra'            => $total_mitra,
+        'total_pending'          => $total_pending,
+        'total_butuh_verifikasi' => $total_butuh_verifikasi, // Sekarang ini tidak akan error
+        'mitra_list'             => $mitra_list,
+        'pelanggan_list'         => $pelanggan_list,
+        'mitra_verifikasi'       => $mitra_verifikasi,
+        'mitra_aktif'            => $mitra_aktif
     ]);
 });
 
@@ -185,14 +192,20 @@ Route::post('/login/proses', function (Request $request) {
 
 // Halaman pilih dokter (mengambil data dokter dari database)
 Route::get('/pilih-dokter', function () {
-    $dokter = DB::table('penyedia_jasa')->where('jenis', 'dokter')->get();
-    return view('pilih-dokter', ['daftar_dokter' => $dokter]);
+    // Kita panggil langsung semua data dari tabel penyedia_jasa
+    // agar kita tahu pasti datanya ada atau tidak di tabel itu
+    $daftar_dokter = DB::table('penyedia_jasa')->get();
+
+    // Debugging lagi: apakah data dari tabel penyedia_jasa ada?
+    // dd($daftar_dokter); 
+
+    return view('pilih-dokter', ['daftar_dokter' => $daftar_dokter]);
 });
 
 // Halaman pilih sitter (mengambil data sitter dari database)
 Route::get('/pilih-sitter', function () {
     $sitter = DB::table('penyedia_jasa')->where('jenis', 'sitter')->get();
-    return view('pilih-sitter', ['daftar_sitter' => $sitter]);
+    return view('pilih-sitter', ['daftar_sitter' => $sitter]); // Mengirim data ke view
 });
 
 // Halaman pesan layanan sekarang dinamis berdasarkan ID dokter/sitter yang diklik
@@ -214,20 +227,24 @@ Route::get('/pesan-layanan/{id}', function ($id) {
 // PROSES SIMPAN FORM PEMESANAN LAYANAN KE DATABASE (ANTI-NULL)
 Route::post('/proses-pemesanan', function (Request $request) {
     // Menyimpan seluruh kiriman data formulir ke dalam tabel pemesanan
-    DB::table('pemesanan')->insert([
-        'id_mitra'          => $request->input('id_mitra'),
-        'nama_hewan'        => $request->input('nama_hewan'),
-        'jenis_hewan'       => $request->input('jenis_hewan'),
-        'umur_hewan'        => $request->input('umur_hewan'),
-        'riwayat_kesehatan' => $request->input('riwayat_kesehatan'),
-        'tanggal_kunjungan' => $request->input('tanggal_kunjungan'),
-        'jam_kunjungan'     => $request->input('jam_kunjungan'),
-        'alamat'            => $request->input('alamat'),
-        'catatan'           => $request->input('catatan'),
-        'status'            => 'Pending', // Status default saat pertama kali pesan
-        'created_at'        => now(),
-        'updated_at'        => now()
-    ]);
+   DB::table('pemesanan')->insert([
+    'id_penyedia'       => $request->input('id_mitra'),
+    'id_user'           => 1, 
+    'id_hewan'          => 1, // Pastikan angka 1 ini ada di tabel hewanmu
+    'id_layanan'        => 1, // Pastikan angka 1 ini ada di tabel layananmu
+    'tanggal'           => $request->input('tanggal_kunjungan'), // <-- INI YANG KURANG
+    'tanggal_kunjungan' => $request->input('tanggal_kunjungan'),
+    'jam_kunjungan'     => $request->input('jam_kunjungan'),
+    'alamat'            => $request->input('alamat'),
+    'status'            => 'Pending',
+    'nama_hewan'        => $request->input('nama_hewan'),
+    'jenis_hewan'       => $request->input('jenis_hewan'),
+    'umur_hewan'        => $request->input('umur_hewan'),
+    'riwayat_kesehatan' => $request->input('riwayat_kesehatan'),
+    'catatan'           => $request->input('catatan'),
+    'created_at'        => now(),
+    'updated_at'        => now()
+]);
 
     // Mengalihkan halaman kembali ke dashboard dengan membawa notifikasi sukses
     return redirect('/dashboard')->with('success', 'Pemesanan layanan home-visit berhasil dibuat, Cees!');
@@ -262,21 +279,20 @@ Route::post('/kontak-store', function (Request $request) {
     return redirect('/dashboard')->with('success', 'Pesan kamu berhasil dikirim, Cees!');
 })->name('kontak.store');
 
-// PROSES MENYETUJUI DOKUMEN MITRA (UPDATE STATUS)
+// PROSES MENYETUJUI DOKUMEN MITRA
 Route::post('/admin/mitra/setujui/{id}', function ($id) {
-    // Update status berkas di tabel penyedia_jasa menjadi 'Aktif' atau 'Disetujui'
     DB::table('penyedia_jasa')
         ->where('id_penyedia', $id)
-        ->update(['status_verifikasi' => 'Disetujui']); // sesuaikan nama kolom status di tabelmu
+        ->update(['status' => 'Disetujui']); // Gunakan 'status' sesuai nama kolom baru
 
-    return back()->with('success', 'Dokumen mitra berhasil disetujui, Cees!');
+    return back()->with('success', 'Dokumen mitra berhasil disetujui!');
 })->name('admin.mitra.setujui');
 
 // PROSES MENOLAK DOKUMEN MITRA
 Route::post('/admin/mitra/tolak/{id}', function ($id) {
     DB::table('penyedia_jasa')
         ->where('id_penyedia', $id)
-        ->update(['status_verifikasi' => 'Ditolak']);
+        ->update(['status' => 'Ditolak']); // Gunakan 'status'
 
     return back()->with('error', 'Dokumen mitra telah ditolak.');
 })->name('admin.mitra.tolak');

@@ -40,112 +40,52 @@
             <p class="text-[#5E887E] font-medium text-sm mt-1">Sitter kami telah diverifikasi identitasnya lewat KTP, SKCK, dan sertifikat keahlian mendasar.</p>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full">
+       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 w-full">
+    @foreach($daftar_sitter as $s)
+        <div class="bg-white rounded-[35px] p-6 border border-white shadow-sm flex flex-col justify-between hover:-translate-y-1 transition-all duration-300">
+            <div>
+                <div class="relative w-24 h-24 mx-auto mb-4">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ $s->nama }}" alt="{{ $s->nama }}" class="w-full h-full rounded-2xl bg-[#F8FBF0] object-cover border border-gray-100">
+                    <span class="absolute -bottom-1 -right-1 w-6 h-6 bg-[#D9B08C] border-2 border-white rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-shield text-white text-[10px]"></i>
+                    </span>
+                </div>
 
-            <div class="bg-white rounded-[35px] p-6 border border-white shadow-sm flex flex-col justify-between hover:-translate-y-1 transition-all duration-300">
-                <div>
-                    <div class="relative w-24 h-24 mx-auto mb-4">
-                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=sitter1" alt="Pet Sitter" class="w-full h-full rounded-2xl bg-[#F8FBF0] object-cover border border-gray-100">
-                        <span class="absolute -bottom-1 -right-1 w-6 h-6 bg-[#D9B08C] border-2 border-white rounded-full flex items-center justify-center" title="Identitas Aman">
-                            <i class="fa-solid fa-shield text-white text-[10px]"></i>
-                        </span>
-                    </div>
+                <div class="text-center mb-4">
+                    <h3 class="font-bold text-lg text-[#2D433E]">{{ $s->nama }}</h3>
+                    <p class="text-xs font-semibold text-[#5E887E] bg-[#F4F7F6] px-3 py-1 rounded-full inline-block mt-1">{{ $s->spesialis }}</p>
+                </div>
 
-                    <div class="text-center mb-4">
-                        <h3 class="font-bold text-lg text-[#2D433E]">Aurellia Ledy</h3>
-                        <p class="text-xs font-semibold text-[#5E887E] bg-[#F4F7F6] px-3 py-1 rounded-full inline-block mt-1">Cat Lovers</p>
-                    </div>
-
-                    <p class="text-xs text-gray-400 text-center line-clamp-2 px-2 mb-4 italic">
-                        "Berpengalaman merawat kucing galak dan anjing aktif. Siap menemani anabul bermain di rumah Anda."
+                <p class="text-xs text-gray-400 text-center line-clamp-2 px-2 mb-4 italic">
+                        "Siap memberikan penanganan medis primer terbaik langsung di rumah Anda."
                     </p>
 
-                    <div class="border-t border-b border-gray-100 py-3 my-4 space-y-2 text-sm text-[#2D433E]">
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-briefcase w-4 text-[#5E887E]"></i> Pengalaman:</span>
-                            <span class="font-bold text-xs">3 Tahun</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-id-card w-4 text-[#D9B08C]"></i> Dokumen SKCK:</span>
-                            <span class="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md flex items-center gap-1">Terverifikasi</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-award text-w-4 text-blue-400"></i> Sertifikat:</span>
-                            <span class="font-bold text-xs text-gray-500">Pet Handling 101</span>
-                        </div>
+                <div class="border-t border-b border-gray-100 py-3 my-4 space-y-2 text-sm text-gray-600">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-briefcase w-4 text-[#5E887E]"></i> Pengalaman:</span>
+                        <span class="font-bold text-xs">{{ $s->pengalaman }} Tahun</span>
                     </div>
-                </div>
-
-                <div class="mt-2">
-                    <div class="flex items-baseline justify-between mb-3 px-1">
-                        <span class="text-xs text-gray-400">Tarif Jasa:</span>
-                        <span class="text-lg font-extrabold text-[#5E887E]">Rp 75.000<span class="text-[10px] font-normal text-gray-400">/hari</span></span>
                     </div>
-
-                    <div class="flex gap-2">
-                        <a href="/chat" class="w-12 h-12 bg-[#F8FBF0] hover:bg-[#5E887E]/10 border border-[#5E887E]/20 text-[#5E887E] rounded-2xl flex items-center justify-center transition-all shadow-sm active:scale-95" title="Hubungi Sitter via Chat">
-                            <i class="fa-solid fa-comment-dots text-lg"></i>
-                        </a>
-                        <a href="/pesan-layanan/4" class="flex-1 bg-[#2D433E] hover:bg-[#5E887E] text-white font-bold py-3 rounded-2xl text-sm transition-all shadow-md active:scale-95 text-center flex items-center justify-center">
-                            Pesan Sitter
-                        </a>
-                    </div>
-                </div>
             </div>
 
-            <div class="bg-white rounded-[35px] p-6 border border-white shadow-sm flex flex-col justify-between hover:-translate-y-1 transition-all duration-300">
-                <div>
-                    <div class="relative w-24 h-24 mx-auto mb-4">
-                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=sitter2" alt="Pet Sitter" class="w-full h-full rounded-2xl bg-[#F8FBF0] object-cover border border-gray-100">
-                        <span class="absolute -bottom-1 -right-1 w-6 h-6 bg-[#D9B08C] border-2 border-white rounded-full flex items-center justify-center">
-                            <i class="fa-solid fa-shield text-white text-[10px]"></i>
-                        </span>
-                    </div>
-
-                    <div class="text-center mb-4">
-                        <h3 class="font-bold text-lg text-[#2D433E]">Silviana Novita</h3>
-                        <p class="text-xs font-semibold text-[#5E887E] bg-[#F4F7F6] px-3 py-1 rounded-full inline-block mt-1">Cat Lover Sitter</p>
-                    </div>
-
-                    <p class="text-xs text-gray-400 text-center line-clamp-2 px-2 mb-4 italic">
-                        "Spesialis mendampingi kucing pasca-steril atau kucing senior yang butuh perhatian ekstra lembut."
-                    </p>
-
-                    <div class="border-t border-b border-gray-100 py-3 my-4 space-y-2 text-sm text-gray-600">
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-briefcase w-4 text-[#5E887E]"></i> Pengalaman:</span>
-                            <span class="font-bold text-xs">1 Tahun</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-id-card w-4 text-[#D9B08C]"></i> Dokumen SKCK:</span>
-                            <span class="text-xs text-emerald-600 font-bold bg-emerald-50 px-2 py-0.5 rounded-md flex items-center gap-1">Terverifikasi</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-400 text-xs flex items-center gap-1.5"><i class="fa-solid fa-award text-w-4 text-blue-400"></i> Sertifikat:</span>
-                            <span class="font-bold text-xs text-gray-500">Tidak ada</span>
-                        </div>
-                    </div>
+            <div>
+                <div class="flex items-baseline justify-between mb-3 px-1">
+                    <span class="text-xs text-gray-400">Tarif Jasa:</span>
+                    <span class="text-lg font-extrabold text-[#5E887E]">Rp {{ number_format($s->tarif, 0, ',', '.') }}</span>
                 </div>
 
-                <div>
-                    <div class="flex items-baseline justify-between mb-3 px-1">
-                        <span class="text-xs text-gray-400">Tarif Jasa:</span>
-                        <span class="text-lg font-extrabold text-[#5E887E]">Rp 60.000<span class="text-[10px] font-normal text-gray-400">/hari</span></span>
-                    </div>
-
-                    <div class="flex gap-2">
-                        <a href="/chat" class="w-12 h-12 bg-[#F8FBF0] hover:bg-[#5E887E]/10 border border-[#5E887E]/20 text-[#5E887E] rounded-2xl flex items-center justify-center transition-all shadow-sm active:scale-95" title="Hubungi Sitter via Chat">
-                            <i class="fa-solid fa-comment-dots text-lg"></i>
-                        </a>
-                        <a href="/pesan-layanan/5" class="flex-1 bg-[#2D433E] hover:bg-[#5E887E] text-white font-bold py-3 rounded-2xl text-sm transition-all shadow-md active:scale-95 text-center flex items-center justify-center">
-                            Pesan Sitter
-                        </a>
-                    </div>
+                <div class="flex gap-2">
+                    <a href="/chat" class="w-12 h-12 bg-[#F8FBF0] hover:bg-[#5E887E]/10 border border-[#5E887E]/20 text-[#5E887E] rounded-2xl flex items-center justify-center transition-all shadow-sm">
+                        <i class="fa-solid fa-comment-dots text-lg"></i>
+                    </a>
+                    <a href="/pesan-layanan/{{ $s->id_penyedia }}" class="flex-1 bg-[#2D433E] hover:bg-[#5E887E] text-white font-bold py-3 rounded-2xl text-sm transition-all text-center">
+                        Pesan Sitter
+                    </a>
                 </div>
             </div>
-
         </div>
-    </main>
+    @endforeach
+</div>
 
     <footer class="w-full bg-white border-t border-gray-100 py-6 text-center text-xs text-gray-400">
         <p>&copy; 2026 Go Team. All rights reserved.</p>
