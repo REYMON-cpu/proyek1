@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -32,23 +33,45 @@
         </a>
         <div class="flex items-center gap-3">
             <div class="relative">
-                <img src="https://i.pravatar.cc/150?u=drh_mutia" class="w-11 h-11 rounded-[18px] object-cover border-2 border-white shadow-sm">
+                <img src="https://api.dicebear.com/7.x/adventurer/svg?seed={{ urlencode($provider->nama ?? 'default') }}" class="w-11 h-11 rounded-[18px] object-cover border-2 border-white shadow-sm">
                 <div id="online-indicator" class="absolute bottom-0 right-0 w-3 h-3 bg-gray-300 border-2 border-white rounded-full transition-all duration-500"></div>
             </div>
             <div>
-                <h3 class="font-bold text-[#2D433E] text-sm leading-none">drh. Mutia Ulfa</h3>
+                <h3 class="font-bold text-[#2D433E] text-sm leading-none">{{ $provider->nama ?? 'Penyedia Jasa' }}</h3>
                 <p id="status-text" class="text-[10px] text-gray-400 font-bold uppercase mt-1 tracking-wider">Menghubungkan...</p>
             </div>
         </div>
     </div>
-
+<input type="hidden" id="penerima-id" value="{{ $id_sitter ?? 0 }}">
     <div id="chat-box" class="flex-1 overflow-y-auto p-6 space-y-4 flex flex-col chat-load">
         <div class="flex items-start gap-3">
             <div class="bg-white p-4 rounded-tr-[22px] rounded-bl-[22px] rounded-br-[22px] shadow-sm border border-gray-50 max-w-[85%]">
-                <p class="text-sm text-[#2D433E] leading-relaxed">Halo! Selamat datang di layanan chat Pawrawat. Ada yang bisa saya bantu untuk anabulnya hari ini? 😊</p>
+                <p class="text-sm text-[#2D433E] leading-relaxed">Halo! Selamat datang di layanan chat GoPet. Ada yang bisa saya bantu hari ini? 😊</p>
                 <p class="text-[9px] text-gray-300 mt-2 text-right">08:00</p>
             </div>
         </div>
+
+        @foreach($messages ?? [] as $msg)
+            @php
+              $isSender = ($msg->id_pengirim == Auth::id());
+              $time = \Carbon\Carbon::parse($msg->created_at)->format('H:i');
+            @endphp
+            @if($isSender)
+                <div class="flex flex-row-reverse items-start gap-3 msg-bubble" data-msg-id="{{ $msg->id }}">
+                    <div class="bg-[#2D433E] p-4 rounded-tl-[22px] rounded-bl-[22px] rounded-br-[22px] shadow-md shadow-[#2D433E]/10 max-w-[85%]">
+                        <p class="text-sm text-white leading-relaxed">{{ $msg->isi_pesan }}</p>
+                        <p class="text-[9px] text-white/50 mt-2 text-right">{{ $time }}</p>
+                    </div>
+                </div>
+            @else
+                <div class="flex items-start gap-3 msg-bubble" data-msg-id="{{ $msg->id }}">
+                    <div class="bg-white p-4 rounded-tr-[22px] rounded-bl-[22px] rounded-br-[22px] shadow-sm border border-gray-50 max-w-[85%]">
+                        <p class="text-sm text-[#2D433E] leading-relaxed">{{ $msg->isi_pesan }}</p>
+                        <p class="text-[9px] text-gray-300 mt-2 text-right">{{ $time }}</p>
+                    </div>
+                </div>
+            @endif
+        @endforeach
     </div>
 
     <div class="bg-white p-4 pb-8 border-t border-gray-50 shadow-[0_-10px_40px_rgba(0,0,0,0.02)]">
@@ -58,7 +81,7 @@
                 <i class="fas fa-paperclip text-lg"></i>
             </label>
 
-            <input type="text" id="message-input" placeholder="Tulis pesan ke Dokter..."
+            <input type="text" id="message-input" placeholder="Tulis pesan ke {{ $provider->nama ?? 'Penyedia Jasa' }}..."
                 class="flex-1 bg-transparent border-none focus:ring-0 outline-none text-sm text-[#2D433E] px-2 font-medium">
 
             <button onclick="sendMessage()" class="w-11 h-11 bg-[#2D433E] text-white rounded-full flex items-center justify-center hover:bg-[#5E887E] transition-all shadow-lg active:scale-90">
@@ -72,12 +95,17 @@
         const chatBox = document.getElementById('chat-box');
         const statusText = document.getElementById('status-text');
         const onlineIndicator = document.getElementById('online-indicator');
-
+        const receiverId = document.getElementById('penerima-id').value;
+        const currentUserId = {{ Auth::id() ?? 0 }};
 
         document.addEventListener("DOMContentLoaded", function() {
             setTimeout(() => {
                 chatBox.classList.add('chat-loaded');
+                chatBox.scrollTop = chatBox.scrollHeight;
             }, 50);
+
+            // Start polling every 3 seconds
+            setInterval(pollMessages, 3000);
         });
 
         setTimeout(() => {
@@ -90,25 +118,73 @@
             const text = messageInput.value.trim();
             if (text === "") return;
 
-            const now = new Date();
-            const time = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-            const bubble = `
-                <div class="flex flex-row-reverse items-start gap-3 animate-fade-in">
-                    <div class="bg-[#2D433E] p-4 rounded-tl-[22px] rounded-bl-[22px] rounded-br-[22px] shadow-md shadow-[#2D433E]/10 max-w-[85%]">
-                        <p class="text-sm text-white leading-relaxed">${text}</p>
-                        <p class="text-[9px] text-white/50 mt-2 text-right">${time}</p>
-                    </div>
-                </div>
-            `;
-
-            chatBox.innerHTML += bubble;
-            messageInput.value = "";
-
-
-            chatBox.scrollTo({
-                top: chatBox.scrollHeight,
-                behavior: 'smooth'
+            fetch('/send-message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: JSON.stringify({
+                    id_penerima: receiverId,
+                    isi_pesan: text
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Poll immediately to grab the new message
+                    pollMessages();
+                    messageInput.value = "";
+                } else {
+                    alert('Gagal mengirim pesan');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
             });
+        }
+
+        function pollMessages() {
+            const bubbles = document.querySelectorAll('.msg-bubble');
+            let lastId = 0;
+            if (bubbles.length > 0) {
+                lastId = bubbles[bubbles.length - 1].dataset.msgId;
+            }
+
+            fetch(`/chat/get-messages/${receiverId}?last_id=${lastId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success' && data.messages.length > 0) {
+                    data.messages.forEach(msg => {
+                        const isSender = msg.id_pengirim == currentUserId;
+                        const date = new Date(msg.created_at);
+                        const time = date.getHours().toString().padStart(2, '0') + ":" + date.getMinutes().toString().padStart(2, '0');
+                        let bubble = '';
+                        if (isSender) {
+                            bubble = `
+                                <div class="flex flex-row-reverse items-start gap-3 msg-bubble" data-msg-id="${msg.id}">
+                                    <div class="bg-[#2D433E] p-4 rounded-tl-[22px] rounded-bl-[22px] rounded-br-[22px] shadow-md shadow-[#2D433E]/10 max-w-[85%]">
+                                        <p class="text-sm text-white leading-relaxed">${msg.isi_pesan}</p>
+                                        <p class="text-[9px] text-white/50 mt-2 text-right">${time}</p>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            bubble = `
+                                <div class="flex items-start gap-3 msg-bubble" data-msg-id="${msg.id}">
+                                    <div class="bg-white p-4 rounded-tr-[22px] rounded-bl-[22px] rounded-br-[22px] shadow-sm border border-gray-50 max-w-[85%]">
+                                        <p class="text-sm text-[#2D433E] leading-relaxed">${msg.isi_pesan}</p>
+                                        <p class="text-[9px] text-gray-300 mt-2 text-right">${time}</p>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        chatBox.innerHTML += bubble;
+                    });
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
+            })
+            .catch(err => console.error(err));
         }
 
         messageInput.addEventListener("keypress", (e) => {

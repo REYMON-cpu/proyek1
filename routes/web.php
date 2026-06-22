@@ -3,7 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SitterController;
+use App\Http\Controllers\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +19,7 @@ use App\Http\Controllers\AdminController;
 // ==========================================
 Route::get('/', function () {
     return view('index'); // Memanggil tampilan form login utama (index.blade.php)
-});
+})->name('login');
 
 // PROSES MENGECEK DATA LOGIN KE DATABASE DENGAN DIVRESI ROLE AUTOMATIS
 Route::post('/login/proses', function (Request $request) {
@@ -32,17 +35,24 @@ Route::post('/login/proses', function (Request $request) {
 
     if ($user) {
         // Simpan ID ke session agar dashboard bisa mengenali siapa yang login
-        session(['user_id' => $user->id]); 
+        session(['user_id' => $user->id_user]);
+
+        // Set Laravel auth session secara langsung
+        Auth::loginUsingId($user->id_user);
 
         if ($user->role === 'Penyedia Jasa') {
-            // Logika pembeda berdasarkan kolom 'jenis'
             if (isset($user->jenis) && $user->jenis === 'sitter') {
                 return redirect('/dashboard-sitter');
-            } else {
-                return redirect('/dashboard-dokter');
             }
-        } elseif ($user->role === 'Admin') {
+            return redirect('/dashboard-dokter');
+        }
+
+        if ($user->role === 'Admin') {
             return redirect('/dashboard-admin');
+        }
+
+        if ($user->role === 'Pemilik Hewan') {
+            return redirect('/dashboard');
         }
     }
 
@@ -101,7 +111,7 @@ Route::get('/dashboard', function () {
     ]);
 });
 
-
+ 
 // ==========================================
 // 2. ROUTE DASHBOARD KHUSUS DOKTER, ADMIN ,& SITTER  (FIXED ID COLUMNS)
 // ==========================================
@@ -153,38 +163,9 @@ Route::get('/dashboard-admin', function () {
     ]);
 });
 
-Route::post('/login/proses', function (Request $request) {
-    $email = $request->input('email');
-    $password = $request->input('password');
-    $role = $request->input('role');
+Route::get('/dashboard-sitter', [SitterController::class, 'index']);
 
-    // Ambil user dari database
-    $user = DB::table('user')
-              ->where('email', $email)
-              ->where('password', $password)
-              ->where('role', $role)
-              ->first();
 
-    if ($user) {
-        // Simpan ID ke session
-        session(['user_id' => $user->id_user]);
-
-        // Cek jika role-nya "Penyedia Jasa"
-        if ($user->role === 'Penyedia Jasa') {
-            if (isset($user->jenis) && $user->jenis === 'sitter') {
-                return redirect('/dashboard-sitter');
-            } else {
-                return redirect('/dashboard-dokter');
-            }
-        } elseif ($user->role === 'Admin') {
-            return redirect('/dashboard-admin');
-        } elseif ($user->role === 'Pemilik Hewan');{
-            return redirect('/dashboard');
-        }    
-    }
-    
-    return back()->with('error', 'Email, Password, atau Role salah, Cees!');
-})->name('login.proses'); // <--- INI KUNCI UTAMANYA!
 
 // ==========================================
 // 3. SELEKSI & PEMESANAN LAYANAN MITRA
@@ -298,6 +279,38 @@ Route::post('/admin/mitra/tolak/{id}', function ($id) {
 })->name('admin.mitra.tolak');
 
 // PROSES LOGOUT AKUN (SINKRON UNTUK SEMUA ROLE)
+Route::post('/pemesanan/update-status', function (Request $request) {
+    $id = $request->input('id');
+    $status = $request->input('status');
+    DB::table('pemesanan')->where('id_pemesanan', $id)->update(['status' => $status]);
+    
+    if (strtolower($status) === 'selesai') {
+        $exists = DB::table('riwayat_layanan')->where('id_pemesanan', $id)->exists();
+        if (!$exists) {
+            DB::table('riwayat_layanan')->insert([
+                'id_pemesanan' => $id,
+                'catatan' => 'Layanan telah diselesaikan oleh sitter.',
+                'tanggal' => now()->toDateString()
+            ]);
+        }
+    }
+    return response()->json(['status' => 'success']);
+});
+
+Route::post('/pemesanan/delete', function (Request $request) {
+    $id = $request->input('id');
+    DB::table('pemesanan')->where('id_pemesanan', $id)->delete();
+    return response()->json(['status' => 'success']);
+});
+
+Route::post('/sitter/set-status', function (Request $request) {
+    $status = $request->input('status');
+    session(['sitter_status' => $status]);
+    return response()->json(['status' => 'success']);
+});
+
+Route::get('/chat/get-messages/{id_sitter}', [ChatController::class, 'getNewMessages']);
+
 Route::post('/logout', function () {
     // Menghapus seluruh data session aktif
     session()->flush(); 
@@ -309,6 +322,8 @@ Route::get('/login-admin', function () {
     return view('login-admin');
 });
 
-Route::get('/dashboard-sitter', function () {
-    return view('dashboard-sitter');
-});
+Route::get('/chat/{id_sitter}', [ChatController::class, 'index'])->name('chat.index');
+// Route::post('/send-message', [ChatController::class, 'store'])->name('chat.store');
+// use App\Http\Controllers\ChatController;
+
+Route::post('/send-message', [ChatController::class, 'store']);

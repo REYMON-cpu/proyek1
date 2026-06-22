@@ -72,22 +72,32 @@
       </nav>
     </div>
 
-    <!-- Profile & Logout -->
-    <div class="space-y-3">
-      <div class="flex items-center gap-3 px-3 py-3 bg-[#E8F0EE]/40 rounded-2xl">
-        <div class="w-10 h-10 rounded-xl bg-[#5E887E] flex items-center justify-center text-white text-sm font-bold">DP</div>
-        <div>
-          <div class="text-sm font-bold text-[#2D433E]">Dimas Pratama</div>
-          <div id="sidebar-status-text" class="text-[10px] text-[#5E887E] font-semibold">● Tersedia</div>
-        </div>
-      </div>
-      <div class="border-t border-[#5E887E]/10 pt-3">
-        <button onclick="alert('Fungsi logout aplikasi.')" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-red-400 hover:bg-red-50 font-bold text-sm transition-all">
-          <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i> Keluar Aplikasi
-        </button>
+    <!-- Profile & Logout (Dinamis) -->
+<div class="space-y-3">
+  <div class="flex items-center gap-3 px-3 py-3 bg-[#E8F0EE]/40 rounded-2xl">
+    <!-- Inisial Nama -->
+    <div class="w-10 h-10 rounded-xl bg-[#5E887E] flex items-center justify-center text-white text-sm font-bold">
+{{ $user->nama ?? 'Sitter' }}
+    </div>
+    <div>
+      <div class="text-sm font-bold text-[#2D433E]">{{ $user->nama ?? 'Sitter' }}</div>
+      <!-- Status dari database -->
+      <div id="sidebar-status-text" class="text-[10px] text-[#5E887E] font-semibold">
+        ● {{ $user->status ?? 'Tersedia' }}
       </div>
     </div>
-  </aside>
+  </div>
+  
+  <div class="border-t border-[#5E887E]/10 pt-3">
+    <!-- Menggunakan route logout Laravel -->
+    <form action="{{ route('logout') }}" method="POST">
+        @csrf
+        <button type="submit" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-red-400 hover:bg-red-50 font-bold text-sm transition-all">
+            <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i> Keluar Aplikasi
+        </button>
+    </form>
+  </div>
+</div>
 
   <!-- MAIN CONTENT -->
   <div id="main-content" class="flex-1 flex flex-col h-full overflow-y-auto lg:pl-72 transition-all duration-300">
@@ -99,7 +109,7 @@
           <i class="fa-solid fa-bars"></i>
         </button>
         <div>
-          <h1 id="page-title" class="text-xl md:text-2xl font-black text-[#2D433E] tracking-tight">Halo, Kak Dimas! 🐾</h1>
+          <h1 id="page-title" class="text-xl md:text-2xl font-black text-[#2D433E] tracking-tight">Halo, Kak {{ $user->nama ?? 'Sitter' }}! 🐾</h1>
           <p id="page-desc" class="text-xs text-[#5E887E] font-medium mt-0.5 hidden sm:block">Ringkasan aktivitas penitipan dan status Anda hari ini.</p>
         </div>
       </div>
@@ -107,9 +117,19 @@
 
       <!-- Status Indicator -->
       <div class="flex items-center gap-3">
-        <div id="status-pill" class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-200">
-          <div id="status-dot" class="w-2 h-2 rounded-full bg-green-600"></div>
-          <span id="status-label">Tersedia</span>
+        @php
+          $currStatus = session('sitter_status', 'Tersedia');
+          $statusConfig = [
+            'Tersedia' => ['label' => 'Tersedia', 'dot' => 'bg-green-600', 'pill' => 'bg-green-100 text-green-800 border-green-200'],
+            'Dalam Perjalanan' => ['label' => 'Dalam Perjalanan', 'dot' => 'bg-amber-500', 'pill' => 'bg-amber-100 text-amber-800 border-amber-200'],
+            'Sedang Menjaga' => ['label' => 'Sedang Menjaga', 'dot' => 'bg-blue-500', 'pill' => 'bg-blue-100 text-blue-800 border-blue-200'],
+            'Tidak Bertugas' => ['label' => 'Tidak Bertugas', 'dot' => 'bg-teal-600', 'pill' => 'bg-teal-100 text-teal-800 border-teal-200'],
+          ];
+          $cfg = $statusConfig[$currStatus] ?? $statusConfig['Tersedia'];
+        @endphp
+        <div id="status-pill" class="flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold border {{ $cfg['pill'] }}">
+          <div id="status-dot" class="w-2 h-2 rounded-full {{ $cfg['dot'] }}"></div>
+          <span id="status-label">{{ $cfg['label'] }}</span>
         </div>
       </div>
     </header>
@@ -123,7 +143,8 @@
             <div class="bg-white p-5 rounded-[28px] border border-[#5E887E]/5 shadow-sm flex justify-between items-center">
                 <div>
                     <p class="text-[10px] font-bold uppercase tracking-wider text-[#5E887E]">Penitipan Hari Ini</p>
-                    <h3 class="text-2xl font-black text-[#2D433E] mt-1">5 <span class="text-xs font-medium text-[#5E887E]">sesi</span></h3>
+                    <h3 class="text-2xl font-black text-[#2D433E] mt-1">{{ $totalPenitipanHariIni ?? 0 }} <span class="text-xs font-medium text-[#5E887E]">sesi</span></h3>
+
                 </div>
                 <div class="w-12 h-12 bg-[#5E887E]/10 rounded-2xl flex items-center justify-center text-[#5E887E] text-xl"><i class="fa-solid fa-dog"></i></div>
             </div>
@@ -131,7 +152,8 @@
             <div class="bg-white p-5 rounded-[28px] border border-[#5E887E]/5 shadow-sm flex justify-between items-center">
                 <div>
                     <p class="text-[10px] font-bold uppercase tracking-wider text-[#5E887E]">Menunggu Konfirmasi</p>
-                    <h3 class="text-2xl font-black text-amber-600 mt-1">3 <span class="text-xs font-medium text-[#5E887E]">booking</span></h3>
+                    <h3 class="text-2xl font-black text-amber-600 mt-1">{{ $menungguKonfirmasi ?? 0 }} <span class="text-xs font-medium text-[#5E887E]">booking</span></h3>
+
                 </div>
                 <div class="w-12 h-12 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-600 text-xl"><i class="fa-solid fa-clock"></i></div>
             </div>
@@ -139,7 +161,8 @@
             <div class="bg-white p-5 rounded-[28px] border border-[#5E887E]/5 shadow-sm flex justify-between items-center">
                 <div>
                     <p class="text-[10px] font-bold uppercase tracking-wider text-[#5E887E]">Total Hewan yang telah diasuh</p>
-                    <h3 class="text-2xl font-black text-[#2D433E] mt-1">142 <span class="text-xs font-medium text-[#5E887E]">hewan</span></h3>
+                    <h3 class="text-2xl font-black text-[#2D433E] mt-1">{{ $totalHewanDiasuh ?? 0 }} <span class="text-xs font-medium text-[#5E887E]">hewan</span></h3>
+
                 </div>
                 <div class="w-12 h-12 bg-teal-500/10 rounded-2xl flex items-center justify-center text-teal-600 text-xl"><i class="fa-solid fa-circle-check"></i></div>
             </div>
@@ -158,40 +181,38 @@
               <button onclick="switchTab('jadwal')" class="text-xs font-bold text-[#5E887E] hover:underline">Lihat Semua →</button>
             </div>
             <div class="space-y-3">
-              <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF9F6] border border-gray-50">
-                <div class="text-center min-w-[44px]">
-                  <div class="text-[10px] font-bold text-[#5E887E]">07.30</div>
+              <div class="bg-red-100 p-2 text-xs">
+    Debug: Total jadwal ditemukan = {{ count($jadwal ?? []) }}
+</div>
+@forelse($jadwal ?? [] as $row)
+                @php
+                  $status = strtolower((string) $row->status);
+                  $badgeClass = match($status) {
+                    'selesai' => 'bg-green-100 text-green-700',
+                    'berlangsung', 'active' => 'bg-blue-100 text-blue-700',
+                    'menunggu', 'pending' => 'bg-amber-100 text-amber-700',
+                    default => 'bg-gray-100 text-gray-700',
+                  };
+                @endphp
+
+                <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF9F6] border border-gray-50">
+                  <div class="text-center min-w-[44px]">
+                    <div class="text-[10px] font-bold text-[#5E887E]">{{ $row->jam_kunjungan }}</div>
+                  </div>
+                  <div class="w-9 h-9 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-xs font-bold">
+                    {{ strtoupper(substr($row->nama_pemilik ?? '', 0, 2)) }}
+                  </div>
+                  <div class="flex-1">
+                    <div class="text-xs font-bold text-[#2D433E]">{{ $row->nama_pemilik }}</div>
+                    <div class="text-[10px] text-[#5E887E]">{{ $row->nama_hewan }} • {{ $row->nama_layanan }}</div>
+                  </div>
+                  <span class="px-2.5 py-1 {{ $badgeClass }} rounded-full text-[10px] font-bold">{{ $row->status }}</span>
                 </div>
-                <div class="w-9 h-9 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-xs font-bold">AP</div>
-                <div class="flex-1">
-                  <div class="text-xs font-bold text-[#2D433E]">Andi Pratama</div>
-                  <div class="text-[10px] text-[#5E887E]">Bruno — Anjing Golden Retriever • Dog Walking</div>
-                </div>
-                <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold">Selesai</span>
-              </div>
-              <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF9F6] border border-gray-50">
-                <div class="text-center min-w-[44px]">
-                  <div class="text-[10px] font-bold text-[#5E887E]">09.00</div>
-                </div>
-                <div class="w-9 h-9 rounded-xl bg-blue-400/10 flex items-center justify-center text-blue-500 text-xs font-bold">MS</div>
-                <div class="flex-1">
-                  <div class="text-xs font-bold text-[#2D433E]">Maya Sari</div>
-                  <div class="text-[10px] text-[#5E887E]">Kiki — Kucing Domestik • Pet Hotel (Hari 2/3)</div>
-                </div>
-                <span class="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold">Berlangsung</span>
-              </div>
-              <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF9F6] border border-gray-50">
-                <div class="text-center min-w-[44px]">
-                  <div class="text-[10px] font-bold text-[#5E887E]">13.00</div>
-                </div>
-                <div class="w-9 h-9 rounded-xl bg-green-400/10 flex items-center justify-center text-green-600 text-xs font-bold">FN</div>
-                <div class="flex-1">
-                  <div class="text-xs font-bold text-[#2D433E]">Fajar Nugroho</div>
-                  <div class="text-[10px] text-[#5E887E]">Coco — Anjing Pomeranian • Day Care</div>
-                </div>
-                <span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold">Menunggu</span>
-              </div>
+              @empty
+                <div class="text-xs text-[#5E887E]">Tidak ada jadwal.</div>
+              @endforelse
             </div>
+
           </div>
 
           <!-- Chat Preview -->
@@ -253,65 +274,45 @@
           </div>
 
           <div class="space-y-3" id="jadwal-list">
-            <!-- Row 1 -->
-            <div id="jadwal-row-1" class="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-gray-50 bg-[#FAF9F6]/60 hover:bg-[#FAF9F6] transition-all">
-              <div class="text-xs font-bold text-[#5E887E] w-12">07.30</div>
-              <div class="w-10 h-10 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-xs font-bold">AP</div>
-              <div class="flex-1 min-w-[120px]">
-                <div class="text-sm font-bold text-[#2D433E] cell-j-nama">Andi Pratama</div>
-                <div class="text-[10px] text-[#5E887E] cell-j-hewan">Bruno — Anjing Golden Retriever • Dog Walking</div>
+            @forelse($jadwal ?? [] as $row)
+              @php
+                $status = strtolower((string) $row->status);
+                $badgeClass = match($status) {
+                  'selesai' => 'bg-green-100 text-green-700',
+                  'berlangsung', 'active' => 'bg-blue-100 text-blue-700',
+                  'menunggu', 'pending' => 'bg-amber-100 text-amber-700',
+                  default => 'bg-gray-100 text-gray-700',
+                };
+                $rowClass = match($status) {
+                  'selesai' => 'border border-gray-50 bg-[#FAF9F6]/60 hover:bg-[#FAF9F6]',
+                  'berlangsung', 'active' => 'border border-blue-50 bg-blue-50/30 hover:bg-blue-50/50',
+                  'menunggu', 'pending' => 'border border-amber-50 bg-amber-50/30 hover:bg-amber-50/50',
+                  default => 'border border-gray-50 bg-[#FAF9F6]/60 hover:bg-[#FAF9F6]',
+                };
+                $inisial = strtoupper(substr($row->nama_pemilik ?? '', 0, 2));
+              @endphp
+              <div id="jadwal-row-{{ $row->id_pemesanan }}" class="flex flex-wrap items-center gap-3 p-4 rounded-2xl transition-all {{ $rowClass }}">
+                <div class="text-xs font-bold text-[#5E887E] w-12">{{ $row->jam_kunjungan }}</div>
+                <div class="w-10 h-10 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-xs font-bold">{{ $inisial }}</div>
+                <div class="flex-1 min-w-[120px]">
+                  <div class="text-sm font-bold text-[#2D433E] cell-j-nama">{{ $row->nama_pemilik }}</div>
+                  <div class="text-[10px] text-[#5E887E] cell-j-hewan">{{ $row->nama_hewan }} — {{ $row->nama_layanan }}</div>
+                </div>
+                <span class="px-2.5 py-1 {{ $badgeClass }} rounded-full text-[10px] font-bold cell-j-status">{{ $row->status }}</span>
+                <div class="flex gap-2">
+                  @if($status === 'menunggu' || $status === 'pending')
+                    <button onclick="updateJadwalStatus({{ $row->id_pemesanan }}, 'Berlangsung')" class="w-8 h-8 bg-green-50 text-green-600 rounded-lg text-xs flex items-center justify-center hover:bg-green-500 hover:text-white transition-all" title="Terima"><i class="fa-solid fa-check"></i></button>
+                    <button onclick="updateJadwalStatus({{ $row->id_pemesanan }}, 'Ditolak')" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all" title="Tolak"><i class="fa-solid fa-xmark"></i></button>
+                  @elseif($status === 'berlangsung' || $status === 'active')
+                    <button onclick="updateJadwalStatus({{ $row->id_pemesanan }}, 'Selesai')" class="w-8 h-8 bg-green-50 text-green-600 rounded-lg text-xs flex items-center justify-center hover:bg-green-500 hover:text-white transition-all" title="Tandai Selesai"><i class="fa-solid fa-check"></i></button>
+                  @endif
+                  <button onclick="openJadwalModal('edit', {{ $row->id_pemesanan }})" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
+                  <button onclick="deleteJadwal({{ $row->id_pemesanan }})" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
+                </div>
               </div>
-              <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold cell-j-status">Selesai</span>
-              <div class="flex gap-2">
-                <button onclick="openJadwalModal('edit', 1)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button onclick="deleteJadwal(1)" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
-              </div>
-            </div>
-            <!-- Row 2 -->
-            <div id="jadwal-row-2" class="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-blue-50 bg-blue-50/30 hover:bg-blue-50/50 transition-all">
-              <div class="text-xs font-bold text-[#5E887E] w-12">09.00</div>
-              <div class="w-10 h-10 rounded-xl bg-blue-400/10 flex items-center justify-center text-blue-500 text-xs font-bold">MS</div>
-              <div class="flex-1 min-w-[120px]">
-                <div class="text-sm font-bold text-[#2D433E] cell-j-nama">Maya Sari</div>
-                <div class="text-[10px] text-[#5E887E] cell-j-hewan">Kiki — Kucing Domestik • Pet Hotel (Hari 2/3)</div>
-              </div>
-              <span class="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold cell-j-status">Berlangsung</span>
-              <div class="flex gap-2">
-                <button onclick="confirmJadwal(2)" class="w-8 h-8 bg-green-50 text-green-600 rounded-lg text-xs flex items-center justify-center hover:bg-green-500 hover:text-white transition-all" title="Tandai Selesai"><i class="fa-solid fa-check"></i></button>
-                <button onclick="openJadwalModal('edit', 2)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button onclick="deleteJadwal(2)" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
-              </div>
-            </div>
-            <!-- Row 3 -->
-            <div id="jadwal-row-3" class="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-amber-50 bg-amber-50/30 hover:bg-amber-50/50 transition-all">
-              <div class="text-xs font-bold text-[#5E887E] w-12">13.00</div>
-              <div class="w-10 h-10 rounded-xl bg-green-400/10 flex items-center justify-center text-green-600 text-xs font-bold">FN</div>
-              <div class="flex-1 min-w-[120px]">
-                <div class="text-sm font-bold text-[#2D433E] cell-j-nama">Fajar Nugroho</div>
-                <div class="text-[10px] text-[#5E887E] cell-j-hewan">Coco — Anjing Pomeranian • Day Care</div>
-              </div>
-              <span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold cell-j-status">Menunggu</span>
-              <div class="flex gap-2">
-                <button onclick="terimaJadwal(3)" class="w-8 h-8 bg-green-50 text-green-600 rounded-lg text-xs flex items-center justify-center hover:bg-green-500 hover:text-white transition-all" title="Terima"><i class="fa-solid fa-check"></i></button>
-                <button onclick="tolakJadwal(3)" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all" title="Tolak"><i class="fa-solid fa-xmark"></i></button>
-                <button onclick="openJadwalModal('edit', 3)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-              </div>
-            </div>
-            <!-- Row 4 -->
-            <div id="jadwal-row-4" class="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-amber-50 bg-amber-50/30 hover:bg-amber-50/50 transition-all">
-              <div class="text-xs font-bold text-[#5E887E] w-12">16.00</div>
-              <div class="w-10 h-10 rounded-xl bg-[#5E887E]/10 flex items-center justify-center text-[#5E887E] text-xs font-bold">RW</div>
-              <div class="flex-1 min-w-[120px]">
-                <div class="text-sm font-bold text-[#2D433E] cell-j-nama">Rini Wulandari</div>
-                <div class="text-[10px] text-[#5E887E] cell-j-hewan">Mimi — Kucing Anggora • Home Visit</div>
-              </div>
-              <span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold cell-j-status">Menunggu</span>
-              <div class="flex gap-2">
-                <button onclick="terimaJadwal(4)" class="w-8 h-8 bg-green-50 text-green-600 rounded-lg text-xs flex items-center justify-center hover:bg-green-500 hover:text-white transition-all" title="Terima"><i class="fa-solid fa-check"></i></button>
-                <button onclick="tolakJadwal(4)" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all" title="Tolak"><i class="fa-solid fa-xmark"></i></button>
-                <button onclick="openJadwalModal('edit', 4)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-              </div>
-            </div>
+            @empty
+              <div class="text-xs text-[#5E887E]">Tidak ada jadwal penitipan.</div>
+            @endforelse
           </div>
         </div>
       </main>
@@ -715,16 +716,35 @@
     };
 
     function setStatus(key) {
-      const cfg = statusConfig[key];
-      const pill = document.getElementById('status-pill');
-      const dot  = document.getElementById('status-dot');
-      document.getElementById('status-label').innerText = cfg.label;
-      pill.className = `flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold border ${cfg.pill}`;
-      dot.className  = `w-2 h-2 rounded-full ${cfg.dot}`;
-      document.getElementById('sidebar-status-text').innerText = cfg.sidebar;
+      const displayMap = {
+        tersedia: 'Tersedia',
+        perjalanan: 'Dalam Perjalanan',
+        menjaga: 'Sedang Menjaga',
+        off: 'Tidak Bertugas'
+      };
+      const statusText = displayMap[key];
 
-      document.querySelectorAll('.status-opt').forEach(b => {
-        b.style.boxShadow = b.dataset.status === key ? '0 0 0 2.5px currentColor' : 'none';
+      fetch('/sitter/set-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ status: statusText })
+      })
+      .then(res => res.json())
+      .then(data => {
+        const cfg = statusConfig[key];
+        const pill = document.getElementById('status-pill');
+        const dot  = document.getElementById('status-dot');
+        document.getElementById('status-label').innerText = cfg.label;
+        pill.className = `flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold border ${cfg.pill}`;
+        dot.className  = `w-2 h-2 rounded-full ${cfg.dot}`;
+        document.getElementById('sidebar-status-text').innerText = cfg.sidebar;
+
+        document.querySelectorAll('.status-opt').forEach(b => {
+          b.style.boxShadow = b.dataset.status === key ? '0 0 0 2.5px currentColor' : 'none';
+        });
       });
     }
 
@@ -790,30 +810,44 @@
       closeJadwalModal();
     }
 
-    function terimaJadwal(id) {
-      const row = document.getElementById('jadwal-row-' + id);
-      if (!row) return;
-      const badge = row.querySelector('.cell-j-status');
-      badge.className = 'px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold cell-j-status';
-      badge.innerText = 'Berlangsung';
-      row.className = 'flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-blue-50 bg-blue-50/30 hover:bg-blue-50/50 transition-all';
-    }
-
-    function tolakJadwal(id) {
-      if (confirm('Yakin menolak jadwal ini?')) document.getElementById('jadwal-row-' + id)?.remove();
-    }
-
-    function confirmJadwal(id) {
-      const row = document.getElementById('jadwal-row-' + id);
-      if (!row) return;
-      const badge = row.querySelector('.cell-j-status');
-      badge.className = 'px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold cell-j-status';
-      badge.innerText = 'Selesai';
-      row.className = 'flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-gray-50 bg-[#FAF9F6]/60 hover:bg-[#FAF9F6] transition-all';
+    function updateJadwalStatus(id, status) {
+      fetch('/pemesanan/update-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        body: JSON.stringify({ id: id, status: status })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'success') {
+          location.reload();
+        } else {
+          alert('Gagal memperbarui status');
+        }
+      });
     }
 
     function deleteJadwal(id) {
-      if (confirm('Yakin hapus jadwal ini?')) document.getElementById('jadwal-row-' + id)?.remove();
+      if (confirm('Yakin hapus jadwal ini?')) {
+        fetch('/pemesanan/delete', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+          },
+          body: JSON.stringify({ id: id })
+        })
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === 'success') {
+            document.getElementById('jadwal-row-' + id)?.remove();
+          } else {
+            alert('Gagal menghapus jadwal');
+          }
+        });
+      }
     }
 
     // ========== CATATAN HARIAN ==========

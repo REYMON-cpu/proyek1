@@ -29,7 +29,7 @@ class User extends Authenticatable
         'password',
         'role',
     ];
-
+    
     /**
      * Sembunyikan password saat data di-serialize (keamanan internal).
      */
