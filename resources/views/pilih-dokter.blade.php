@@ -88,9 +88,15 @@
                         </span>
                     </div>
                     <div class="flex gap-2">
-                        <a href="/chat" class="w-12 h-12 bg-[#F8FBF0] hover:bg-[#5E887E]/10 border border-[#5E887E]/20 text-[#5E887E] rounded-2xl flex items-center justify-center transition-all shadow-sm active:scale-95" title="Hubungi Dokter via Chat">
+                        @if(session()->has('id_user'))
+                        <a href="{{ url('/chat-sitter/' . $doc->id_penyedia) }}" class="w-12 h-12 bg-[#F8FBF0] hover:bg-[#5E887E]/10 border border-[#5E887E]/20 text-[#5E887E] rounded-2xl flex items-center justify-center transition-all shadow-sm active:scale-95" title="Hubungi Dokter via Chat">
                             <i class="fa-solid fa-comment-dots text-lg"></i>
                         </a>
+                        @else
+                        <a href="/" class="w-12 h-12 bg-[#F8FBF0] hover:bg-[#5E887E]/10 border border-[#5E887E]/20 text-[#5E887E] rounded-2xl flex items-center justify-center transition-all shadow-sm active:scale-95" title="Login untuk chat">
+                            <i class="fa-solid fa-comment-dots text-lg"></i>
+                        </a>
+                        @endif
                         <a href="/pesan-layanan/{{ $doc->id_penyedia }}" class="flex-1 bg-[#2D433E] hover:bg-[#5E887E] text-white font-bold py-3 rounded-2xl text-sm transition-all shadow-md active:scale-95 text-center flex items-center justify-center">
                             Pilih Dokter
                         </a>

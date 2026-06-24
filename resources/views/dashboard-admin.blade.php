@@ -55,12 +55,16 @@
                 <button onclick="switchTab('pelanggan')" id="btn-tab-pelanggan" class="sidebar-link text-gray-400 hover:text-[#5E887E] hover:bg-[#E8F0EE]/50 w-full text-left flex items-center gap-4 px-4 py-4 rounded-2xl font-bold text-sm transition-all duration-300">
                     <i class="fa-solid fa-users text-lg w-6 text-center"></i> Data Pelanggan
                 </button>
+
+                <button onclick="switchTab('pemesanan')" id="btn-tab-pemesanan" class="sidebar-link text-gray-400 hover:text-[#5E887E] hover:bg-[#E8F0EE]/50 w-full text-left flex items-center gap-4 px-4 py-4 rounded-2xl font-bold text-sm transition-all duration-300">
+                    <i class="fa-solid fa-clipboard-list text-lg w-6 text-center"></i> Data Pemesanan
+                </button>
             </nav>
         </div>
 
 
         <div class="border-t border-[#5E887E]/10 pt-4">
-            <a href="#" onclick="alert('Memicu fungsi logout bawaan sistem.')" class="w-full flex items-center justify-between px-4 py-4 rounded-2xl font-bold text-sm text-red-500 hover:bg-red-50 transition-all duration-300">
+            <a href="{{ url('/logout') }}" class="w-full flex items-center justify-between px-4 py-4 rounded-2xl font-bold text-sm text-red-500 hover:bg-red-50 transition-all duration-300">
                 <span class="flex items-center gap-4">
                     <i class="fa-solid fa-arrow-right-from-bracket text-lg w-6 text-center"></i> Keluar Aplikasi
                 </span>
@@ -91,7 +95,7 @@
                     <div class="bg-white p-6 rounded-[30px] border border-[#5E887E]/5 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.03)] flex justify-between items-center">
                         <div class="space-y-2">
                             <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Pengguna Terdaftar</p>
-                            <h3 class="text-2xl font-black text-[#2D433E]">1.250 <span class="text-xs font-medium text-gray-400">User</span></h3>
+                            <h3 class="text-2xl font-black text-[#2D433E]">{{ $total_users }} <span class="text-xs font-medium text-gray-400">User</span></h3>
                         </div>
                         <div class="w-14 h-14 bg-[#D9B08C]/10 rounded-2xl flex items-center justify-center text-[#D9B08C] text-2xl"><i class="fa-solid fa-users"></i></div>
                     </div>
@@ -99,7 +103,7 @@
                     <div class="bg-white p-6 rounded-[30px] border border-[#5E887E]/5 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.03)] flex justify-between items-center">
                         <div class="space-y-2">
                             <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Mitra Terverifikasi</p>
-                            <h3 class="text-2xl font-black text-[#2D433E]">48 <span class="text-xs font-medium text-gray-400">Mitra</span></h3>
+                            <h3 class="text-2xl font-black text-[#2D433E]">{{ $total_mitra }} <span class="text-xs font-medium text-gray-400">Mitra</span></h3>
                         </div>
                         <div class="w-14 h-14 bg-[#2D433E]/10 rounded-2xl flex items-center justify-center text-[#2D433E] text-2xl"><i class="fa-solid fa-user-shield"></i></div>
                     </div>
@@ -107,7 +111,7 @@
                     <div class="bg-white p-6 rounded-[30px] border border-[#5E887E]/5 shadow-[0_10px_30px_-15px_rgba(0,0,0,0.03)] flex justify-between items-center">
                         <div class="space-y-2">
                             <p class="text-xs font-bold uppercase tracking-wider text-gray-400">Butuh Verifikasi</p>
-                            <h3 class="text-2xl font-black text-amber-600">2 <span class="text-xs font-medium text-gray-400">Berkas</span></h3>
+                            <h3 class="text-2xl font-black text-amber-600">{{ $pending_mitra }} <span class="text-xs font-medium text-gray-400">Berkas</span></h3>
                         </div>
                         <div class="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center text-amber-600 text-2xl"><i class="fa-solid fa-file-signature"></i></div>
                     </div>
@@ -131,28 +135,93 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-50 text-sm font-medium text-[#2D433E]">
+                                @forelse($pending_mitra_list as $m)
                                 <tr class="hover:bg-[#FAF9F6]/50 transition-colors">
-                                    <td class="py-4 pl-2"><div class="font-bold">Drh. Aryan Rayhan</div></td>
-                                    <td class="py-4"><span class="px-2.5 py-1 bg-[#E8F0EE] text-[#5E887E] rounded-full text-xs font-bold">Dokter Hewan</span></td>
-                                    <td class="py-4"><a href="#" onclick="alert('Membuka berkas STR_Aryan.pdf')" class="text-xs text-blue-500 underline font-semibold"><i class="fa-solid fa-file-pdf mr-1"></i>STR_Aryan.pdf</a></td>
+                                    <td class="py-4 pl-2"><div class="font-bold">{{ $m->nama }}</div></td>
+                                    <td class="py-4"><span class="px-2.5 py-1 @if($m->jenis == 'sitter') bg-[#D9B08C]/10 text-[#D9B08C] @else bg-[#E8F0EE] text-[#5E887E] @endif rounded-full text-xs font-bold">{{ $m->jenis == 'sitter' ? 'Pet Sitter' : 'Dokter Hewan' }}</span></td>
+                                    <td class="py-4">
+                                        @if($m->dokumen)
+                                            <a href="#" onclick="alert('Membuka berkas {{ $m->dokumen }}')" class="text-xs text-blue-500 underline font-semibold"><i class="fa-solid fa-file mr-1"></i>{{ $m->dokumen }}</a>
+                                        @else
+                                            <span class="text-xs text-gray-400 font-semibold">No Document</span>
+                                        @endif
+                                    </td>
                                     <td class="py-4">
                                         <div class="flex justify-center gap-2">
-                                            <button onclick="alert('Berkas Drh. Aryan disetujui!')" class="px-3 py-1.5 bg-green-600 text-white rounded-xl text-xs font-bold hover:bg-green-700 transition-all">Terima</button>
-                                            <button onclick="alert('Berkas ditolak.')" class="px-3 py-1.5 bg-red-50 text-red-500 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white transition-all">Tolak</button>
+                                            <form action="{{ route('mitra.approve', $m->id_penyedia) }}" method="POST" class="inline">
+                                                @csrf
+                                                <button type="submit" class="px-3 py-1.5 bg-green-600 text-white rounded-xl text-xs font-bold hover:bg-green-700 transition-all">Terima</button>
+                                            </form>
+                                            <form action="{{ route('mitra.reject', $m->id_penyedia) }}" method="POST" class="inline">
+                                                @csrf
+                                                <button type="submit" class="px-3 py-1.5 bg-red-50 text-red-500 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white transition-all">Tolak</button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="4" class="py-4 text-center text-xs text-gray-400">Tidak ada pengajuan mitra baru.</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="w-full bg-white rounded-[40px] border border-gray-100 p-6 md:p-8 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.02)] mt-8">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-extrabold text-[#2D433E]">Pengajuan Tarif Baru</h3>
+                        <p class="text-[12px] font-extrabold text-gray-400 mt-1">Daftar usulan tarif dari mitra yang menunggu verifikasi Admin.</p>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-gray-200 text-[11px] font-extrabold text-gray-400 uppercase tracking-widest">
+                                    <th class="pb-4 pl-2">Penyedia Jasa</th>
+                                    <th class="pb-4">Profesi</th>
+                                    <th class="pb-4">Tarif Lama</th>
+                                    <th class="pb-4">Tarif Baru</th>
+                                    <th class="pb-4">Tanggal</th>
+                                    <th class="pb-4">Dokumen</th>
+                                    <th class="pb-4">Catatan</th>
+                                    <th class="pb-4 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50 text-sm font-medium text-[#2D433E]">
+                                @forelse($pending_tarif_list as $t)
                                 <tr class="hover:bg-[#FAF9F6]/50 transition-colors">
-                                    <td class="py-4 pl-2"><div class="font-bold">Kak Kelvin</div></td>
-                                    <td class="py-4"><span class="px-2.5 py-1 bg-[#D9B08C]/10 text-[#D9B08C] rounded-full text-xs font-bold">Pet Sitter</span></td>
-                                    <td class="py-4"><a href="#" onclick="alert('Membuka berkas Sertif_Kelvin.png')" class="text-xs text-blue-500 underline font-semibold"><i class="fa-solid fa-file-image mr-1"></i>Sertif_Kelvin.png</a></td>
+                                    <td class="py-4 pl-2"><div class="font-bold">{{ $t->nama_mitra }}</div></td>
+                                    <td class="py-4"><span class="px-2.5 py-1 @if($t->jenis == 'sitter') bg-[#D9B08C]/10 text-[#D9B08C] @else bg-[#E8F0EE] text-[#5E887E] @endif rounded-full text-xs font-bold">{{ $t->jenis == 'sitter' ? 'Pet Sitter' : 'Dokter Hewan' }}</span></td>
+                                    <td class="py-4 font-semibold">Rp {{ number_format($t->tarif_lama ?? 0, 0, ',', '.') }}</td>
+                                    <td class="py-4 font-semibold">Rp {{ number_format($t->tarif_baru, 0, ',', '.') }}</td>
+                                    <td class="py-4 text-gray-500 text-xs">{{ date('d M Y', strtotime($t->created_at)) }}</td>
+                                    <td class="py-4">
+                                        @if($t->dokumen)
+                                            <a href="{{ asset('uploads/pengajuan_tarif/' . $t->dokumen) }}" target="_blank" class="text-xs text-blue-500 underline font-semibold"><i class="fa-solid fa-file-arrow-down mr-1"></i>{{ $t->dokumen }}</a>
+                                        @else
+                                            <span class="text-xs text-gray-400 font-semibold">Tidak ada berkas</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-4 text-xs text-gray-500">{{ strlen($t->alasan) > 60 ? substr($t->alasan, 0, 60) . '...' : $t->alasan }}</td>
                                     <td class="py-4">
                                         <div class="flex justify-center gap-2">
-                                            <button onclick="alert('Berkas Kak Kelvin disetujui!')" class="px-3 py-1.5 bg-green-600 text-white rounded-xl text-xs font-bold hover:bg-green-700 transition-all">Terima</button>
-                                            <button onclick="alert('Berkas ditolak.')" class="px-3 py-1.5 bg-red-50 text-red-500 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white transition-all">Tolak</button>
+                                            <form action="{{ route('pengajuan.tarif.approve', $t->id_pengajuan) }}" method="POST" class="inline">
+                                                @csrf
+                                                <button type="submit" class="px-3 py-1.5 bg-green-600 text-white rounded-xl text-xs font-bold hover:bg-green-700 transition-all">Acc</button>
+                                            </form>
+                                            <form action="{{ route('pengajuan.tarif.reject', $t->id_pengajuan) }}" method="POST" class="inline">
+                                                @csrf
+                                                <button type="submit" class="px-3 py-1.5 bg-red-50 text-red-500 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white transition-all">Tolak</button>
+                                            </form>
                                         </div>
                                     </td>
                                 </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="7" class="py-4 text-center text-xs text-gray-400">Tidak ada pengajuan tarif terbaru.</td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -188,60 +257,41 @@
                                 </tr>
                             </thead>
                             <tbody id="mitra-table-body" class="divide-y divide-gray-50 text-sm font-medium text-[#2D433E]">
-                                <tr id="mitra-row-1" class="hover:bg-[#FAF9F6]/50 transition-colors">
+                                @forelse($approved_mitra_list as $m)
+                                <tr id="mitra-row-{{ $m->id_penyedia }}" class="hover:bg-[#FAF9F6]/50 transition-colors">
                                     <td class="py-4 pl-2">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-xl bg-[#5E887E]/10 flex items-center justify-center font-bold text-[#5E887E]">JA</div>
+                                            <div class="w-10 h-10 rounded-xl bg-[#5E887E]/10 flex items-center justify-center font-bold text-[#5E887E]">
+                                                {{ strtoupper(substr($m->nama, 0, 2)) }}
+                                            </div>
                                             <div>
-                                                <div class="font-bold cell-nama">drh. Jinten Anggraeni</div>
-                                                <div class="text-[11px] text-gray-400 cell-dokumen-id">SIP: SIP/2026/0892</div>
+                                                <div class="font-bold cell-nama">{{ $m->nama }}</div>
+                                                <div class="text-[11px] text-gray-400 cell-dokumen-id">Doc: {{ $m->dokumen ?? '-' }}</div>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="py-4">
-                                        <span class="px-2.5 py-1 bg-[#E8F0EE] text-[#5E887E] rounded-full text-xs font-bold block w-max cell-profesi">Dokter</span>
+                                        <span class="px-2.5 py-1 @if($m->jenis == 'sitter') bg-[#D9B08C]/10 text-[#D9B08C] @else bg-[#E8F0EE] text-[#5E887E] @endif rounded-full text-xs font-bold block w-max cell-profesi">{{ $m->jenis == 'sitter' ? 'Pet Sitter' : 'Dokter' }}</span>
                                     </td>
                                     <td class="py-4">
-                                        <div class="text-xs font-semibold cell-pengalaman">2 Tahun</div>
+                                        <div class="text-xs font-semibold cell-pengalaman">{{ $m->pengalaman }} Tahun</div>
                                         <div class="text-[11px] text-green-600 font-semibold"><i class="fa-solid fa-circle-check text-[10px] mr-1"></i>Verified</div>
                                     </td>
                                     <td class="py-4 font-bold text-[#2D433E]">
-                                        <span class="cell-tarif">Rp 150.000</span><span class="text-[10px] text-gray-400 font-medium">/visit</span>
+                                        <span class="cell-tarif">Rp {{ number_format($m->tarif, 0, ',', '.') }}</span><span class="text-[10px] text-gray-400 font-medium">/{{ $m->jenis == 'sitter' ? 'hari' : 'visit' }}</span>
                                     </td>
                                     <td class="py-4">
                                         <div class="flex justify-center gap-2">
-                                            <button onclick="openMitraModal('edit', 1)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                                            <button onclick="deleteMitraRow(1, 'drh. Jinten Anggraeni')" class="w-8 h-8 bg-red-50 text-red-500 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
+                                            <button onclick="openMitraModal('edit', {{ $m->id_penyedia }})" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
+                                            <button onclick="deleteMitraRow({{ $m->id_penyedia }}, '{{ $m->nama }}')" class="w-8 h-8 bg-red-50 text-red-500 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
                                         </div>
                                     </td>
                                 </tr>
-                                <tr id="mitra-row-2" class="hover:bg-[#FAF9F6]/50 transition-colors">
-                                    <td class="py-4 pl-2">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-xl bg-[#D9B08C]/20 flex items-center justify-center font-bold text-[#D9B08C]">AL</div>
-                                            <div>
-                                                <div class="font-bold cell-nama">Aurellia Ledy</div>
-                                                <div class="text-[11px] text-gray-400 cell-dokumen-id">Cert: Pet Handling 101</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="py-4">
-                                        <span class="px-2.5 py-1 bg-[#D9B08C]/10 text-[#D9B08C] rounded-full text-xs font-bold block w-max cell-profesi">Pet Sitter</span>
-                                    </td>
-                                    <td class="py-4">
-                                        <div class="text-xs font-semibold cell-pengalaman">3 Tahun</div>
-                                        <div class="text-[11px] text-green-600 font-semibold"><i class="fa-solid fa-circle-check text-[10px] mr-1"></i>Verified</div>
-                                    </td>
-                                    <td class="py-4 font-bold text-[#2D433E]">
-                                        <span class="cell-tarif">Rp 75.000</span><span class="text-[10px] text-gray-400 font-medium">/hari</span>
-                                    </td>
-                                    <td class="py-4">
-                                        <div class="flex justify-center gap-2">
-                                            <button onclick="openMitraModal('edit', 2)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                                            <button onclick="deleteMitraRow(2, 'Aurellia Ledy')" class="w-8 h-8 bg-red-50 text-red-500 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
-                                        </div>
-                                    </td>
+                                @empty
+                                <tr>
+                                    <td colspan="5" class="py-4 text-center text-xs text-gray-400">Tidak ada mitra aktif.</td>
                                 </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -269,24 +319,83 @@
                                 </tr>
                             </thead>
                             <tbody id="customer-table-body" class="divide-y divide-gray-50 text-sm font-medium text-[#2D433E]">
-                                <tr id="cust-row-1" class="hover:bg-[#FAF9F6]/50 transition-colors">
+                                @forelse($users_list->where('role', 'Pemilik Hewan') as $u)
+                                <tr id="cust-row-{{ $u->id_user }}" class="hover:bg-[#FAF9F6]/50 transition-colors">
                                     <td class="py-4 pl-2">
                                         <div class="flex items-center gap-3">
-                                            <div class="w-10 h-10 rounded-xl bg-[#5E887E]/10 flex items-center justify-center font-bold text-[#5E887E]">BL</div>
+                                            <div class="w-10 h-10 rounded-xl bg-[#5E887E]/10 flex items-center justify-center font-bold text-[#5E887E]">
+                                                {{ strtoupper(substr($u->nama, 0, 2)) }}
+                                            </div>
                                             <div>
-                                                <div class="font-bold cell-cust-nama">Bunga Lestari</div>
-                                                <div class="text-[11px] text-gray-400">ID: CUST-001</div>
+                                                <div class="font-bold cell-cust-nama">{{ $u->nama }}</div>
+                                                <div class="text-[11px] text-gray-400">ID: CUST-{{ $u->id_user }}</div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="py-4 text-gray-500 cell-cust-email">bunga.lestari@gmail.com</td>
+                                    <td class="py-4 text-gray-500 cell-cust-email">{{ $u->email }}</td>
                                     <td class="py-4">
                                         <div class="flex justify-center gap-2">
-                                            <button onclick="openCustomerModal('edit', 1)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                                            <button onclick="deleteCustomerRow(1, 'Bunga Lestari')" class="w-8 h-8 bg-red-50 text-red-500 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
+                                            <button onclick="openCustomerModal('edit', {{ $u->id_user }})" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
+                                            <button onclick="deleteCustomerRow({{ $u->id_user }}, '{{ $u->nama }}')" class="w-8 h-8 bg-red-50 text-red-500 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
                                         </div>
                                     </td>
                                 </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="3" class="py-4 text-center text-xs text-gray-400">Tidak ada pelanggan terdaftar.</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <!-- TAB 4: DATA PEMESANAN (ORDERS) -->
+        <div id="tab-pemesanan" class="tab-content hidden">
+            <main class="px-6 md:px-10 py-8 space-y-6">
+                <div class="w-full bg-white rounded-[40px] border border-gray-100 p-6 md:p-8 shadow-[0_20px_50px_-20px_rgba(0,0,0,0.02)]">
+                    <div class="mb-6">
+                        <h3 class="text-xl font-extrabold text-[#2D433E]">Daftar Pemesanan Layanan</h3>
+                        <p class="text-[12px] font-extrabold text-gray-400 mt-1">Data pemesanan yang diajukan oleh pemilik hewan di platform GoPet.</p>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="border-b border-gray-200 text-[11px] font-extrabold text-gray-400 uppercase tracking-widest">
+                                    <th class="pb-4 pl-2">Pemilik Hewan</th>
+                                    <th class="pb-4">Nama Hewan</th>
+                                    <th class="pb-4">Penyedia Jasa</th>
+                                    <th class="pb-4">Tanggal Kunjungan</th>
+                                    <th class="pb-4">Alamat</th>
+                                    <th class="pb-4">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50 text-sm font-medium text-[#2D433E]">
+                                @forelse($bookings as $b)
+                                <tr class="hover:bg-[#FAF9F6]/50 transition-colors">
+                                    <td class="py-4 pl-2"><div class="font-bold">{{ $b->nama_pemilik }}</div></td>
+                                    <td class="py-4">{{ $b->nama_hewan }} ({{ $b->jenis_hewan }})</td>
+                                    <td class="py-4"><span class="font-semibold text-[#5E887E]">drh. {{ $b->nama_mitra }}</span></td>
+                                    <td class="py-4">{{ $b->tanggal }}</td>
+                                    <td class="py-4 text-xs text-gray-500 max-w-xs truncate" title="{{ $b->alamat }}">{{ $b->alamat }}</td>
+                                    <td class="py-4">
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-bold
+                                            @if($b->status === 'Pending') bg-amber-100 text-amber-700
+                                            @elseif($b->status === 'Disetujui' || $b->status === 'Berlangsung') bg-blue-100 text-blue-700
+                                            @elseif($b->status === 'Ditolak') bg-red-100 text-red-700
+                                            @else bg-green-100 text-green-700 @endif">
+                                            {{ $b->status }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr>
+                                    <td colspan="6" class="py-4 text-center text-xs text-gray-400">Belum ada pemesanan layanan.</td>
+                                </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
@@ -396,6 +505,9 @@
             document.getElementById('btn-tab-dashboard').className = "sidebar-link text-gray-400 hover:text-[#5E887E] hover:bg-[#E8F0EE]/50 w-full text-left flex items-center gap-4 px-4 py-4 rounded-2xl font-bold text-sm transition-all duration-300";
             document.getElementById('btn-tab-mitra').className = "sidebar-link text-gray-400 hover:text-[#5E887E] hover:bg-[#E8F0EE]/50 w-full text-left flex items-center gap-4 px-4 py-4 rounded-2xl font-bold text-sm transition-all duration-300";
             document.getElementById('btn-tab-pelanggan').className = "sidebar-link text-gray-400 hover:text-[#5E887E] hover:bg-[#E8F0EE]/50 w-full text-left flex items-center gap-4 px-4 py-4 rounded-2xl font-bold text-sm transition-all duration-300";
+            if (document.getElementById('btn-tab-pemesanan')) {
+                document.getElementById('btn-tab-pemesanan').className = "sidebar-link text-gray-400 hover:text-[#5E887E] hover:bg-[#E8F0EE]/50 w-full text-left flex items-center gap-4 px-4 py-4 rounded-2xl font-bold text-sm transition-all duration-300";
+            }
 
             const mainTitle = document.getElementById('page-main-title');
             const mainDesc = document.getElementById('page-main-desc');
@@ -418,10 +530,12 @@
                 mainDesc.innerText = "Daftar pengawasan akun konsumen terdaftar (Nama Lengkap & Email aktif).";
             }
 
-            if(tabName === 'tarif') {
-                document.getElementById('btn-tab-tarif').className = "sidebar-link active w-full text-left flex items-center gap-4 px-4 py-4 rounded-2xl font-bold text-sm transition-all duration-300";
-                mainTitle.innerText = "Persetujuan Tarif Dokter 💰";
-                mainDesc.innerText = "Verifikasi dokumen usulan kenaikan tarif kunjungan dan persetujuan dari atasan klinik.";
+            if(tabName === 'pemesanan') {
+                if (document.getElementById('btn-tab-pemesanan')) {
+                    document.getElementById('btn-tab-pemesanan').className = "sidebar-link active w-full text-left flex items-center gap-4 px-4 py-4 rounded-2xl font-bold text-sm transition-all duration-300";
+                }
+                mainTitle.innerText = "Daftar Pemesanan Layanan 🐾";
+                mainDesc.innerText = "Pemantauan data pemesanan yang diajukan oleh pemilik hewan.";
             }
 
             if(tabName === 'tarif') {

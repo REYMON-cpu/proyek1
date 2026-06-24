@@ -56,43 +56,91 @@
 
             <div class="hidden lg:flex gap-8 font-bold text-[13px] uppercase tracking-[0.2em] text-white/80">
                 <a href="#" class="hover:text-white transition-colors">Beranda</a>
+                <a href="#penyedia-layanan" class="hover:text-white transition-colors">Layanan</a>
+                <a href="javascript:void(0)" onclick="toggleNotificationDropdown(event)" class="hover:text-white transition-colors">Riwayat Medis</a>
                 <a href="#tentang-kami" class="hover:text-white transition-colors">Tentang Kami</a>
                 <a href="#kontak" class="hover:text-white transition-colors">Kontak</a>
-                <a href="#penyedia-layanan" class="hover:text-white transition-colors">Layanan</a>
             </div>
 
             <div class="flex items-center gap-4">
-                <button class="relative text-white hover:scale-105 transition-transform p-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
-                    </svg>
+                <!-- Dropdown Lonceng Notifikasi -->
+                <div class="relative">
+                    <button id="btn-notification" class="relative text-white hover:scale-105 transition-transform p-1 outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                        </svg>
+                        <span id="notif-badge" class="absolute top-1 right-1 hidden h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-[#5E887E]"></span>
+                    </button>
 
-                    @if(isset($hasUnreadNotifications) && $hasUnreadNotifications)
-                        <span class="absolute top-1 right-1 block h-2.5 w-2.5 rounded-full bg-red-500 border-2 border-[#5E887E]"></span>
-                    @endif
-                </button>
+                    <!-- Dropdown Panel -->
+                    <div id="dropdown-notification" class="absolute right-0 mt-3 w-80 bg-white rounded-3xl shadow-2xl border border-gray-100 py-4 hidden z-[200] max-h-96 overflow-y-auto">
+                        <div class="px-6 py-2 border-b border-gray-100 flex justify-between items-center">
+                            <h4 class="font-bold text-[#2D433E] text-sm">Notifikasi Medis & Perawatan</h4>
+                            <span class="text-[10px] bg-[#E8F0EE] text-[#5E887E] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">Terbaru</span>
+                        </div>
+                        <div class="divide-y divide-gray-50">
+                            @forelse($riwayat_medis as $item)
+                                <div class="px-6 py-4 hover:bg-gray-50/80 transition-colors flex gap-3 notification-item" data-id="{{ $item->id }}">
+                                    <div class="w-10 h-10 rounded-xl flex-shrink-0 flex items-center justify-center text-sm font-bold {{ $item->tipe === 'dokter' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700' }}">
+                                        @if($item->tipe === 'dokter')
+                                            <i class="fa-solid fa-user-doctor"></i>
+                                        @else
+                                            <i class="fa-solid fa-paw"></i>
+                                        @endif
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-xs text-gray-700 font-medium">
+                                            <span class="font-extrabold text-[#2D433E]">
+                                                {{ $item->nama_penyedia }}
+                                            </span>
+                                            @if($item->tipe === 'dokter')
+                                                telah menambahkan rekam medis untuk <span class="font-bold text-[#5E887E]">{{ $item->nama_hewan }}</span>: Diagnosis <span class="italic text-blue-700 font-semibold">{{ $item->diagnosis }}</span>.
+                                            @else
+                                                telah menambahkan catatan harian untuk <span class="font-bold text-[#D9B08C]">{{ $item->nama_hewan }}</span>: <span class="italic text-gray-500 font-semibold">"{{ $item->catatan }}"</span>.
+                                            @endif
+                                        </p>
+                                        <span class="text-[9px] text-gray-400 font-semibold mt-1 block">{{ $item->tanggal }}</span>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="px-6 py-8 text-center text-gray-400">
+                                    <i class="fa-solid fa-bell-slash text-xl mb-2 block opacity-40"></i>
+                                    <p class="text-xs font-bold">Belum ada riwayat medis</p>
+                                </div>
+                            @endforelse
+                        </div>
+                    </div>
+                </div>
 
                 <div class="h-6 w-[1px] bg-white/20"></div>
 
-                <a href="#" class="flex items-center gap-3 group">
-                    <div class="text-right hidden xl:block">
-                        <p class="text-[11px] font-extrabold text-white leading-none uppercase tracking-tight" style="font-family: 'Poppins', sans-serif;">
-                            {{ Auth::user()->name ?? 'Guest' }}
-                        </p>
-                    </div>
-
-                    <div class="relative">
-                        <div class="w-9 h-9 rounded-xl overflow-hidden border border-white/20 shadow-sm transition-transform group-hover:scale-105 flex items-center justify-center bg-[#FAF9F6]">
-                            @if(Auth::user() && Auth::user()->profile_photo_path)
-                                <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="Profil" class="w-full h-full object-cover">
-                            @else
-                                <span class="text-[#5E887E] text-xs font-bold" style="font-family: 'Poppins', sans-serif;">
-                                    {{ strtoupper(substr(Auth::user()->name ?? 'Guest', 0, 2)) }}
-                                </span>
-                            @endif
+                <div class="flex items-center gap-4">
+                    <a href="#" class="flex items-center gap-3 group">
+                        <div class="text-right hidden xl:block">
+                            <p class="text-[11px] font-extrabold text-white leading-none uppercase tracking-tight" style="font-family: 'Poppins', sans-serif;">
+                                {{ $nama ?? 'Guest' }}
+                            </p>
                         </div>
-                    </div>
-                </a>
+
+                        <div class="relative">
+                            <div class="w-9 h-9 rounded-xl overflow-hidden border border-white/20 shadow-sm transition-transform group-hover:scale-105 flex items-center justify-center bg-[#FAF9F6]">
+                                @if(isset($profile_photo_path))
+                                    <img src="{{ asset('storage/' . $profile_photo_path) }}" alt="Profil" class="w-full h-full object-cover">
+                                @else
+                                    <span class="text-[#5E887E] text-xs font-bold" style="font-family: 'Poppins', sans-serif;">
+                                        {{ strtoupper(substr($nama ?? 'Guest', 0, 2)) }}
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    </a>
+
+                    <div class="h-6 w-[1px] bg-white/20"></div>
+
+                    <a href="{{ route('logout') }}" class="text-white/80 hover:text-red-300 text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-all" title="Keluar">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i> <span class="hidden sm:inline">Keluar</span>
+                    </a>
+                </div>
             </div>
 
         </nav>
@@ -779,6 +827,44 @@
                 }
             });
         @endif
+
+        // NOTIFIKASI LONCENG & DROPDOWN SCRIPT
+        const btnNotif = document.getElementById('btn-notification');
+        const dropdownNotif = document.getElementById('dropdown-notification');
+        const notifBadge = document.getElementById('notif-badge');
+        const notifItems = document.querySelectorAll('.notification-item');
+
+        let lastReadId = parseInt(localStorage.getItem('gopet_last_read_notif') || '0');
+        let maxId = 0;
+        notifItems.forEach(item => {
+            const id = parseInt(item.getAttribute('data-id'));
+            if (id > maxId) maxId = id;
+        });
+
+        if (maxId > lastReadId) {
+            notifBadge.classList.remove('hidden');
+        }
+
+        function toggleNotificationDropdown(e) {
+            if (e) {
+                e.stopPropagation();
+            }
+            dropdownNotif.classList.toggle('hidden');
+            if (!dropdownNotif.classList.contains('hidden')) {
+                localStorage.setItem('gopet_last_read_notif', maxId.toString());
+                notifBadge.classList.add('hidden');
+            }
+        }
+
+        if (btnNotif) {
+            btnNotif.addEventListener('click', toggleNotificationDropdown);
+        }
+
+        document.addEventListener('click', (e) => {
+            if (dropdownNotif && !dropdownNotif.contains(e.target) && e.target !== btnNotif) {
+                dropdownNotif.classList.add('hidden');
+            }
+        });
     </script>
 </body>
 </html>

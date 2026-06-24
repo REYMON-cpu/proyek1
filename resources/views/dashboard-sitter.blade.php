@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAF9F6; color: #2D433E; }
         .sidebar-link.active { background-color: #5E887E; color: white; box-shadow: 0 10px 25px -5px rgba(94,136,126,0.3); }
@@ -62,7 +63,9 @@
         <button onclick="switchTab('chat')" id="btn-tab-chat"
           class="sidebar-link text-[#5E887E] hover:bg-[#E8F0EE]/50 w-full text-left flex items-center gap-4 px-4 py-3.5 rounded-2xl font-bold text-sm transition-all duration-300">
           <i class="fa-solid fa-comments text-base w-5 text-center"></i> Chat Pemilik
-          <span id="badge-chat" class="ml-auto bg-[#5E887E] text-white text-[9px] font-bold px-2 py-0.5 rounded-full">2</span>
+          @if($chat_list->sum('unread_count') > 0)
+          <span id="badge-chat" class="ml-auto bg-[#5E887E] text-white text-[9px] font-bold px-2 py-0.5 rounded-full">{{ $chat_list->sum('unread_count') }}</span>
+          @endif
         </button>
 
         <button onclick="switchTab('profil')" id="btn-tab-profil"
@@ -75,16 +78,18 @@
     <!-- Profile & Logout -->
     <div class="space-y-3">
       <div class="flex items-center gap-3 px-3 py-3 bg-[#E8F0EE]/40 rounded-2xl">
-        <div class="w-10 h-10 rounded-xl bg-[#5E887E] flex items-center justify-center text-white text-sm font-bold">DP</div>
+        <div class="w-10 h-10 rounded-xl bg-[#5E887E] flex items-center justify-center text-white text-sm font-bold">
+          {{ strtoupper(substr($provider->nama ?? session('nama') ?? 'Si', 0, 2)) }}
+        </div>
         <div>
-          <div class="text-sm font-bold text-[#2D433E]">Dimas Pratama</div>
-          <div id="sidebar-status-text" class="text-[10px] text-[#5E887E] font-semibold">● Tersedia</div>
+          <div class="text-sm font-bold text-[#2D433E]">{{ $provider->nama ?? session('nama') ?? 'Pet Sitter' }}</div>
+          <div id="sidebar-status-text" class="text-[10px] text-[#5E887E] font-semibold">● {{ $provider->spesialis ?? 'Pet Sitter Jasa' }}</div>
         </div>
       </div>
       <div class="border-t border-[#5E887E]/10 pt-3">
-        <button onclick="alert('Fungsi logout aplikasi.')" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-red-400 hover:bg-red-50 font-bold text-sm transition-all">
+        <a href="{{ url('/logout') }}" class="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-red-400 hover:bg-red-50 font-bold text-sm transition-all">
           <i class="fa-solid fa-arrow-right-from-bracket w-5 text-center"></i> Keluar Aplikasi
-        </button>
+        </a>
       </div>
     </div>
   </aside>
@@ -99,7 +104,7 @@
           <i class="fa-solid fa-bars"></i>
         </button>
         <div>
-          <h1 id="page-title" class="text-xl md:text-2xl font-black text-[#2D433E] tracking-tight">Halo, Kak Dimas! 🐾</h1>
+          <h1 id="page-title" class="text-xl md:text-2xl font-black text-[#2D433E] tracking-tight">Halo, Kak {{ $provider->nama ?? session('nama') }}! 🐾</h1>
           <p id="page-desc" class="text-xs text-[#5E887E] font-medium mt-0.5 hidden sm:block">Ringkasan aktivitas penitipan dan status Anda hari ini.</p>
         </div>
       </div>
@@ -113,6 +118,17 @@
         </div>
       </div>
     </header>
+
+    @if(session('success'))
+    <div class="mx-6 md:mx-10 mt-4 px-4 py-3 bg-[#E8F0EE] border border-green-200 text-green-700 rounded-2xl text-xs font-semibold">
+      <i class="fa-solid fa-circle-check mr-2"></i>{{ session('success') }}
+    </div>
+    @endif
+    @if(session('error'))
+    <div class="mx-6 md:mx-10 mt-4 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-xs font-semibold">
+      <i class="fa-solid fa-circle-xmark mr-2"></i>{{ session('error') }}
+    </div>
+    @endif
 
     <!-- ===== TAB: DASHBOARD ===== -->
     <div id="tab-dashboard" class="tab-content active">
@@ -153,44 +169,33 @@
             <div class="flex justify-between items-start mb-5">
               <div>
                 <h3 class="text-base font-extrabold text-[#2D433E]">Jadwal Hari Ini</h3>
-                <p class="text-xs text-[#5E887E] mt-0.5">Sabtu, 13 Juni 2026</p>
+                <p class="text-xs text-[#5E887E] mt-0.5">{{ date('l, d M Y') }}</p>
               </div>
               <button onclick="switchTab('jadwal')" class="text-xs font-bold text-[#5E887E] hover:underline">Lihat Semua →</button>
             </div>
             <div class="space-y-3">
+              @forelse(collect($bookings)->take(3) as $booking)
               <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF9F6] border border-gray-50">
                 <div class="text-center min-w-[44px]">
-                  <div class="text-[10px] font-bold text-[#5E887E]">07.30</div>
+                  <div class="text-[10px] font-bold text-[#5E887E]">{{ \Carbon\Carbon::parse($booking->tanggal)->format('H:i') ?? '09:00' }}</div>
                 </div>
-                <div class="w-9 h-9 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-xs font-bold">AP</div>
+                <div class="w-9 h-9 rounded-xl bg-[#5E887E]/10 flex items-center justify-center text-[#5E887E] text-xs font-bold">
+                  {{ strtoupper(substr($booking->nama_pemilik ?? 'CU', 0, 2)) }}
+                </div>
                 <div class="flex-1">
-                  <div class="text-xs font-bold text-[#2D433E]">Andi Pratama</div>
-                  <div class="text-[10px] text-[#5E887E]">Bruno — Anjing Golden Retriever • Dog Walking</div>
+                  <div class="text-xs font-bold text-[#2D433E]">{{ $booking->nama_pemilik }}</div>
+                  <div class="text-[10px] text-gray-400">{{ $booking->nama_hewan }} — {{ $booking->jenis_hewan }}</div>
                 </div>
-                <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold">Selesai</span>
+                <span class="px-2.5 py-1 
+                  @if($booking->status === 'Pending') bg-amber-100 text-amber-700
+                  @elseif($booking->status === 'Disetujui' || $booking->status === 'Berlangsung') bg-blue-100 text-blue-700
+                  @else bg-green-100 text-green-700 @endif rounded-full text-[10px] font-bold">
+                  {{ $booking->status }}
+                </span>
               </div>
-              <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF9F6] border border-gray-50">
-                <div class="text-center min-w-[44px]">
-                  <div class="text-[10px] font-bold text-[#5E887E]">09.00</div>
-                </div>
-                <div class="w-9 h-9 rounded-xl bg-blue-400/10 flex items-center justify-center text-blue-500 text-xs font-bold">MS</div>
-                <div class="flex-1">
-                  <div class="text-xs font-bold text-[#2D433E]">Maya Sari</div>
-                  <div class="text-[10px] text-[#5E887E]">Kiki — Kucing Domestik • Pet Hotel (Hari 2/3)</div>
-                </div>
-                <span class="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold">Berlangsung</span>
-              </div>
-              <div class="flex items-center gap-3 p-3 rounded-2xl bg-[#FAF9F6] border border-gray-50">
-                <div class="text-center min-w-[44px]">
-                  <div class="text-[10px] font-bold text-[#5E887E]">13.00</div>
-                </div>
-                <div class="w-9 h-9 rounded-xl bg-green-400/10 flex items-center justify-center text-green-600 text-xs font-bold">FN</div>
-                <div class="flex-1">
-                  <div class="text-xs font-bold text-[#2D433E]">Fajar Nugroho</div>
-                  <div class="text-[10px] text-[#5E887E]">Coco — Anjing Pomeranian • Day Care</div>
-                </div>
-                <span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold">Menunggu</span>
-              </div>
+              @empty
+              <p class="text-xs text-gray-400 text-center py-4">Belum ada jadwal hari ini, Cees!</p>
+              @endforelse
             </div>
           </div>
 
@@ -204,33 +209,24 @@
               <button onclick="switchTab('chat')" class="text-xs font-bold text-[#5E887E] hover:underline">Lihat Semua →</button>
             </div>
             <div class="space-y-3">
-              <div class="flex items-center gap-3 p-3 rounded-2xl hover:bg-[#FAF9F6] cursor-pointer transition-all border border-transparent hover:border-gray-50">
-                <div class="w-2 h-2 rounded-full bg-[#5E887E] flex-shrink-0"></div>
-                <div class="w-9 h-9 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-xs font-bold flex-shrink-0">AP</div>
-                <div class="flex-1 min-w-0">
-                  <div class="text-xs font-bold text-[#2D433E]">Andi Pratama</div>
-                  <div class="text-[10px] text-[#5E887E] truncate">Bruno udah jalan-jalan pagi ini kak?</div>
+              @forelse(collect($chat_list)->take(3) as $chat)
+              <div onclick="switchTab('chat'); openChatModal({{ $chat->id_user }}, '{{ addslashes($chat->nama_pemilik) }}')"
+                   class="flex items-center gap-3 p-3 rounded-2xl hover:bg-[#FAF9F6] cursor-pointer transition-all border border-transparent hover:border-gray-50">
+                <div class="w-2 h-2 rounded-full {{ $chat->unread_count > 0 ? 'bg-[#5E887E]' : 'bg-transparent' }} flex-shrink-0"></div>
+                <div class="w-9 h-9 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-xs font-bold flex-shrink-0">
+                  {{ strtoupper(substr($chat->nama_pemilik, 0, 2)) }}
                 </div>
-                <div class="text-[10px] text-[#5E887E] font-semibold flex-shrink-0">08.45</div>
-              </div>
-              <div class="flex items-center gap-3 p-3 rounded-2xl hover:bg-[#FAF9F6] cursor-pointer transition-all border border-transparent hover:border-gray-50">
-                <div class="w-2 h-2 rounded-full bg-[#5E887E] flex-shrink-0"></div>
-                <div class="w-9 h-9 rounded-xl bg-blue-400/10 flex items-center justify-center text-blue-500 text-xs font-bold flex-shrink-0">MS</div>
                 <div class="flex-1 min-w-0">
-                  <div class="text-xs font-bold text-[#2D433E]">Maya Sari</div>
-                  <div class="text-[10px] text-[#5E887E] truncate">Kiki minta obat jam 3 ya, taruh di tasnya</div>
+                  <div class="text-xs font-bold text-[#2D433E]">{{ $chat->nama_pemilik }}</div>
+                  <div class="text-[10px] text-[#5E887E] truncate">{{ $chat->last_pesan }}</div>
                 </div>
-                <div class="text-[10px] text-[#5E887E] font-semibold flex-shrink-0">Kemarin</div>
-              </div>
-              <div class="flex items-center gap-3 p-3 rounded-2xl hover:bg-[#FAF9F6] cursor-pointer transition-all border border-transparent hover:border-gray-50">
-                <div class="w-2 h-2 rounded-full bg-transparent flex-shrink-0"></div>
-                <div class="w-9 h-9 rounded-xl bg-green-400/10 flex items-center justify-center text-green-600 text-xs font-bold flex-shrink-0">FN</div>
-                <div class="flex-1 min-w-0">
-                  <div class="text-xs font-bold text-[#2D433E]">Fajar Nugroho</div>
-                  <div class="text-[10px] text-[#5E887E] truncate">Makasih banyak udah jagain Coco kemarin!</div>
+                <div class="text-[10px] text-[#5E887E] font-semibold flex-shrink-0">
+                  {{ $chat->last_time ? \Carbon\Carbon::parse($chat->last_time)->format('H:i') : '' }}
                 </div>
-                <div class="text-[10px] text-[#5E887E] font-semibold flex-shrink-0">Kemarin</div>
               </div>
+              @empty
+              <p class="text-xs text-[#5E887E]/60 text-center py-4">Belum ada pesan masuk, Cees!</p>
+              @endforelse
             </div>
           </div>
         </div>
@@ -253,65 +249,49 @@
           </div>
 
           <div class="space-y-3" id="jadwal-list">
-            <!-- Row 1 -->
-            <div id="jadwal-row-1" class="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-gray-50 bg-[#FAF9F6]/60 hover:bg-[#FAF9F6] transition-all">
-              <div class="text-xs font-bold text-[#5E887E] w-12">07.30</div>
-              <div class="w-10 h-10 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-xs font-bold">AP</div>
-              <div class="flex-1 min-w-[120px]">
-                <div class="text-sm font-bold text-[#2D433E] cell-j-nama">Andi Pratama</div>
-                <div class="text-[10px] text-[#5E887E] cell-j-hewan">Bruno — Anjing Golden Retriever • Dog Walking</div>
+            @forelse($bookings as $booking)
+            <div id="jadwal-row-{{ $booking->id_pemesanan }}" class="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-gray-50 
+              @if($booking->status === 'Pending') bg-amber-50/30 border-amber-50
+              @elseif($booking->status === 'Disetujui' || $booking->status === 'Berlangsung') bg-blue-50/30 border-blue-50
+              @else bg-[#FAF9F6]/60 @endif hover:bg-[#FAF9F6] transition-all">
+              <div class="text-xs font-bold text-[#5E887E] w-12">{{ \Carbon\Carbon::parse($booking->tanggal)->format('H:i') ?? '09:00' }}</div>
+              <div class="w-10 h-10 rounded-xl bg-[#5E887E]/10 flex items-center justify-center text-[#5E887E] text-xs font-bold">
+                {{ strtoupper(substr($booking->nama_pemilik ?? 'CU', 0, 2)) }}
               </div>
-              <span class="px-2.5 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-bold cell-j-status">Selesai</span>
+              <div class="flex-1 min-w-[120px]">
+                <div class="text-sm font-bold text-[#2D433E] cell-j-nama">{{ $booking->nama_pemilik }}</div>
+                <div class="text-[10px] text-[#5E887E] cell-j-hewan">{{ $booking->nama_hewan }} — {{ $booking->jenis_hewan }} • {{ $booking->alamat }}</div>
+              </div>
+              <span class="px-2.5 py-1 
+                @if($booking->status === 'Pending') bg-amber-100 text-amber-700
+                @elseif($booking->status === 'Disetujui' || $booking->status === 'Berlangsung') bg-blue-100 text-blue-700
+                @else bg-green-100 text-green-700 @endif rounded-full text-[10px] font-bold cell-j-status">
+                {{ $booking->status }}
+              </span>
               <div class="flex gap-2">
-                <button onclick="openJadwalModal('edit', 1)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button onclick="deleteJadwal(1)" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
+                @if($booking->status === 'Pending')
+                  <form action="{{ route('pemesanan.update-status', $booking->id_pemesanan) }}" method="POST" class="inline">
+                    @csrf
+                    <input type="hidden" name="status" value="Berlangsung">
+                    <button type="submit" class="w-8 h-8 bg-green-50 text-green-600 rounded-lg text-xs flex items-center justify-center hover:bg-green-500 hover:text-white transition-all" title="Terima"><i class="fa-solid fa-check"></i></button>
+                  </form>
+                  <form action="{{ route('pemesanan.update-status', $booking->id_pemesanan) }}" method="POST" class="inline">
+                    @csrf
+                    <input type="hidden" name="status" value="Ditolak">
+                    <button type="submit" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all" title="Tolak"><i class="fa-solid fa-xmark"></i></button>
+                  </form>
+                @elseif($booking->status === 'Berlangsung')
+                  <form action="{{ route('pemesanan.update-status', $booking->id_pemesanan) }}" method="POST" class="inline">
+                    @csrf
+                    <input type="hidden" name="status" value="Selesai">
+                    <button type="submit" class="w-8 h-8 bg-green-50 text-green-600 rounded-lg text-xs flex items-center justify-center hover:bg-green-500 hover:text-white transition-all" title="Tandai Selesai"><i class="fa-solid fa-check"></i></button>
+                  </form>
+                @endif
               </div>
             </div>
-            <!-- Row 2 -->
-            <div id="jadwal-row-2" class="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-blue-50 bg-blue-50/30 hover:bg-blue-50/50 transition-all">
-              <div class="text-xs font-bold text-[#5E887E] w-12">09.00</div>
-              <div class="w-10 h-10 rounded-xl bg-blue-400/10 flex items-center justify-center text-blue-500 text-xs font-bold">MS</div>
-              <div class="flex-1 min-w-[120px]">
-                <div class="text-sm font-bold text-[#2D433E] cell-j-nama">Maya Sari</div>
-                <div class="text-[10px] text-[#5E887E] cell-j-hewan">Kiki — Kucing Domestik • Pet Hotel (Hari 2/3)</div>
-              </div>
-              <span class="px-2.5 py-1 bg-blue-100 text-blue-700 rounded-full text-[10px] font-bold cell-j-status">Berlangsung</span>
-              <div class="flex gap-2">
-                <button onclick="confirmJadwal(2)" class="w-8 h-8 bg-green-50 text-green-600 rounded-lg text-xs flex items-center justify-center hover:bg-green-500 hover:text-white transition-all" title="Tandai Selesai"><i class="fa-solid fa-check"></i></button>
-                <button onclick="openJadwalModal('edit', 2)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                <button onclick="deleteJadwal(2)" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
-              </div>
-            </div>
-            <!-- Row 3 -->
-            <div id="jadwal-row-3" class="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-amber-50 bg-amber-50/30 hover:bg-amber-50/50 transition-all">
-              <div class="text-xs font-bold text-[#5E887E] w-12">13.00</div>
-              <div class="w-10 h-10 rounded-xl bg-green-400/10 flex items-center justify-center text-green-600 text-xs font-bold">FN</div>
-              <div class="flex-1 min-w-[120px]">
-                <div class="text-sm font-bold text-[#2D433E] cell-j-nama">Fajar Nugroho</div>
-                <div class="text-[10px] text-[#5E887E] cell-j-hewan">Coco — Anjing Pomeranian • Day Care</div>
-              </div>
-              <span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold cell-j-status">Menunggu</span>
-              <div class="flex gap-2">
-                <button onclick="terimaJadwal(3)" class="w-8 h-8 bg-green-50 text-green-600 rounded-lg text-xs flex items-center justify-center hover:bg-green-500 hover:text-white transition-all" title="Terima"><i class="fa-solid fa-check"></i></button>
-                <button onclick="tolakJadwal(3)" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all" title="Tolak"><i class="fa-solid fa-xmark"></i></button>
-                <button onclick="openJadwalModal('edit', 3)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-              </div>
-            </div>
-            <!-- Row 4 -->
-            <div id="jadwal-row-4" class="flex flex-wrap items-center gap-3 p-4 rounded-2xl border border-amber-50 bg-amber-50/30 hover:bg-amber-50/50 transition-all">
-              <div class="text-xs font-bold text-[#5E887E] w-12">16.00</div>
-              <div class="w-10 h-10 rounded-xl bg-[#5E887E]/10 flex items-center justify-center text-[#5E887E] text-xs font-bold">RW</div>
-              <div class="flex-1 min-w-[120px]">
-                <div class="text-sm font-bold text-[#2D433E] cell-j-nama">Rini Wulandari</div>
-                <div class="text-[10px] text-[#5E887E] cell-j-hewan">Mimi — Kucing Anggora • Home Visit</div>
-              </div>
-              <span class="px-2.5 py-1 bg-amber-100 text-amber-700 rounded-full text-[10px] font-bold cell-j-status">Menunggu</span>
-              <div class="flex gap-2">
-                <button onclick="terimaJadwal(4)" class="w-8 h-8 bg-green-50 text-green-600 rounded-lg text-xs flex items-center justify-center hover:bg-green-500 hover:text-white transition-all" title="Terima"><i class="fa-solid fa-check"></i></button>
-                <button onclick="tolakJadwal(4)" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all" title="Tolak"><i class="fa-solid fa-xmark"></i></button>
-                <button onclick="openJadwalModal('edit', 4)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-              </div>
-            </div>
+            @empty
+            <p class="text-xs text-gray-400 text-center py-4">Belum ada jadwal penitipan masuk, Cees!</p>
+            @endforelse
           </div>
         </div>
       </main>
@@ -343,60 +323,33 @@
                 </tr>
               </thead>
               <tbody id="catatan-table-body" class="divide-y divide-gray-50 text-sm font-medium text-[#2D433E]">
-                <tr id="catatan-row-1" class="hover:bg-[#FAF9F6]/50 transition-colors">
+                @forelse($catatan_list as $catatan)
+                <tr id="catatan-row-{{ $catatan->id }}" class="hover:bg-[#FAF9F6]/50 transition-colors">
                   <td class="py-4 pl-2">
-                    <div class="font-bold cell-c-hewan">Bruno</div>
-                    <div class="text-[10px] text-[#5E887E] cell-c-jenis">Anjing Golden Retriever</div>
+                    <div class="font-bold cell-c-hewan">{{ $catatan->nama_hewan }}</div>
+                    <div class="text-[10px] text-[#5E887E] cell-c-jenis">{{ $catatan->jenis_hewan }}</div>
                   </td>
-                  <td class="py-4 text-xs cell-c-pemilik">Andi Pratama</td>
+                  <td class="py-4 text-xs cell-c-pemilik">{{ $catatan->nama_pemilik }}</td>
                   <td class="py-4">
-                    <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-bold cell-c-layanan">Dog Walking</span>
+                    <span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-bold cell-c-layanan">{{ $catatan->jenis_layanan }}</span>
                   </td>
-                  <td class="py-4 text-xs cell-c-catatan">Aktif &amp; ceria — jalan pagi 30 menit, makan habis, BAB normal</td>
-                  <td class="py-4 text-[10px] text-[#5E887E] cell-c-tanggal">13 Jun 2026</td>
+                  <td class="py-4 text-xs cell-c-catatan">{{ $catatan->catatan }}</td>
+                  <td class="py-4 text-[10px] text-[#5E887E] cell-c-tanggal">{{ $catatan->tanggal }}</td>
                   <td class="py-4">
                     <div class="flex justify-center gap-2">
-                      <button onclick="openCatatanModal('edit', 1)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                      <button onclick="deleteCatatan(1, 'Bruno')" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
+                      <button onclick="openCatatanModal('edit', {{ $catatan->id }})" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all" title="Edit"><i class="fa-solid fa-pen-to-square"></i></button>
+                      <form action="{{ route('rekam-medis.delete', $catatan->id) }}" method="POST" class="inline" onsubmit="return confirm('Yakin hapus catatan ini?')">
+                        @csrf
+                        <button type="submit" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+                      </form>
                     </div>
                   </td>
                 </tr>
-                <tr id="catatan-row-2" class="hover:bg-[#FAF9F6]/50 transition-colors">
-                  <td class="py-4 pl-2">
-                    <div class="font-bold cell-c-hewan">Kiki</div>
-                    <div class="text-[10px] text-[#5E887E] cell-c-jenis">Kucing Domestik</div>
-                  </td>
-                  <td class="py-4 text-xs cell-c-pemilik">Maya Sari</td>
-                  <td class="py-4">
-                    <span class="px-2 py-1 bg-amber-50 text-amber-700 rounded-full text-[10px] font-bold cell-c-layanan">Pet Hotel (Hari 2/3)</span>
-                  </td>
-                  <td class="py-4 text-xs cell-c-catatan">Tenang &amp; nyaman — nafsu makan baik, litter box sudah dibersihkan</td>
-                  <td class="py-4 text-[10px] text-[#5E887E] cell-c-tanggal">13 Jun 2026</td>
-                  <td class="py-4">
-                    <div class="flex justify-center gap-2">
-                      <button onclick="openCatatanModal('edit', 2)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                      <button onclick="deleteCatatan(2, 'Kiki')" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                  </td>
+                @empty
+                <tr>
+                  <td colspan="6" class="text-center py-8 text-gray-400 text-xs font-semibold">Belum ada catatan harian yang ditambahkan.</td>
                 </tr>
-                <tr id="catatan-row-3" class="hover:bg-[#FAF9F6]/50 transition-colors">
-                  <td class="py-4 pl-2">
-                    <div class="font-bold cell-c-hewan">Coco</div>
-                    <div class="text-[10px] text-[#5E887E] cell-c-jenis">Anjing Pomeranian</div>
-                  </td>
-                  <td class="py-4 text-xs cell-c-pemilik">Fajar Nugroho</td>
-                  <td class="py-4">
-                    <span class="px-2 py-1 bg-green-50 text-green-700 rounded-full text-[10px] font-bold cell-c-layanan">Day Care</span>
-                  </td>
-                  <td class="py-4 text-xs cell-c-catatan">Sangat aktif — bermain dengan anjing lain, sedikit takut suara petir</td>
-                  <td class="py-4 text-[10px] text-[#5E887E] cell-c-tanggal">12 Jun 2026</td>
-                  <td class="py-4">
-                    <div class="flex justify-center gap-2">
-                      <button onclick="openCatatanModal('edit', 3)" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-                      <button onclick="deleteCatatan(3, 'Coco')" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                  </td>
-                </tr>
+                @endforelse
               </tbody>
             </table>
           </div>
@@ -412,49 +365,38 @@
             <h3 class="text-lg font-extrabold text-[#2D433E]">Chat dengan Pemilik Hewan</h3>
             <p class="text-xs text-[#5E887E] mt-0.5">Update perkembangan dan komunikasi langsung via pesan.</p>
           </div>
-          <div class="space-y-3">
-            <!-- Chat Item 1 -->
-            <div class="flex items-center gap-4 p-4 rounded-2xl border border-[#5E887E]/10 hover:bg-[#FAF9F6] cursor-pointer transition-all" onclick="openChatModal('Andi Pratama', 'AP', 'Bruno — Golden Retriever')">
-              <div class="w-2 h-2 rounded-full bg-[#5E887E] flex-shrink-0"></div>
-              <div class="w-11 h-11 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-sm font-bold flex-shrink-0">AP</div>
+          <div id="chat-list-container" class="space-y-3">
+            @forelse($chat_list as $chat)
+            <div class="flex items-center gap-4 p-4 rounded-2xl border border-[#5E887E]/10 hover:bg-[#FAF9F6] cursor-pointer transition-all"
+                 onclick="openChatModal({{ $chat->id_user }}, '{{ addslashes($chat->nama_pemilik) }}')">
+              <div class="w-2 h-2 rounded-full {{ $chat->unread_count > 0 ? 'bg-[#5E887E]' : 'bg-transparent' }} flex-shrink-0"></div>
+              <div class="w-11 h-11 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-sm font-bold flex-shrink-0">
+                {{ strtoupper(substr($chat->nama_pemilik, 0, 2)) }}
+              </div>
               <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2">
-                  <div class="text-sm font-bold text-[#2D433E]">Andi Pratama</div>
-                  <span class="px-2 py-0.5 bg-[#D9B08C]/10 text-[#D9B08C] rounded-full text-[9px] font-bold">Bruno — Retriever</span>
-                </div>
-                <div class="text-xs text-[#5E887E] truncate mt-0.5">Pagi kak, Bruno udah jalan-jalan?</div>
+                <div class="text-sm font-bold text-[#2D433E]">{{ $chat->nama_pemilik }}</div>
+                <div class="text-xs text-[#5E887E] truncate mt-0.5">{{ $chat->last_pesan }}</div>
               </div>
               <div class="flex flex-col items-end gap-1.5 flex-shrink-0">
-                <div class="text-[10px] text-[#5E887E] font-semibold">08.45</div>
-                <div class="w-5 h-5 rounded-full bg-[#5E887E] flex items-center justify-center text-white text-[9px] font-bold">2</div>
-              </div>
-            </div>
-            <!-- Chat Item 2 -->
-            <div class="flex items-center gap-4 p-4 rounded-2xl border border-gray-50 hover:bg-[#FAF9F6] cursor-pointer transition-all" onclick="openChatModal('Maya Sari', 'MS', 'Kiki — Kucing Domestik')">
-              <div class="w-2 h-2 rounded-full bg-[#5E887E] flex-shrink-0"></div>
-              <div class="w-11 h-11 rounded-xl bg-blue-400/10 flex items-center justify-center text-blue-500 text-sm font-bold flex-shrink-0">MS</div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2">
-                  <div class="text-sm font-bold text-[#2D433E]">Maya Sari</div>
-                  <span class="px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[9px] font-bold">Kiki — Domestik</span>
+                <div class="text-[10px] text-[#5E887E] font-semibold">
+                  {{ $chat->last_time ? \Carbon\Carbon::parse($chat->last_time)->format('H:i') : '' }}
                 </div>
-                <div class="text-xs text-[#5E887E] truncate mt-0.5">Kiki minta obat jam 3 ya, taruh di tasnya</div>
-              </div>
-              <div class="text-[10px] text-[#5E887E] font-semibold">Kemarin</div>
-            </div>
-            <!-- Chat Item 3 -->
-            <div class="flex items-center gap-4 p-4 rounded-2xl border border-gray-50 hover:bg-[#FAF9F6] cursor-pointer transition-all" onclick="openChatModal('Fajar Nugroho', 'FN', 'Coco — Anjing Pomeranian')">
-              <div class="w-2 h-2 rounded-full bg-transparent flex-shrink-0"></div>
-              <div class="w-11 h-11 rounded-xl bg-green-400/10 flex items-center justify-center text-green-600 text-sm font-bold flex-shrink-0">FN</div>
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2">
-                  <div class="text-sm font-bold text-[#2D433E]">Fajar Nugroho</div>
-                  <span class="px-2 py-0.5 bg-green-50 text-green-600 rounded-full text-[9px] font-bold">Coco — Pomeranian</span>
+                @if($chat->unread_count > 0)
+                <div class="w-5 h-5 rounded-full bg-[#5E887E] flex items-center justify-center text-white text-[9px] font-bold">
+                  {{ $chat->unread_count }}
                 </div>
-                <div class="text-xs text-[#5E887E] truncate mt-0.5">Makasih banyak udah jagain Coco kemarin!</div>
+                @endif
               </div>
-              <div class="text-[10px] text-[#5E887E] font-semibold">Kemarin</div>
             </div>
+            @empty
+            <div class="text-center py-12">
+              <div class="w-16 h-16 bg-[#F4F7F6] rounded-3xl flex items-center justify-center mx-auto mb-3">
+                <i class="fa-solid fa-comments text-2xl text-[#5E887E]/30"></i>
+              </div>
+              <p class="text-sm font-bold text-gray-400">Belum ada pesan masuk</p>
+              <p class="text-xs text-gray-300 mt-1">Pemilik hewan akan menghubungi Anda melalui halaman Pilih Sitter.</p>
+            </div>
+            @endforelse
           </div>
         </div>
       </main>
@@ -493,13 +435,15 @@
             <p class="text-xs text-[#5E887E] mt-0.5">Formulir ini digunakan untuk mengajukan penyesuaian tarif jasa penitipan. Perubahan akan berlaku setelah diverifikasi oleh Admin.</p>
         </div>
 
-        <form onsubmit="submitPengajuanTarif(event)" class="space-y-4" enctype="multipart/form-data">
+        <form action="{{ route('pengajuan.tarif.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+            @csrf
+            <input type="hidden" name="tarif_sekarang" value="{{ $provider->tarif ?? 0 }}">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
             <!-- Nama Lengkap (Disabled/Read-only karena otomatis dari akun) -->
             <div>
                 <label class="block text-[10px] font-bold text-[#5E887E] uppercase tracking-wider mb-1.5">Nama Lengkap</label>
-                <input type="text" value="Dimas Pratama" disabled class="w-full px-4 py-2.5 bg-[#F5F5F3] border border-gray-100 rounded-xl text-xs font-semibold text-[#5E887E] cursor-not-allowed focus:outline-none">
+                <input type="text" value="{{ $provider->nama ?? session('nama') ?? 'Pet Sitter' }}" disabled class="w-full px-4 py-2.5 bg-[#F5F5F3] border border-gray-100 rounded-xl text-xs font-semibold text-[#5E887E] cursor-not-allowed focus:outline-none">
             </div>
 
             <!-- Layanan (Disabled/Read-only) -->
@@ -511,13 +455,13 @@
             <!-- Tarif Saat Ini -->
             <div>
                 <label class="block text-[10px] font-bold text-[#5E887E] uppercase tracking-wider mb-1.5">Tarif Saat Ini (Per Hari)</label>
-                <input type="text" value="Rp 75.000" disabled class="w-full px-4 py-2.5 bg-[#F5F5F3] border border-gray-100 rounded-xl text-xs font-semibold text-[#5E887E] cursor-not-allowed focus:outline-none">
+                <input type="text" value="Rp {{ $provider && $provider->tarif > 0 ? number_format($provider->tarif, 0, ',', '.') : '0' }}" disabled class="w-full px-4 py-2.5 bg-[#F5F5F3] border border-gray-100 rounded-xl text-xs font-semibold text-[#5E887E] cursor-not-allowed focus:outline-none">
             </div>
 
             <!-- Usulan Tarif Baru -->
             <div>
                 <label class="block text-[10px] font-bold text-[#5E887E] uppercase tracking-wider mb-1.5">Usulan Tarif Baru (Rp)</label>
-                <input type="number" placeholder="Contoh: 100000" required class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E] focus:ring-1 focus:ring-[#5E887E]/20">
+                <input type="number" name="tarif_baru" placeholder="Contoh: 100000" required class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E] focus:ring-1 focus:ring-[#5E887E]/20">
             </div>
 
             <!-- Upload Berkas Pendukung -->
@@ -529,7 +473,7 @@
                     <div class="flex text-xs text-[#5E887E] justify-center">
                     <label for="file-upload" class="relative cursor-pointer bg-white rounded-md font-bold text-[#5E887E] hover:text-[#4d7168] focus-within:outline-none">
                         <span>Pilih Berkas</span>
-                        <input id="file-upload" name="file-upload" type="file" accept=".pdf,.png,.jpg,.jpeg" required class="sr-only">
+                        <input id="file-upload" name="dokumen" type="file" accept=".pdf,.png,.jpg,.jpeg" required class="sr-only">
                     </label>
                     <p class="pl-1 text-[#5E887E] font-medium">atau drag and drop</p>
                     </div>
@@ -541,7 +485,7 @@
             <!-- Alasan Pengajuan -->
             <div class="sm:col-span-2">
                 <label class="block text-[10px] font-bold text-[#5E887E] uppercase tracking-wider mb-1.5">Alasan / Keterangan Pengajuan</label>
-                <textarea rows="3" placeholder="Tuliskan alasan penyesuaian tarif di sini..." required class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E] focus:ring-1 focus:ring-[#5E887E]/20 resize-none"></textarea>
+                <textarea name="alasan" rows="3" placeholder="Tuliskan alasan penyesuaian tarif di sini..." required class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E] focus:ring-1 focus:ring-[#5E887E]/20 resize-none"></textarea>
             </div>
             </div>
 
@@ -606,28 +550,41 @@
         <h4 id="catatanModalTitle" class="text-base font-black text-[#2D433E]">Tambah Catatan Harian</h4>
         <button onclick="closeCatatanModal()" class="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-[#5E887E] hover:bg-gray-100"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <form id="formCatatan" onsubmit="saveCatatan(event)" class="space-y-4">
-        <input type="hidden" id="catatanId">
+      <form id="formCatatan" action="{{ route('rekam-medis.save') }}" method="POST" class="space-y-4">
+        @csrf
+        <input type="hidden" id="catatanId" name="id">
+        <input type="hidden" name="tipe" value="sitter">
         <div class="grid grid-cols-2 gap-3">
+          <div class="col-span-2">
+            <label class="block text-[10px] font-bold text-[#5E887E] uppercase tracking-wider mb-1.5">Pilih Pasien dari Booking</label>
+            <select id="selectCBooking" class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-[#5E887E]/10 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E]" onchange="autoFillPatientSitter(this)">
+              <option value="">-- Pilih Pasien --</option>
+              @foreach($bookings as $b)
+                <option value="{{ $b->id_pemesanan }}" data-hewan="{{ $b->nama_hewan }}" data-jenis="{{ $b->jenis_hewan }}" data-pemilik="{{ $b->nama_pemilik }}" data-tanggal="{{ $b->tanggal }}">
+                  {{ $b->nama_hewan }} ({{ $b->jenis_hewan }}) — {{ $b->nama_pemilik }} ({{ \Carbon\Carbon::parse($b->tanggal)->format('d M Y') }})
+                </option>
+              @endforeach
+            </select>
+          </div>
           <div>
             <label class="block text-[10px] font-bold text-[#5E887E] uppercase tracking-wider mb-1.5">Nama Hewan</label>
-            <input type="text" id="inputCHewan" required class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E]">
+            <input type="text" id="inputCHewan" name="nama_hewan" required class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E]">
           </div>
           <div>
             <label class="block text-[10px] font-bold text-[#5E887E] uppercase tracking-wider mb-1.5">Jenis Hewan</label>
-            <input type="text" id="inputCJenis" required class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E]">
+            <input type="text" id="inputCJenis" name="jenis_hewan" required class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E]">
           </div>
           <div>
             <label class="block text-[10px] font-bold text-[#5E887E] uppercase tracking-wider mb-1.5">Nama Pemilik</label>
-            <input type="text" id="inputCPemilik" required class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E]">
+            <input type="text" id="inputCPemilik" name="nama_pemilik" required class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E]">
           </div>
           <div>
             <label class="block text-[10px] font-bold text-[#5E887E] uppercase tracking-wider mb-1.5">Tanggal</label>
-            <input type="text" id="inputCTanggal" required placeholder="13 Jun 2026" class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E]">
+            <input type="text" id="inputCTanggal" name="tanggal" required placeholder="13 Jun 2026" class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E]">
           </div>
           <div class="sm:col-span-2">
             <label class="block text-[10px] font-bold text-[#5E887E] uppercase tracking-wider mb-1.5">Jenis Layanan</label>
-            <select id="inputCLayanan" class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none">
+            <select id="inputCLayanan" name="jenis_layanan" class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none">
               <option value="Dog Walking">Dog Walking</option>
               <option value="Pet Hotel">Pet Hotel</option>
               <option value="Day Care">Day Care</option>
@@ -636,7 +593,7 @@
           </div>
           <div class="col-span-2">
             <label class="block text-[10px] font-bold text-[#5E887E] uppercase tracking-wider mb-1.5">Kondisi & Catatan</label>
-            <textarea id="inputCCatatan" rows="3" required placeholder="Tuliskan kondisi, aktivitas, dan catatan penting lainnya..." class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E] focus:ring-1 focus:ring-[#5E887E]/20 resize-none"></textarea>
+            <textarea id="inputCCatatan" name="catatan" rows="3" required placeholder="Tuliskan kondisi, aktivitas, dan catatan penting lainnya..." class="w-full px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E] focus:ring-1 focus:ring-[#5E887E]/20 resize-none"></textarea>
           </div>
         </div>
         <div class="flex gap-3 pt-2">
@@ -647,7 +604,7 @@
     </div>
   </div>
 
-  <!-- ===== MODAL: CHAT ===== -->
+  <!-- ===== MODAL: CHAT (REAL DATABASE) ===== -->
   <div id="chatModal" class="modal-overlay fixed inset-0 bg-[#2D433E]/40 backdrop-blur-sm z-[100] items-center justify-center p-4">
     <div class="bg-white rounded-[28px] w-full max-w-md border border-gray-100 shadow-2xl flex flex-col" style="max-height:90vh">
       <div class="flex items-center justify-between p-5 border-b border-gray-50">
@@ -655,13 +612,13 @@
           <div id="chatAvatar" class="w-10 h-10 rounded-xl bg-[#D9B08C]/10 flex items-center justify-center text-[#D9B08C] text-sm font-bold"></div>
           <div>
             <div id="chatName" class="text-sm font-bold text-[#2D433E]"></div>
-            <div id="chatPet" class="text-[10px] text-[#5E887E]"></div>
+            <div id="chatSub" class="text-[10px] text-[#5E887E]">Pemilik Hewan</div>
           </div>
         </div>
         <button onclick="closeChatModal()" class="w-8 h-8 rounded-xl bg-gray-50 flex items-center justify-center text-[#5E887E] hover:bg-gray-100"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div id="chatMessages" class="flex-1 overflow-y-auto p-5 space-y-3" style="min-height:200px;max-height:50vh">
-        <!-- Messages -->
+        <div class="text-center text-xs text-gray-400 py-4">Memuat percakapan...</div>
       </div>
       <div class="p-4 border-t border-gray-50 flex gap-2">
         <input type="text" id="chatInput" placeholder="Ketik pesan..." class="flex-1 px-4 py-2.5 bg-[#FAF9F6] border border-gray-100 rounded-xl text-xs font-semibold focus:outline-none focus:border-[#5E887E]">
@@ -684,7 +641,7 @@
     }
 
     const tabMeta = {
-      dashboard: ['Halo, Kak Dimas! 🐾', 'Ringkasan aktivitas penitipan dan status Anda hari ini.'],
+      dashboard: ['Halo, Kak {{ $provider->nama ?? session('nama') }}! 🐾', 'Ringkasan aktivitas penitipan dan status Anda hari ini.'],
       jadwal:    ['Jadwal Penitipan 📅', 'Kelola sesi penjagaan dan konfirmasi booking harian.'],
       catatan:   ['Catatan Perawatan Harian 📋', 'Riwayat aktivitas dan kondisi seluruh hewan yang dititipkan.'],
       chat:      ['Chat Pemilik Hewan 💬', 'Update perkembangan dan komunikasi langsung dengan pemilik.'],
@@ -817,14 +774,15 @@
     }
 
     // ========== CATATAN HARIAN ==========
-    let catatanCount = 3;
-
     function openCatatanModal(mode, id = null) {
       document.getElementById('catatanModal').classList.add('show');
       if (mode === 'create') {
         document.getElementById('catatanModalTitle').innerText = 'Tambah Catatan Harian';
         document.getElementById('formCatatan').reset();
         document.getElementById('catatanId').value = '';
+        if (document.getElementById('selectCBooking')) {
+          document.getElementById('selectCBooking').selectedIndex = 0;
+        }
       } else {
         document.getElementById('catatanModalTitle').innerText = 'Ubah Catatan Harian';
         document.getElementById('catatanId').value = id;
@@ -835,106 +793,153 @@
         document.getElementById('inputCLayanan').value  = row.querySelector('.cell-c-layanan').innerText;
         document.getElementById('inputCCatatan').value  = row.querySelector('.cell-c-catatan').innerText;
         document.getElementById('inputCTanggal').value  = row.querySelector('.cell-c-tanggal').innerText;
+        if (document.getElementById('selectCBooking')) {
+          document.getElementById('selectCBooking').selectedIndex = 0;
+        }
       }
     }
 
     function closeCatatanModal() { document.getElementById('catatanModal').classList.remove('show'); }
 
-    function saveCatatan(e) {
-      e.preventDefault();
-      const id       = document.getElementById('catatanId').value;
-      const hewan    = document.getElementById('inputCHewan').value;
-      const jenis    = document.getElementById('inputCJenis').value;
-      const pemilik  = document.getElementById('inputCPemilik').value;
-      const layanan  = document.getElementById('inputCLayanan').value;
-      const catatan  = document.getElementById('inputCCatatan').value;
-      const tanggal  = document.getElementById('inputCTanggal').value;
+    function autoFillPatientSitter(selectEl) {
+      const selectedOption = selectEl.options[selectEl.selectedIndex];
+      if (!selectedOption.value) return;
 
-      if (id) {
-        const row = document.getElementById('catatan-row-' + id);
-        row.querySelector('.cell-c-hewan').innerText    = hewan;
-        row.querySelector('.cell-c-jenis').innerText    = jenis;
-        row.querySelector('.cell-c-pemilik').innerText  = pemilik;
-        row.querySelector('.cell-c-layanan').innerText  = layanan;
-        row.querySelector('.cell-c-catatan').innerText  = catatan;
-        row.querySelector('.cell-c-tanggal').innerText  = tanggal;
-      } else {
-        catatanCount++;
-        const tbody = document.getElementById('catatan-table-body');
-        const tr = document.createElement('tr');
-        tr.id = 'catatan-row-' + catatanCount;
-        tr.className = 'hover:bg-[#FAF9F6]/50 transition-colors';
-        tr.innerHTML = `
-          <td class="py-4 pl-2"><div class="font-bold cell-c-hewan">${hewan}</div><div class="text-[10px] text-[#5E887E] cell-c-jenis">${jenis}</div></td>
-          <td class="py-4 text-xs cell-c-pemilik">${pemilik}</td>
-          <td class="py-4"><span class="px-2 py-1 bg-blue-50 text-blue-700 rounded-full text-[10px] font-bold cell-c-layanan">${layanan}</span></td>
-          <td class="py-4 text-xs cell-c-catatan">${catatan}</td>
-          <td class="py-4 text-[10px] text-[#5E887E] cell-c-tanggal">${tanggal}</td>
-          <td class="py-4"><div class="flex justify-center gap-2">
-            <button onclick="openCatatanModal('edit',${catatanCount})" class="w-8 h-8 bg-amber-50 text-amber-600 rounded-lg text-xs flex items-center justify-center hover:bg-amber-500 hover:text-white transition-all"><i class="fa-solid fa-pen-to-square"></i></button>
-            <button onclick="deleteCatatan(${catatanCount},'${hewan}')" class="w-8 h-8 bg-red-50 text-red-400 rounded-lg text-xs flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"><i class="fa-solid fa-trash"></i></button>
-          </div></td>`;
-        tbody.appendChild(tr);
+      const namaHewan = selectedOption.getAttribute('data-hewan');
+      const jenisHewan = selectedOption.getAttribute('data-jenis');
+      const namaPemilik = selectedOption.getAttribute('data-pemilik');
+      const tanggal = selectedOption.getAttribute('data-tanggal');
+
+      document.getElementById('inputCHewan').value = namaHewan || '';
+      document.getElementById('inputCJenis').value = jenisHewan || '';
+      document.getElementById('inputCPemilik').value = namaPemilik || '';
+
+      if (tanggal) {
+        try {
+          const dateParts = tanggal.split('-');
+          if (dateParts.length === 3) {
+            const year = dateParts[0];
+            const monthIndex = parseInt(dateParts[1]) - 1;
+            const day = parseInt(dateParts[2]);
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+            document.getElementById('inputCTanggal').value = `${day.toString().padStart(2, '0')} ${months[monthIndex]} ${year}`;
+          } else {
+            document.getElementById('inputCTanggal').value = tanggal;
+          }
+        } catch(e) {
+          document.getElementById('inputCTanggal').value = tanggal;
+        }
       }
-      closeCatatanModal();
     }
 
-    function deleteCatatan(id, nama) {
-      if (confirm(`Yakin hapus catatan harian "${nama}"?`)) document.getElementById('catatan-row-' + id)?.remove();
+    // ========== CHAT MODAL (REAL DATABASE) ==========
+    const CSRF_TOKEN   = document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').content : '';
+    const ID_PENYEDIA  = {{ $provider->id_penyedia ?? 0 }};
+    let currentPemilikId = null;
+    let chatPollInterval = null;
+    let lastChatId = 0;
+
+    function getInisial(nama) {
+      return nama.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase();
     }
 
-    // ========== CHAT MODAL ==========
-    const chatHistories = {
-      'Andi Pratama': [
-        { from: 'user', text: 'Pagi kak, Bruno udah jalan-jalan?' },
-        { from: 'user', text: 'Kalau belum, jam 8 aja ya jalannya, dia lagi semangat banget hehe' },
-      ],
-      'Maya Sari': [
-        { from: 'sitter', text: 'Kiki tadi makan dengan lahap, sudah saya kasih obat jam 3 ya' },
-        { from: 'user', text: 'Siap kak, makasih banyak infonya' },
-      ],
-      'Fajar Nugroho': [
-        { from: 'sitter', text: 'Coco hari ini ceria banget, main bareng anjing lain di Day Care' },
-        { from: 'user', text: 'Makasih banyak udah jagain Coco kemarin!' },
-      ],
-    };
-
-    let currentChatName = '';
-
-    function openChatModal(name, inisial, pet) {
-      currentChatName = name;
-      document.getElementById('chatAvatar').innerText = inisial;
-      document.getElementById('chatName').innerText   = name;
-      document.getElementById('chatPet').innerText    = pet;
-
-      const msgs = document.getElementById('chatMessages');
-      msgs.innerHTML = '';
-      const history = chatHistories[name] || [];
-      history.forEach(m => appendChatBubble(m.from, m.text, false));
-
-      document.getElementById('chatModal').classList.add('show');
-      msgs.scrollTop = msgs.scrollHeight;
+    function escHtml(t) {
+      return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
     }
 
-    function closeChatModal() { document.getElementById('chatModal').classList.remove('show'); }
-
-    function appendChatBubble(from, text, scroll = true) {
+    function appendChatBubble(pengirim, text, waktu, scroll = true) {
       const msgs = document.getElementById('chatMessages');
       const div  = document.createElement('div');
-      div.className = from === 'sitter' ? 'flex justify-end' : 'flex justify-start';
-      div.innerHTML = `<div class="max-w-[75%] px-4 py-2.5 rounded-2xl text-xs font-medium ${from === 'sitter' ? 'bg-[#5E887E] text-white rounded-br-sm' : 'bg-[#FAF9F6] text-[#2D433E] border border-gray-100 rounded-bl-sm'}">${text}</div>`;
+      const isSitter = pengirim === 'penyedia';
+      div.className  = isSitter ? 'flex justify-end' : 'flex justify-start';
+      div.innerHTML  = `<div class="max-w-[75%] px-4 py-2.5 rounded-2xl text-xs font-medium ${isSitter ? 'bg-[#5E887E] text-white rounded-br-sm' : 'bg-[#FAF9F6] text-[#2D433E] border border-gray-100 rounded-bl-sm'}">${escHtml(text)}<div class="text-[9px] ${isSitter ? 'text-white/60 text-right' : 'text-gray-400'} mt-1">${waktu}</div></div>`;
       msgs.appendChild(div);
       if (scroll) msgs.scrollTop = msgs.scrollHeight;
     }
 
-    function sendChat() {
+    async function openChatModal(idPemilik, namaPemilik) {
+      currentPemilikId = idPemilik;
+      lastChatId = 0;
+
+      document.getElementById('chatAvatar').innerText = getInisial(namaPemilik);
+      document.getElementById('chatName').innerText   = namaPemilik;
+      document.getElementById('chatModal').classList.add('show');
+
+      // Muat riwayat chat dari database
+      const msgs = document.getElementById('chatMessages');
+      msgs.innerHTML = '<div class="text-center text-xs text-gray-400 py-4">Memuat...</div>';
+
+      try {
+        const res   = await fetch(`/api/chat-sitter/${idPemilik}`);
+        const data  = await res.json();
+        msgs.innerHTML = '';
+        if (data.length === 0) {
+          msgs.innerHTML = '<div class="text-center text-xs text-gray-400 py-4">Belum ada pesan. Mulai percakapan!</div>';
+        }
+        data.forEach(m => {
+          const d = new Date(m.created_at);
+          const waktu = d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+          appendChatBubble(m.pengirim, m.pesan, waktu, false);
+          lastChatId = Math.max(lastChatId, m.id);
+        });
+        msgs.scrollTop = msgs.scrollHeight;
+      } catch(e) {
+        msgs.innerHTML = '<div class="text-center text-xs text-red-400 py-4">Gagal memuat pesan.</div>';
+      }
+
+      // Mulai polling pesan baru
+      if (chatPollInterval) clearInterval(chatPollInterval);
+      chatPollInterval = setInterval(pollNewChatMessages, 3000);
+    }
+
+    async function pollNewChatMessages() {
+      if (!currentPemilikId) return;
+      try {
+        const res  = await fetch(`/api/chat-sitter/${currentPemilikId}?since_id=${lastChatId}`);
+        const msgs = await res.json();
+        if (Array.isArray(msgs) && msgs.length > 0) {
+          msgs.forEach(m => {
+            const d = new Date(m.created_at);
+            const waktu = d.getHours().toString().padStart(2,'0') + ':' + d.getMinutes().toString().padStart(2,'0');
+            appendChatBubble(m.pengirim, m.pesan, waktu);
+            lastChatId = Math.max(lastChatId, m.id);
+          });
+        }
+      } catch(e) {}
+    }
+
+    function closeChatModal() {
+      document.getElementById('chatModal').classList.remove('show');
+      if (chatPollInterval) { clearInterval(chatPollInterval); chatPollInterval = null; }
+      currentPemilikId = null;
+    }
+
+    async function sendChat() {
       const input = document.getElementById('chatInput');
       const text  = input.value.trim();
-      if (!text) return;
-      appendChatBubble('sitter', text);
-      if (!chatHistories[currentChatName]) chatHistories[currentChatName] = [];
-      chatHistories[currentChatName].push({ from: 'sitter', text });
+      if (!text || !currentPemilikId) return;
       input.value = '';
+
+      const now = new Date();
+      const waktu = now.getHours().toString().padStart(2,'0') + ':' + now.getMinutes().toString().padStart(2,'0');
+      appendChatBubble('penyedia', text, waktu);
+
+      try {
+        const res  = await fetch('/chat-sitter/kirim', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF_TOKEN },
+          body: JSON.stringify({
+            id_penyedia: ID_PENYEDIA,
+            id_pemilik:  currentPemilikId,
+            pesan:       text,
+            pengirim:    'penyedia'
+          })
+        });
+        const data = await res.json();
+        if (data.id) lastChatId = Math.max(lastChatId, data.id);
+      } catch(e) {
+        console.error('Gagal kirim pesan:', e);
+      }
     }
 
     document.getElementById('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendChat(); });

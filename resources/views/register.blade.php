@@ -54,7 +54,9 @@
                 <label class="block text-[11px] font-extrabold text-gray-400 uppercase tracking-widest mb-2">Daftar Sebagai</label>
                 <select name="role" required class="w-full px-4 py-3.5 bg-[#FAF9F6] border border-gray-100 rounded-2xl text-xs font-semibold text-[#2D433E] focus:outline-none focus:border-[#5E887E] focus:bg-white transition-all">
                     <option value="Pemilik Hewan">Pemilik Hewan</option>
-                    <option value="Penyedia Jasa">Penyedia Jasa</option>
+                    <option value="Penyedia Jasa (Dokter)">Penyedia Jasa (Dokter)</option>
+                    <option value="Penyedia Jasa (Pet Sitter)">Penyedia Jasa (Pet Sitter)</option>
+                    <option value="Admin">Admin</option>
                 </select>
             </div>
 

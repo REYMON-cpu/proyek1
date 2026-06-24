@@ -15,10 +15,12 @@ return new class extends Migration
             $table->integer('id_penyedia', true);
             $table->string('nama', 100);
             $table->string('jenis', 50);
-            $table->string('no_hp', 20);
+            $table->string('no_hp', 20)->nullable();
             $table->string('spesialis', 100)->nullable();
             $table->integer('pengalaman')->nullable();
             $table->integer('tarif')->nullable();
+            $table->string('status', 20)->default('Pending');
+            $table->string('dokumen', 255)->nullable();
         });
     }
 

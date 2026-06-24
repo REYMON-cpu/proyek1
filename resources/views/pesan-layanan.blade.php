@@ -17,7 +17,7 @@
 
     <!-- Navbar -->
     <nav class="w-full bg-white border-b border-[#5E887E]/10 py-4 sticky top-0 z-50 backdrop-blur-md bg-white/80 px-6 md:px-12 flex items-center justify-between">
-       <a href="{{ $dokter->jenis == 'Pet Sitter' ? '/pilih-sitter' : '/pilih-dokter' }}" class="mr-3 text-gray-400 hover:text-[#5E887E] hover:scale-110 transition-all duration-200 text-lg" title="Kembali">
+       <a href="{{ $dokter->jenis == 'sitter' ? '/pilih-sitter' : '/pilih-dokter' }}" class="mr-3 text-gray-400 hover:text-[#5E887E] hover:scale-110 transition-all duration-200 text-lg" title="Kembali">
     <i class="fa-solid fa-arrow-left"></i>
 </a>
             <img src="{{ asset('images/logo hijau.svg') }}" alt="Logo" class="h-12 w-auto">

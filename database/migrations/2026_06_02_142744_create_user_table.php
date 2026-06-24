@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('email', 100);
             $table->string('password');
             $table->string('role', 20);
+            $table->string('jenis', 50)->nullable();
         });
     }
 
