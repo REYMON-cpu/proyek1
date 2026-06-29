@@ -31,3 +31,11 @@ class RegisterController extends Controller
         return redirect('/')->with('success', 'Akun berhasil terdaftar, Cees! Silakan login.');
     }
 }
+
+$total_selesai = Pemesanan::where('id_penyedia', $provider->id_penyedia)
+                    ->where('status', 'Selesai')
+                    ->count();
+
+return view('dashboard-dokter', compact(
+    'provider', 'bookings', 'rekam_list', 'chat_list', 'total_selesai'
+));

@@ -38,7 +38,7 @@
         <!-- FORM UTAMA -->
         <form action="/proses-pemesanan" method="POST" class="space-y-8">
             @csrf
-            
+
             <!-- ANTI-NULL FIX: Mengambil ID langsung dari rute parameter URL -->
             <input type="hidden" name="id_mitra" value="{{ $id_terpilih }}">
 
@@ -74,9 +74,6 @@
                         <select name="jenis_hewan" required class="w-full px-4 py-3 rounded-2xl border border-gray-100 focus:outline-none focus:border-[#5E887E] focus:ring-2 focus:ring-[#5E887E]/20 bg-[#F4F7F6] text-sm font-medium transition-all">
                             <option value="kucing">Kucing</option>
                             <option value="anjing">Anjing</option>
-                            <option value="burung">Burung</option>
-                            <option value="kelinci">Kelinci</option>
-                            <option value="lainnya">Lainnya</option>
                         </select>
                     </div>
                 </div>
@@ -124,7 +121,7 @@
 
             <!-- Tombol Konfirmasi Pembayaran/Pemesanan -->
             <button type="submit" class="w-full bg-[#2D433E] hover:bg-[#5E887E] text-white font-bold py-4 rounded-[20px] shadow-lg hover:shadow-xl transition-all duration-300 active:scale-[0.99] text-center text-sm flex items-center justify-center gap-2">
-                <i class="fa-solid fa-circle-check"></i> Konfirmasi Pemesanan & Cari Dokter
+                <i class="fa-solid fa-circle-check"></i> Konfirmasi Pemesanan
             </button>
         </form>
     </main>

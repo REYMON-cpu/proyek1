@@ -36,16 +36,16 @@
     </style>
 </head>
 
-<body class="antialiased relative">
+<body class="antialiased">
 
-    <div class="bg-blob top-[-150px] left-[-150px] opacity-70"></div>
-    <div class="bg-blob bottom-[-150px] right-[-150px] opacity-50"></div>
+    <div class="fixed top-[-150px] left-[-150px] w-[600px] h-[600px] bg-[#E8F0EE] blur-[100px] rounded-full -z-10 opacity-70 pointer-events-none"></div>
+    <div class="fixed bottom-[-150px] right-[-150px] w-[600px] h-[600px] bg-[#E8F0EE] blur-[100px] rounded-full -z-10 opacity-50 pointer-events-none"></div>
 
-    <header id="main-nav" class="fixed top-0 w-full z-[100] px-4 md:px-6 py-4 transition-all duration-500">
-        <nav class="w-full max-w-[1440px] mx-auto bg-[#5E887E] backdrop-blur-xl rounded-[24px] px-4 md:px-8 py-3 flex justify-between items-center border border-[#5E887E]/20 shadow-[0_15px_30px_-10px_rgba(94,136,126,0.25)]">
+    <header id="main-nav" class="fixed top-0 w-full z-[100] px-4 md:px-6 py-2 transition-all duration-500">
+        <nav class="w-full max-w-[1440px] mx-auto bg-[#5E887E] backdrop-blur-xl rounded-[20px] px-4 md:px-8 py-2 flex justify-between items-center border border-[#5E887E]/20 shadow-[0_12px_25px_-10px_rgba(94,136,126,0.25)]">
 
             <div class="flex items-center gap-3 relative">
-                <div class="w-12 h-12 flex items-center justify-center overflow-hidden bg-white/10 backdrop-blur-md rounded-xl p-1.5 border border-white/20">
+                <div class="w-12 h-12 flex items-center justify-center overflow-hidden bg-[#5E887E] rounded-xl p-1.5 border border-[#5E887E]/30">
                     <img src="{{ asset('images/logo putih.svg') }}" alt="Logo" class="w-full h-full object-contain">
                 </div>
 
@@ -146,15 +146,15 @@
         </nav>
     </header>
 
+    <!-- Diubah ke h-36: jarak pas di tengah-tengah agar tidak dempet ke navbar -->
+    <div class="h-36"></div>
 
-    <div class="h-40"></div>
-
-    <main class="max-w-[1440px] mx-auto px-10 min-h-[75vh] flex items-center relative">
+    <!-- Menggunakan min-h-[70vh] dan pb-16 untuk transisi yang pas dengan section di bawahnya -->
+    <main class="max-w-[1440px] mx-auto px-10 min-h-[70vh] flex items-center relative pb-16">
         <div class="grid grid-cols-12 gap-20 items-center w-full">
 
-
-            <div class="col-span-12 lg:col-span-7 relative">
-                <div class="absolute -top-8 -left-8 bg-white/90 backdrop-blur px-6 py-4 rounded-[25px] shadow-2xl z-10 flex items-center gap-4 border border-white/50">
+            <div class="col-span-12 lg:col-span-7 relative mx-auto lg:mx-0 w-full">
+                <div class="absolute -top-6 -left-4 bg-white/90 backdrop-blur px-6 py-4 rounded-[25px] shadow-2xl z-10 flex items-center gap-4 border border-white/50">
                     <div class="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center text-2xl shadow-inner">🐾</div>
                     <div>
                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Trusted by</p>
@@ -162,7 +162,7 @@
                     </div>
                 </div>
 
-                <div class="swiper mySwiper rounded-[70px] overflow-hidden shadow-[0_60px_120px_-30px_rgba(0,0,0,0.2)] h-[600px] border-[20px] border-white relative">
+                <div class="swiper mySwiper rounded-[60px] overflow-hidden shadow-[0_50px_100px_-30px_rgba(0,0,0,0.2)] max-w-[92%] h-[540px] border-[18px] border-white relative">
                     <div class="swiper-wrapper">
                         <div class="swiper-slide">
                             <img src="{{ asset('images/hero slider 1.png') }}" class="w-full h-full object-cover">
@@ -171,10 +171,9 @@
                             <img src="{{ asset('images/hero slider 2.png') }}" class="w-full h-full object-cover">
                         </div>
                     </div>
-                    <div class="swiper-pagination !bottom-12"></div>
+                    <div class="swiper-pagination !bottom-8"></div>
                 </div>
             </div>
-
 
             <div class="col-span-12 lg:col-span-5">
                 <div class="space-y-10">
@@ -563,7 +562,7 @@
                         <div class="faq-body max-h-0 opacity-0 transition-all duration-500 ease-in-out">
                             <div class="px-32 pb-12">
                                 <p class="text-gray-500 text-lg leading-relaxed">
-                                    Kami mendukung berbagai metode pembayaran mulai dari QRIS, Transfer Bank, hingga Cash on Delivery untuk memudahkan transaksi kamu.
+                                    Sistem pembayaran di GoPet dilakukan secaraTunai. Kamu cukup bayar langsung ke petugas atau penyedia jasa di rumahmu setelah seluruh rangkaian perawatan anabul selesai dikerjakan!
                                 </p>
                             </div>
                         </div>
@@ -657,7 +656,7 @@
                 <div class="md:col-span-4">
                     <div class="flex items-center gap-4 mb-6">
                         <img src="{{ asset('images/logo putih.svg') }}" alt="Logo Gopet" class="h-12 w-auto object-contain">
-                        <span class="text-3xl font-black text-white tracking-tighter">GoPet.</span>
+                         <h2 class="text-3xl font-bold tracking-tight text-white">Go<span class="text-[#D9B08C]">Pet</span></h2>
                     </div>
                     <p class="leading-relaxed mb-8 max-w-sm text-white/70">
                         Solusi terpercaya untuk perawatan anabul langsung di rumah. Kami membawa kasih sayang dan keahlian medis ke depan pintu kamu.

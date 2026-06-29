@@ -44,73 +44,79 @@
 
 <body class="bg-[#FDF5E6] flex items-center justify-center min-h-screen p-4">
 
+    <div class="anim-kartu bg-white rounded-[30px] shadow-2xl overflow-hidden max-w-[930px] w-full flex flex-col md:flex-row">
 
-    <div class="anim-kartu bg-white rounded-[30px] shadow-2xl overflow-hidden max-w-5xl w-full flex flex-col md:flex-row">
-
-        <div class="md:w-1/2 bg-[#5E887E] p-10 md:p-12 flex flex-col justify-between text-white">
+        <div class="md:w-1/2 bg-[#5E887E] p-10 flex flex-col justify-between text-white">
             <div class="anim-teks">
-                <div class="flex items-center gap-2 mb-10">
-                    <img src="{{ asset('images/logo putih.svg') }}" alt="Logo" class="h-12 w-auto">
-                    <h2 class="text-3xl font-bold tracking-tight">GoPet</h2>
+                <div class="flex items-center gap-2 mb-8">
+                    <img src="{{ asset('images/logo putih.svg') }}" alt="Logo" class="h-11 w-auto">
+                    <h2 class="text-3xl font-bold tracking-tight text-white">Go<span class="text-[#D9B08C]">Pet</span></h2>
                 </div>
 
-                <h1 class="text-4xl lg:text-5xl font-bold leading-tight mb-6">
+                <h1 class="text-3xl lg:text-4xl font-bold leading-tight mb-5">
                     Bikin anabul makin happy dan terawat.
                 </h1>
-                <p class="text-lg opacity-90 leading-relaxed mb-8">
+                <p class="text-base opacity-90 leading-relaxed mb-6">
                     Booking jasa pet care gak pakai ribet. Mulai dari pet sitting sampai konsultasi ahli, semua ada di GoPet!
                 </p>
             </div>
+
             <div class="w-full anim-foto">
                 <img src="{{ asset('images/gopet form.jpeg') }}"
                      alt="Anabul"
-                     class="w-full h-56 lg:h-64 object-cover rounded-[20px] shadow-md border-2 border-white/20 transition-transform duration-500 hover:scale-105">
+                     class="w-full h-52 lg:h-56 object-cover rounded-[20px] shadow-md border-2 border-white/20 transition-transform duration-500 hover:scale-105">
             </div>
         </div>
 
-
-        <div class="md:w-1/2 p-10 md:p-14 flex flex-col justify-center bg-white anim-form">
-            <h2 class="text-3xl font-bold text-[#4A4A4A] mb-2">Buat Akun</h2>
-            <p class="text-gray-500 mb-8">Lengkapi data di bawah untuk bergabung dengan komunitas GoPet.</p>
+        <div class="md:w-1/2 p-10 flex flex-col justify-center bg-white anim-form">
+            <h2 class="text-3xl font-bold text-[#4A4A4A] mb-1">Buat Akun</h2>
+            <p class="text-sm text-gray-500 mb-6">Lengkapi data di bawah untuk bergabung dengan komunitas GoPet.</p>
 
             @if(session('error'))
-                <div class="bg-red-100 text-red-700 p-3 rounded-xl mb-4 text-center font-bold">
+                <div class="bg-red-100 text-red-700 p-3 rounded-xl mb-4 text-center font-bold text-sm">
                     {{ session('error') }}
                 </div>
             @endif
 
-           <form action="{{ route('login.proses') }}" method="POST" class="space-y-5">
+            <form action="{{ route('login.proses') }}" method="POST" class="space-y-4">
                 @csrf
                 <div>
                     <label class="block text-sm font-bold text-[#5E887E] mb-1">Email</label>
-                    <input type="email" name="email" required class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:bg-white outline-none transition-all duration-300" placeholder="contoh@gmail.com">
+                    <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:bg-white outline-none transition-all duration-300" placeholder="contoh@gmail.com">
                 </div>
 
                 <div>
                     <label class="block text-sm font-bold text-[#5E887E] mb-1">Password</label>
-                    <input type="password" name="password" required class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:bg-white outline-none" placeholder="••••••••">
+                    <input type="password" name="password" required class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:bg-white outline-none" placeholder="••••••••">
                 </div>
 
                 <div>
-                    <label for="role" class="block text-sm font-bold text-[#5E887E] mb-1">Masuk Sebagai</label>
-                    <select id="role" name="role" required class="w-full px-4 py-3.5 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:bg-white outline-none transition-all duration-300 appearance-none">
-                        <option value="Pemilik Hewan">Pemilik Hewan</option>
-                        <option value="Penyedia Jasa">Penyedia Jasa</option>
-                        <option value="Admin">Admin</option>
-                    </select>
+                    <label class="block text-sm font-bold text-[#5E887E] mb-1">Masuk Sebagai</label>
+                    <div class="relative">
+                        <select id="role" name="role" required class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#5E887E] focus:bg-white outline-none transition-all duration-300 appearance-none">
+                            <option value="Pemilik Hewan">Pemilik Hewan</option>
+                            <option value="Penyedia Jasa">Penyedia Jasa</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-400">
+                            <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="pt-4">
-                    <button type="submit" class="w-full bg-[#5E887E] hover:bg-[#4a6b63] text-white font-bold py-4 rounded-xl shadow-lg transition-all duration-300 active:scale-95">
+                <div class="pt-3">
+                    <button type="submit" class="w-full bg-[#5E887E] hover:bg-[#4a6b63] text-white font-bold py-3.5 rounded-xl shadow-lg transition-all duration-300 active:scale-95">
                         Masuk
                     </button>
                 </div>
             </form>
 
-            <p class="mt-6 text-center text-sm text-gray-500">
+            <p class="mt-5 text-center text-sm text-gray-500">
                 Belum punya akun? <a href="{{ url('/register') }}" class="text-[#5E887E] font-bold">Daftar di sini</a>
             </p>
         </div>
+
     </div>
+
 </body>
 </html>
